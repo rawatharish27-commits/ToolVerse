@@ -4,8 +4,6 @@ import { TOOLS } from '../data/tools';
 import { CATEGORIES } from '../data/categories';
 import AdPlaceholder from '../components/AdPlaceholder';
 import ToolRenderer from '../components/ToolRenderer';
-import { generateArticle } from '../services/gemini';
-import { GoogleGenAI, Modality } from "@google/genai";
 
 interface ToolPageProps {
   slug: string;
@@ -17,7 +15,6 @@ const ToolPage: React.FC<ToolPageProps> = ({ slug, onNavigate }) => {
   const category = CATEGORIES.find(c => c.id === tool?.category);
 
   // --- Common States ---
-  const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
 
@@ -25,11 +22,16 @@ const ToolPage: React.FC<ToolPageProps> = ({ slug, onNavigate }) => {
     if (tool) document.title = `${tool.title} | ToolVerse Free Online Tools`;
   }, [tool]);
 
-  if (!tool) return <div className="p-20 text-center">Tool not found.</div>;
+  if (!tool) return <div className="p-20 text-center font-bold text-slate-400 text-2xl">Tool not found.</div>;
 
   const showSuccess = (msg: string) => {
     setSuccess(msg);
     setTimeout(() => setSuccess(null), 3000);
+  };
+
+  const showError = (msg: string) => {
+    setError(msg);
+    setTimeout(() => setError(null), 5000);
   };
 
   return (
@@ -38,6 +40,13 @@ const ToolPage: React.FC<ToolPageProps> = ({ slug, onNavigate }) => {
         <div className="fixed top-20 right-4 z-[100] bg-emerald-600 text-white px-6 py-3 rounded-xl shadow-2xl font-bold animate-bounce flex items-center">
           <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M5 13l4 4L19 7" /></svg>
           {success}
+        </div>
+      )}
+
+      {error && (
+        <div className="fixed top-20 right-4 z-[100] bg-red-600 text-white px-6 py-3 rounded-xl shadow-2xl font-bold animate-pulse flex items-center">
+          <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+          {error}
         </div>
       )}
 
@@ -65,7 +74,7 @@ const ToolPage: React.FC<ToolPageProps> = ({ slug, onNavigate }) => {
               <ToolRenderer 
                 slug={tool.slug} 
                 onSuccess={showSuccess} 
-                onError={setError} 
+                onError={showError} 
               />
             </div>
           </div>
@@ -93,9 +102,9 @@ const ToolPage: React.FC<ToolPageProps> = ({ slug, onNavigate }) => {
                         </li>
                       )) || (
                         <>
-                          <li className="flex items-center"><svg className="w-4 h-4 text-indigo-500 mr-2" fill="currentColor" viewBox="0 0 20 20"><path d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" /></svg> Paste your content.</li>
-                          <li className="flex items-center"><svg className="w-4 h-4 text-indigo-500 mr-2" fill="currentColor" viewBox="0 0 20 20"><path d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" /></svg> Wait for processing.</li>
-                          <li className="flex items-center"><svg className="w-4 h-4 text-indigo-500 mr-2" fill="currentColor" viewBox="0 0 20 20"><path d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" /></svg> Export the result.</li>
+                          <li className="flex items-center"><svg className="w-4 h-4 text-indigo-500 mr-2" fill="currentColor" viewBox="0 0 20 20"><path d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" /></svg> Upload or paste your content.</li>
+                          <li className="flex items-center"><svg className="w-4 h-4 text-indigo-500 mr-2" fill="currentColor" viewBox="0 0 20 20"><path d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" /></svg> Adjust settings if necessary.</li>
+                          <li className="flex items-center"><svg className="w-4 h-4 text-indigo-500 mr-2" fill="currentColor" viewBox="0 0 20 20"><path d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" /></svg> Click process and download the result.</li>
                         </>
                       )}
                    </ul>
@@ -113,8 +122,8 @@ const ToolPage: React.FC<ToolPageProps> = ({ slug, onNavigate }) => {
                         </div>
                       )) || (
                         <div>
-                          <div className="font-bold text-indigo-100 text-sm mb-1 uppercase tracking-tighter">Q: Is it free?</div>
-                          <p className="text-indigo-50 text-xs opacity-90">A: Yes, all ToolVerse tools are 100% free and client-side.</p>
+                          <div className="font-bold text-indigo-100 text-sm mb-1 uppercase tracking-tighter">Q: Is it secure?</div>
+                          <p className="text-indigo-50 text-xs opacity-90">A: Yes, all processing happens locally in your browser. No data is sent to our servers.</p>
                         </div>
                       )}
                    </div>
@@ -128,7 +137,7 @@ const ToolPage: React.FC<ToolPageProps> = ({ slug, onNavigate }) => {
           <div className="bg-white p-8 rounded-[2.5rem] border border-slate-200 shadow-sm sticky top-24">
             <h3 className="font-bold text-slate-900 mb-6 flex items-center">
               <span className="w-2 h-2 bg-indigo-600 rounded-full mr-3 animate-pulse"></span>
-              Trending in {category?.name}
+              Related Tools
             </h3>
             <div className="space-y-6">
               {TOOLS.filter(t => t.category === tool.category && t.slug !== tool.slug).slice(0, 5).map(rel => (
@@ -142,7 +151,7 @@ const ToolPage: React.FC<ToolPageProps> = ({ slug, onNavigate }) => {
               onClick={() => onNavigate('home')} 
               className="w-full mt-10 py-4 bg-slate-900 text-white rounded-2xl text-xs font-bold hover:bg-indigo-600 transition-all active:scale-95 shadow-lg"
             >
-              Explore All 1000 Tools
+              Back to Home
             </button>
           </div>
           <AdPlaceholder type="sidebar" />
