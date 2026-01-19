@@ -14,6 +14,33 @@ interface NavigationState {
 const App: React.FC = () => {
   const [nav, setNav] = useState<NavigationState>({ page: 'home' });
   const [searchQuery, setSearchQuery] = useState('');
+  const [favorites, setFavorites] = useState<string[]>(() => {
+    const saved = localStorage.getItem('tv_favorites');
+    return saved ? JSON.parse(saved) : [];
+  });
+  const [recent, setRecent] = useState<string[]>(() => {
+    const saved = localStorage.getItem('tv_recent');
+    return saved ? JSON.parse(saved) : [];
+  });
+
+  // Persist Workspace
+  useEffect(() => {
+    localStorage.setItem('tv_favorites', JSON.stringify(favorites));
+  }, [favorites]);
+
+  useEffect(() => {
+    localStorage.setItem('tv_recent', JSON.stringify(recent));
+  }, [recent]);
+
+  useEffect(() => {
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('/sw.js').catch(err => {
+          console.debug('ServiceWorker registration skipped (dev env).');
+        });
+      });
+    }
+  }, []);
 
   useEffect(() => {
     const handleHashChange = () => {
@@ -38,23 +65,59 @@ const App: React.FC = () => {
   }, []);
 
   const navigate = (page: string, params?: any) => {
-    setSearchQuery(''); // Reset search on explicit navigation
+    setSearchQuery(''); 
     if (page === 'home') window.location.hash = '';
     else if (page === 'category') window.location.hash = `category/${params.id}`;
     else if (page === 'tool') window.location.hash = `tool/${params.slug}`;
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
+  const toggleFavorite = (slug: string) => {
+    setFavorites(prev => 
+      prev.includes(slug) ? prev.filter(s => s !== slug) : [slug, ...prev].slice(0, 12)
+    );
+  };
+
+  const addRecent = (slug: string) => {
+    setRecent(prev => {
+      const filtered = prev.filter(s => s !== slug);
+      return [slug, ...filtered].slice(0, 8);
+    });
+  };
+
   const renderContent = () => {
     switch (nav.page) {
       case 'home':
-        return <Home onNavigate={navigate} searchQuery={searchQuery} />;
+        return (
+          <Home 
+            onNavigate={navigate} 
+            searchQuery={searchQuery} 
+            favorites={favorites} 
+            recent={recent}
+            onToggleFavorite={toggleFavorite}
+          />
+        );
       case 'category':
-        return <CategoryPage categoryId={nav.params.id} onNavigate={navigate} />;
+        return (
+          <CategoryPage 
+            categoryId={nav.params.id} 
+            onNavigate={navigate} 
+            favorites={favorites}
+            onToggleFavorite={toggleFavorite}
+          />
+        );
       case 'tool':
-        return <ToolPage slug={nav.params.slug} onNavigate={navigate} />;
+        return (
+          <ToolPage 
+            slug={nav.params.slug} 
+            onNavigate={navigate} 
+            onToolUsed={addRecent}
+            favorites={favorites}
+            onToggleFavorite={toggleFavorite}
+          />
+        );
       default:
-        return <Home onNavigate={navigate} searchQuery={searchQuery} />;
+        return <Home onNavigate={navigate} searchQuery={searchQuery} favorites={[]} recent={[]} onToggleFavorite={()=>{}} />;
     }
   };
 

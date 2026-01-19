@@ -24,7 +24,8 @@
     "jspdf": "2.5.1",
     "html2canvas": "1.4.1",
     "browser-image-compression": "2.0.2",
-    "pdfjs-dist": "4.0.379"
+    "pdfjs-dist": "4.0.379",
+    "tesseract.js": "5.1.0"
   },
   "devDependencies": {
     "@types/node": "^22.14.0",

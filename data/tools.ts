@@ -1,7 +1,329 @@
 import { Tool } from '../types';
 
 export const TOOLS: Tool[] = [
-  // PHASE-1: FINANCE & CALCULATOR TOOLS (Batch-6 - High CPC + High Traffic)
+  // PHASE-2: SEO AUTOMATION & SCALE (Batch-11)
+  {
+    slug: 'xml-sitemap-generator',
+    title: 'XML Sitemap Generator',
+    category: 'seo',
+    description: 'Generate a comprehensive XML sitemap for search engines to index your site better.',
+    keywords: ['sitemap generator', 'xml sitemap', 'google indexing'],
+    toolType: 'client'
+  },
+  {
+    slug: 'json-ld-schema-pro',
+    title: 'JSON-LD Schema Generator',
+    category: 'seo',
+    description: 'Create professional schema markup for WebApps, Articles, and Local Business.',
+    keywords: ['schema markup', 'json-ld', 'structured data', 'google snippets'],
+    toolType: 'client'
+  },
+  {
+    slug: 'canonical-tag-generator',
+    title: 'Canonical Tag Generator',
+    category: 'seo',
+    description: 'Prevent duplicate content issues by generating proper canonical tags.',
+    keywords: ['canonical tag', 'seo meta', 'duplicate content'],
+    toolType: 'client'
+  },
+  {
+    slug: 'hreflang-tag-generator',
+    title: 'Hreflang Tag Generator',
+    category: 'seo',
+    description: 'Optimize your site for international SEO with proper language tags.',
+    keywords: ['hreflang', 'international seo', 'language tags'],
+    toolType: 'client'
+  },
+  {
+    slug: 'index-now-ping',
+    title: 'IndexNow Pinger',
+    category: 'seo',
+    description: 'Instantly notify Bing and Yandex about your latest content updates.',
+    keywords: ['indexnow', 'ping search engines', 'fast indexing'],
+    toolType: 'client'
+  },
+
+  // PHASE-2: OFFICE & EBOOK TOOLS (Batch-10)
+  {
+    slug: 'csv-to-xlsx',
+    title: 'CSV to Excel Converter',
+    category: 'office',
+    description: 'Convert plain CSV text files into formatted Excel (XLSX) workbooks.',
+    keywords: ['csv to excel', 'convert csv', 'data tools'],
+    toolType: 'client'
+  },
+  {
+    slug: 'xlsx-to-csv',
+    title: 'Excel to CSV Converter',
+    category: 'office',
+    description: 'Extract raw data from Excel spreadsheets and save as universal CSV.',
+    keywords: ['excel to csv', 'xlsx to csv', 'data export'],
+    toolType: 'client'
+  },
+  {
+    slug: 'json-to-excel',
+    title: 'JSON to Excel',
+    category: 'office',
+    description: 'Convert JSON data structures into organized Excel spreadsheets instantly.',
+    keywords: ['json to excel', 'data conversion', 'json to xlsx'],
+    toolType: 'client'
+  },
+  {
+    slug: 'excel-to-pdf',
+    title: 'Excel to PDF',
+    category: 'office',
+    description: 'Convert your Excel sheets into professional-grade PDF reports.',
+    keywords: ['excel to pdf', 'xlsx to pdf', 'convert spreadsheet'],
+    toolType: 'client'
+  },
+  {
+    slug: 'word-to-pdf-converter',
+    title: 'Word to PDF Pro',
+    category: 'office',
+    description: 'Convert Microsoft Word (DOCX) files to PDF format directly in your browser.',
+    keywords: ['word to pdf', 'docx to pdf', 'office converter'],
+    toolType: 'client'
+  },
+  {
+    slug: 'pdf-to-docx-converter',
+    title: 'PDF to Word Converter',
+    category: 'office',
+    description: 'Extract content from PDF files and convert them into editable DOCX files.',
+    keywords: ['pdf to word', 'pdf to docx', 'convert pdf'],
+    toolType: 'client'
+  },
+  {
+    slug: 'vcard-generator',
+    title: 'VCard Generator',
+    category: 'office',
+    description: 'Create professional electronic business cards (VCF) for your contacts.',
+    keywords: ['vcard', 'vcf creator', 'business card'],
+    toolType: 'client'
+  },
+
+  // PHASE-2: VIDEO & AUDIO PROFESSIONAL UPGRADE (Batch-9)
+  {
+    slug: 'video-converter-pro',
+    title: 'Video Converter Pro',
+    category: 'video',
+    description: 'Convert videos between MP4, MKV, AVI, MOV, and WebM formats.',
+    keywords: ['video converter', 'mp4 to webm', 'mkv to mp4', 'avi converter'],
+    toolType: 'client'
+  },
+  {
+    slug: 'audio-converter-pro',
+    title: 'Audio Converter Pro',
+    category: 'utility',
+    description: 'Professional audio conversion between MP3, WAV, AAC, FLAC, and OGG.',
+    keywords: ['audio converter', 'flac to mp3', 'wav to mp3', 'aac to wav'],
+    toolType: 'client'
+  },
+  {
+    slug: 'video-mute',
+    title: 'Remove Audio from Video',
+    category: 'video',
+    description: 'Remove sound from any video file while maintaining video quality.',
+    keywords: ['mute video', 'remove audio', 'silent video'],
+    toolType: 'client'
+  },
+  {
+    slug: 'video-merger',
+    title: 'Video Merger',
+    category: 'video',
+    description: 'Combine multiple video clips into a single professional movie file.',
+    keywords: ['merge video', 'combine clips', 'join video'],
+    toolType: 'client'
+  },
+  {
+    slug: 'video-speed-changer',
+    title: 'Video Speed Changer',
+    category: 'video',
+    description: 'Create slow-motion or fast-forward effects for your video clips.',
+    keywords: ['slow motion', 'fast forward', 'video speed', 'timelapse'],
+    toolType: 'client'
+  },
+  {
+    slug: 'audio-reverse',
+    title: 'Reverse Audio',
+    category: 'utility',
+    description: 'Reverse any audio file for creative sound design or fun effects.',
+    keywords: ['reverse audio', 'backwards sound', 'audio effect'],
+    toolType: 'client'
+  },
+  {
+    slug: 'video-to-gif-high-res',
+    title: 'High-Res GIF Maker',
+    category: 'image',
+    description: 'Create high-quality animated GIFs with optimized color palettes.',
+    keywords: ['video to gif', 'hq gif', 'animated gif creator'],
+    toolType: 'client'
+  },
+  {
+    slug: 'audio-noise-gate',
+    title: 'Audio Noise Gate',
+    category: 'utility',
+    description: 'Reduce background hiss and low-level noise using DSP filters.',
+    keywords: ['noise gate', 'clean audio', 'audio dsp', 'hiss removal'],
+    toolType: 'client'
+  },
+  {
+    slug: 'video-metadata-viewer',
+    title: 'Video Metadata Viewer',
+    category: 'video',
+    description: 'Inspect deep technical metadata of video and audio files.',
+    keywords: ['video info', 'ffprobe', 'metadata', 'codec info'],
+    toolType: 'client'
+  },
+  {
+    slug: 'audio-merger-pro',
+    title: 'Audio Merger Pro',
+    category: 'utility',
+    description: 'Join multiple audio tracks into a single seamless audio file.',
+    keywords: ['merge audio', 'join mp3', 'combine songs'],
+    toolType: 'client'
+  },
+
+  // PHASE-2: PDF & DOCUMENT PROFESSIONAL UPGRADE (Batch-8)
+  {
+    slug: 'pdf-to-jpg',
+    title: 'PDF to Image',
+    category: 'pdf',
+    description: 'Convert PDF pages into high-quality JPG or PNG images instantly.',
+    keywords: ['pdf to jpg', 'pdf to png', 'extract images from pdf'],
+    toolType: 'client'
+  },
+  {
+    slug: 'pdf-compressor',
+    title: 'Compress PDF',
+    category: 'pdf',
+    description: 'Reduce PDF file size by optimizing internal resources and images.',
+    keywords: ['compress pdf', 'reduce pdf size', 'shrink pdf'],
+    toolType: 'client'
+  },
+  {
+    slug: 'pdf-to-text',
+    title: 'PDF to Text (OCR)',
+    category: 'pdf',
+    description: 'Extract searchable text from scanned or regular PDF documents.',
+    keywords: ['pdf to text', 'ocr pdf', 'extract text'],
+    toolType: 'client'
+  },
+  {
+    slug: 'pdf-rotate',
+    title: 'Rotate PDF',
+    category: 'pdf',
+    description: 'Rotate PDF pages permanently and save the new document.',
+    keywords: ['rotate pdf', 'fix orientation', 'flip pdf'],
+    toolType: 'client'
+  },
+  {
+    slug: 'word-to-pdf',
+    title: 'Word to PDF',
+    category: 'pdf',
+    description: 'Convert DOCX files to professional PDF documents in your browser.',
+    keywords: ['word to pdf', 'docx to pdf', 'convert docx'],
+    toolType: 'client'
+  },
+  {
+    slug: 'pdf-unlock',
+    title: 'Unlock PDF',
+    category: 'pdf',
+    description: 'Remove passwords and restrictions from your PDF files.',
+    keywords: ['unlock pdf', 'remove password', 'pdf security'],
+    toolType: 'client'
+  },
+  {
+    slug: 'pdf-protect',
+    title: 'Protect PDF',
+    category: 'pdf',
+    description: 'Secure your PDF files with advanced AES encryption and passwords.',
+    keywords: ['protect pdf', 'encrypt pdf', 'secure pdf'],
+    toolType: 'client'
+  },
+
+  // PHASE-2: IMAGE TOOLS PROFESSIONAL UPGRADE (Batch-7)
+  {
+    slug: 'heic-to-jpg',
+    title: 'HEIC to JPG Converter',
+    category: 'image',
+    description: 'Convert iPhone HEIC photos to standard JPG/PNG format instantly.',
+    keywords: ['heic', 'iphone photo', 'convert heic', 'heif'],
+    toolType: 'client'
+  },
+  {
+    slug: 'background-remover',
+    title: 'Magic Background Remover',
+    category: 'image',
+    description: 'Remove solid backgrounds or specific colors from images without AI.',
+    keywords: ['remove bg', 'transparent background', 'png maker'],
+    toolType: 'client'
+  },
+  {
+    slug: 'photo-enhancer',
+    title: 'Pro Photo Enhancer',
+    category: 'image',
+    description: 'Sharpen, brighten, and fix colors in your photos with professional filters.',
+    keywords: ['enhance photo', 'fix blurry', 'brighten image', 'sharpen'],
+    toolType: 'client'
+  },
+  {
+    slug: 'passport-photo-maker',
+    title: 'Passport Photo Maker',
+    category: 'image',
+    description: 'Crop and resize images to standard passport and visa dimensions.',
+    keywords: ['passport photo', 'visa photo', 'id photo generator'],
+    toolType: 'client'
+  },
+  {
+    slug: 'image-color-extractor',
+    title: 'Image Color Extractor',
+    category: 'image',
+    description: 'Extract dominant color palette and HEX codes from any image.',
+    keywords: ['color palette', 'hex codes', 'design tool', 'color picker'],
+    toolType: 'client'
+  },
+  {
+    slug: 'image-resizer-pro',
+    title: 'Image Resizer Pro',
+    category: 'image',
+    description: 'Resize images by pixels or percentage with aspect ratio lock.',
+    keywords: ['resize', 'pixel resize', 'batch resize'],
+    toolType: 'client'
+  },
+  {
+    slug: 'watermark-adder',
+    title: 'Watermark Adder',
+    category: 'image',
+    description: 'Protect your photos by adding text or image watermarks easily.',
+    keywords: ['watermark', 'branding', 'copyright photo'],
+    toolType: 'client'
+  },
+  {
+    slug: 'image-to-text-ocr',
+    title: 'Image to Text (OCR)',
+    category: 'image',
+    description: 'Extract text from scanned images and photos using high-speed OCR.',
+    keywords: ['ocr', 'image to text', 'extract text'],
+    toolType: 'client'
+  },
+  {
+    slug: 'batch-image-converter',
+    title: 'Batch Image Converter',
+    category: 'image',
+    description: 'Convert hundreds of images between WebP, PNG, JPG, and AVIF.',
+    keywords: ['batch convert', 'webp to png', 'png to jpg'],
+    toolType: 'client'
+  },
+  {
+    slug: 'meme-generator-pro',
+    title: 'Meme Generator Pro',
+    category: 'image',
+    description: 'Create viral memes with modern layouts, emojis, and custom fonts.',
+    keywords: ['meme', 'generator', 'viral content'],
+    toolType: 'client'
+  },
+
+  // PHASE-1: FINANCE & CALCULATOR TOOLS (Batch-6)
   {
     slug: 'emi-calculator',
     title: 'EMI Calculator',

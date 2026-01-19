@@ -1,6 +1,11 @@
 {
   "name": "ToolVerse - The Ultimate Mega Tool Platform",
+  "short_name": "ToolVerse",
   "description": "A production-ready, SEO-optimized platform featuring 500+ high-traffic online tools including AI generation, image processing, developer utilities, and SEO boosters.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#4f46e5",
   "requestFramePermissions": [
     "camera",
     "microphone"

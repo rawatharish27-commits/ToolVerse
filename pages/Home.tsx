@@ -8,18 +8,26 @@ import AdPlaceholder from '../components/AdPlaceholder';
 interface HomeProps {
   onNavigate: (page: string, params?: any) => void;
   searchQuery?: string;
+  favorites: string[];
+  recent: string[];
+  onToggleFavorite: (slug: string) => void;
 }
 
-const Home: React.FC<HomeProps> = ({ onNavigate, searchQuery = '' }) => {
+const Home: React.FC<HomeProps> = ({ onNavigate, searchQuery = '', favorites, recent, onToggleFavorite }) => {
   const filteredTools = useMemo(() => {
-    if (!searchQuery) return TOOLS.slice(0, 12);
     const q = searchQuery.toLowerCase();
-    return TOOLS.filter(t => 
-      t.title.toLowerCase().includes(q) || 
-      t.description.toLowerCase().includes(q) ||
-      t.keywords.some(k => k.toLowerCase().includes(q))
-    );
+    const list = q 
+      ? TOOLS.filter(t => 
+          t.title.toLowerCase().includes(q) || 
+          t.description.toLowerCase().includes(q) ||
+          t.keywords.some(k => k.toLowerCase().includes(q))
+        )
+      : TOOLS.slice(0, 24);
+    return list;
   }, [searchQuery]);
+
+  const favoriteTools = TOOLS.filter(t => favorites.includes(t.slug));
+  const recentTools = TOOLS.filter(t => recent.includes(t.slug));
 
   return (
     <div>
@@ -49,13 +57,60 @@ const Home: React.FC<HomeProps> = ({ onNavigate, searchQuery = '' }) => {
               Browse Categories
             </button>
             <div className="text-slate-400 font-bold hidden sm:block">OR</div>
-            <div className="text-white font-bold sm:hidden">Start Searching Above</div>
+            <div className="text-white font-bold sm:hidden">Search 1000 Tools</div>
           </div>
         </div>
       </section>
 
+      {/* PHASE-3 Workspace Section */}
+      {!searchQuery && (favorites.length > 0 || recent.length > 0) && (
+        <section className="max-w-7xl mx-auto px-4 -mt-16 relative z-20">
+          <div className="glass bg-white/70 rounded-[3rem] p-8 md:p-12 shadow-2xl border border-white/50 backdrop-blur-2xl">
+            <div className="flex items-center justify-between mb-8">
+               <h2 className="text-2xl font-black text-slate-900 flex items-center">
+                  <span className="w-10 h-10 bg-indigo-600 text-white rounded-xl flex items-center justify-center mr-3 text-lg">📁</span>
+                  Your Workspace
+               </h2>
+               <div className="flex gap-2">
+                  <div className="px-3 py-1 bg-indigo-50 text-indigo-600 rounded-full text-[10px] font-bold uppercase tracking-widest">Active Session</div>
+               </div>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+               {favorites.length > 0 && (
+                 <div>
+                    <h3 className="text-xs font-black text-slate-400 uppercase tracking-widest mb-4">Starred Tools</h3>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                       {favoriteTools.map(t => (
+                         <ToolCard key={t.slug} tool={t} isMini onClick={() => onNavigate('tool', { slug: t.slug })} isFavorite={true} onToggleFavorite={onToggleFavorite} />
+                       ))}
+                    </div>
+                 </div>
+               )}
+               {recent.length > 0 && (
+                 <div>
+                    <h3 className="text-xs font-black text-slate-400 uppercase tracking-widest mb-4">Recently Used</h3>
+                    <div className="space-y-3">
+                       {recentTools.map(t => (
+                         <div key={t.slug} onClick={() => onNavigate('tool', { slug: t.slug })} className="flex items-center p-3 bg-white/50 hover:bg-white rounded-2xl cursor-pointer transition-all border border-slate-100 group">
+                            <div className="w-10 h-10 bg-slate-100 rounded-xl flex items-center justify-center mr-4 group-hover:scale-110 transition-transform">⚡</div>
+                            <div className="flex-grow">
+                               <div className="text-sm font-bold text-slate-900 group-hover:text-indigo-600 transition-colors">{t.title}</div>
+                               <div className="text-[10px] text-slate-400 uppercase tracking-tight">{t.category}</div>
+                            </div>
+                            <svg className="w-4 h-4 text-slate-300 group-hover:text-indigo-600 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M9 5l7 7-7 7"/></svg>
+                         </div>
+                       ))}
+                    </div>
+                 </div>
+               )}
+            </div>
+          </div>
+        </section>
+      )}
+
       {/* Featured Ad */}
-      <div className="max-w-7xl mx-auto px-4 mt-8">
+      <div className="max-w-7xl mx-auto px-4 mt-12">
         <AdPlaceholder type="banner" />
       </div>
 
@@ -64,15 +119,12 @@ const Home: React.FC<HomeProps> = ({ onNavigate, searchQuery = '' }) => {
         <div className="flex flex-col md:flex-row md:items-end justify-between mb-12">
           <div>
             <h2 className="text-3xl font-bold text-slate-900 mb-2">
-              {searchQuery ? `Search Results for "${searchQuery}"` : "Featured Tools"}
+              {searchQuery ? `Search Results for "${searchQuery}"` : "Explore All Tools"}
             </h2>
             <p className="text-slate-500">
               {searchQuery ? `Found ${filteredTools.length} tools matching your query.` : "The most popular tools used by 100k+ monthly users."}
             </p>
           </div>
-          {searchQuery && (
-            <button onClick={() => window.location.hash = ''} className="text-indigo-600 font-bold mt-4 md:mt-0 underline">Clear Search</button>
-          )}
         </div>
 
         {filteredTools.length > 0 ? (
@@ -82,6 +134,8 @@ const Home: React.FC<HomeProps> = ({ onNavigate, searchQuery = '' }) => {
                 key={tool.slug} 
                 tool={tool} 
                 onClick={() => onNavigate('tool', { slug: tool.slug })} 
+                isFavorite={favorites.includes(tool.slug)}
+                onToggleFavorite={onToggleFavorite}
               />
             ))}
           </div>
@@ -122,7 +176,6 @@ const Home: React.FC<HomeProps> = ({ onNavigate, searchQuery = '' }) => {
             </div>
           </section>
 
-          {/* Ad Slot */}
           <div className="max-w-7xl mx-auto px-4 my-16">
             <AdPlaceholder type="inline" />
           </div>
@@ -137,20 +190,20 @@ const Home: React.FC<HomeProps> = ({ onNavigate, searchQuery = '' }) => {
                </div>
                <div className="grid grid-cols-2 gap-8 text-center">
                   <div className="bg-white/10 p-8 rounded-3xl backdrop-blur-sm">
-                    <div className="text-3xl font-bold mb-1">500+</div>
-                    <div className="text-xs uppercase font-bold text-indigo-200">Tools</div>
+                    <div className="text-3xl font-bold mb-1">1000+</div>
+                    <div className="text-xs uppercase font-bold text-indigo-200">Total Tools</div>
                   </div>
                   <div className="bg-white/10 p-8 rounded-3xl backdrop-blur-sm">
                     <div className="text-3xl font-bold mb-1">100%</div>
-                    <div className="text-xs uppercase font-bold text-indigo-200">Free</div>
+                    <div className="text-xs uppercase font-bold text-indigo-200">Free Forever</div>
                   </div>
                   <div className="bg-white/10 p-8 rounded-3xl backdrop-blur-sm">
-                    <div className="text-3xl font-bold mb-1">24/7</div>
-                    <div className="text-xs uppercase font-bold text-indigo-200">Uptime</div>
+                    <div className="text-3xl font-bold mb-1">Instant</div>
+                    <div className="text-xs uppercase font-bold text-indigo-200">Processing</div>
                   </div>
                   <div className="bg-white/10 p-8 rounded-3xl backdrop-blur-sm">
-                    <div className="text-3xl font-bold mb-1">99.9%</div>
-                    <div className="text-xs uppercase font-bold text-indigo-200">Success</div>
+                    <div className="text-3xl font-bold mb-1">Safe</div>
+                    <div className="text-xs uppercase font-bold text-indigo-200">Client-Side</div>
                   </div>
                </div>
             </div>
