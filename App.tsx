@@ -38,7 +38,8 @@ const App: React.FC = () => {
       const hash = window.location.hash.slice(1);
       trackPageView(hash ? `/${hash}` : '/');
 
-      // Use startTransition to prevent Error #525 during lazy-load suspension
+      // CRITICAL: Wrapping state change in startTransition prevents Error #525 
+      // when React.lazy components are being fetched during navigation.
       startTransition(() => {
         if (!hash || hash === '' || hash === '/') {
           setNav({ page: 'home' });
@@ -63,14 +64,16 @@ const App: React.FC = () => {
   }, []);
 
   const navigate = (page: string, params?: any) => {
-    if (page === 'home') {
-      window.location.hash = '';
-      setSearchQuery('');
-    }
-    else if (page === 'privacy') window.location.hash = 'privacy';
-    else if (page === 'category') window.location.hash = `category/${params.id}`;
-    else if (page === 'tool') window.location.hash = `tool/${params.slug}`;
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    startTransition(() => {
+      if (page === 'home') {
+        window.location.hash = '';
+        setSearchQuery('');
+      }
+      else if (page === 'privacy') window.location.hash = 'privacy';
+      else if (page === 'category') window.location.hash = `category/${params.id}`;
+      else if (page === 'tool') window.location.hash = `tool/${params.slug}`;
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
   };
 
   const toggleFavorite = (slug: string) => {
@@ -126,22 +129,26 @@ const App: React.FC = () => {
 
   return (
     <Layout onNavigate={navigate} onSearch={(q) => {
-      setSearchQuery(q);
-      // If we're not on home, searching should navigate home to show results
-      if (window.location.hash !== '' && window.location.hash !== '#') {
-        window.location.hash = ''; 
-      }
+      startTransition(() => {
+        setSearchQuery(q);
+        if (window.location.hash !== '' && window.location.hash !== '#') {
+          window.location.hash = ''; 
+        }
+      });
     }}>
       <Suspense fallback={
-        <div className="flex items-center justify-center min-h-[70vh]">
-          <div className="flex flex-col items-center space-y-6">
-            <div className="relative w-20 h-20">
-              <div className="absolute inset-0 border-4 border-indigo-100 rounded-full"></div>
-              <div className="absolute inset-0 border-4 border-indigo-600 rounded-full border-t-transparent animate-spin"></div>
+        <div className="flex items-center justify-center min-h-[70vh] bg-slate-50/50 backdrop-blur-sm">
+          <div className="flex flex-col items-center space-y-8 p-12 bg-white rounded-[3rem] shadow-2xl border border-slate-100 animate-in zoom-in-95 duration-300">
+            <div className="relative w-24 h-24">
+              <div className="absolute inset-0 border-[6px] border-indigo-50 rounded-full"></div>
+              <div className="absolute inset-0 border-[6px] border-indigo-600 rounded-full border-t-transparent animate-spin"></div>
+              <div className="absolute inset-4 bg-indigo-500/10 rounded-full flex items-center justify-center">
+                 <span className="text-indigo-600 font-black text-xl">TV</span>
+              </div>
             </div>
             <div className="text-center">
-              <p className="text-slate-900 font-black uppercase tracking-widest text-sm">Synchronizing Engines</p>
-              <p className="text-slate-400 text-xs mt-1 font-medium tracking-tight">Accessing ToolVerse Core...</p>
+              <h2 className="text-slate-900 font-black uppercase tracking-[0.3em] text-sm mb-2">Engines Synchronizing</h2>
+              <p className="text-slate-400 text-xs font-bold tracking-tight animate-pulse">Initializing ToolVerse Production Core...</p>
             </div>
           </div>
         </div>

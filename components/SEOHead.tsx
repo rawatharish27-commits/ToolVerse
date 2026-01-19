@@ -10,16 +10,18 @@ interface SEOHeadProps {
 }
 
 const SEOHead: React.FC<SEOHeadProps> = ({ title, description, url, type = 'website' }) => {
-  const fullTitle = `${title} | ToolVerse - Free Online Tools`;
+  if (!title || !url) return null;
+
+  const fullTitle = `${title} | ToolVerse - The Ultimate Mega Platform`;
   const siteName = "ToolVerse";
 
   return (
     <Helmet>
       <title>{fullTitle}</title>
-      <meta name="description" content={description} />
+      <meta name="description" content={description || "Access 500+ free professional online tools instantly."} />
       <link rel="canonical" href={url} />
 
-      {/* Open Graph */}
+      {/* Open Graph / Facebook */}
       <meta property="og:type" content={type} />
       <meta property="og:title" content={title} />
       <meta property="og:description" content={description} />
@@ -32,6 +34,10 @@ const SEOHead: React.FC<SEOHeadProps> = ({ title, description, url, type = 'webs
       <meta name="twitter:title" content={title} />
       <meta name="twitter:description" content={description} />
       <meta name="twitter:image" content="https://toolverse.com/og-image.png" />
+      <meta name="twitter:site" content="@toolverse" />
+
+      {/* Prevent Flash of Unstyled Content Meta */}
+      <meta name="theme-color" content="#4f46e5" />
     </Helmet>
   );
 };
