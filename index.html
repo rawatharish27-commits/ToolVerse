@@ -30,13 +30,37 @@
       ::-webkit-scrollbar-thumb:hover {
         background: #818cf8;
       }
-      /* Slow spin animation for wheel */
+      
+      /* Celebratory Animations */
+      @keyframes confetti-fall {
+        0% { transform: translateY(-100vh) rotate(0deg); opacity: 1; }
+        100% { transform: translateY(100vh) rotate(720deg); opacity: 0; }
+      }
+      .confetti {
+        position: fixed;
+        width: 10px;
+        height: 10px;
+        background-color: #f00;
+        z-index: 999;
+        animation: confetti-fall 4s linear forwards;
+      }
+
+      @keyframes glow-pulse {
+        0% { box-shadow: 0 0 20px rgba(79, 70, 229, 0.4); }
+        50% { box-shadow: 0 0 60px rgba(79, 70, 229, 0.8); }
+        100% { box-shadow: 0 0 20px rgba(79, 70, 229, 0.4); }
+      }
+      .glow-active {
+        animation: glow-pulse 2s infinite;
+      }
+
+      /* Slow spin animation for wheel background */
       @keyframes spin-slow {
         from { transform: rotate(0deg); }
         to { transform: rotate(360deg); }
       }
       .animate-spin-slow {
-        animation: spin-slow 8s linear infinite;
+        animation: spin-slow 15s linear infinite;
       }
     </style>
   <script type="importmap">
@@ -45,7 +69,6 @@
     "react-dom/": "https://esm.sh/react-dom@^19.2.3/",
     "react/": "https://esm.sh/react@^19.2.3/",
     "react": "https://esm.sh/react@^19.2.3",
-    "react-helmet-async": "https://esm.sh/react-helmet-async@^2.0.5",
     "@google/genai": "https://esm.sh/@google/genai@^1.37.0",
     "qrcode": "https://esm.sh/qrcode@^1.5.4",
     "pdf-lib": "https://esm.sh/pdf-lib@^1.17.1",

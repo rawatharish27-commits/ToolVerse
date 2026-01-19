@@ -1,6 +1,5 @@
 
-import React from 'react';
-import { Helmet } from 'react-helmet-async';
+import React, { useEffect } from 'react';
 
 interface SEOHeadProps {
   title: string;
@@ -9,37 +8,62 @@ interface SEOHeadProps {
   type?: 'website' | 'article';
 }
 
+/**
+ * Native SEO Engine for ToolVerse
+ * Manages document metadata directly to ensure React 19 compatibility
+ * and prevent Error #525 (Suspense mismatch).
+ */
 const SEOHead: React.FC<SEOHeadProps> = ({ title, description, url, type = 'website' }) => {
-  if (!title || !url) return null;
+  useEffect(() => {
+    if (!title || !url) return;
 
-  const fullTitle = `${title} | ToolVerse - The Ultimate Mega Platform`;
-  const siteName = "ToolVerse";
+    // 1. Update Document Title
+    const fullTitle = `${title} | ToolVerse - The Ultimate Mega Platform`;
+    document.title = fullTitle;
 
-  return (
-    <Helmet>
-      <title>{fullTitle}</title>
-      <meta name="description" content={description || "Access 500+ free professional online tools instantly."} />
-      <link rel="canonical" href={url} />
+    // 2. Helper to set or create meta tags
+    const setMeta = (name: string, content: string, property: boolean = false) => {
+      const attr = property ? 'property' : 'name';
+      let el = document.querySelector(`meta[${attr}="${name}"]`);
+      if (!el) {
+        el = document.createElement('meta');
+        el.setAttribute(attr, name);
+        document.head.appendChild(el);
+      }
+      el.setAttribute('content', content);
+    };
 
-      {/* Open Graph / Facebook */}
-      <meta property="og:type" content={type} />
-      <meta property="og:title" content={title} />
-      <meta property="og:description" content={description} />
-      <meta property="og:url" content={url} />
-      <meta property="og:site_name" content={siteName} />
-      <meta property="og:image" content="https://toolverse.com/og-image.png" />
+    // 3. Update Standard Meta
+    setMeta('description', description || "Access 500+ free professional online tools instantly.");
+    setMeta('theme-color', '#4f46e5');
 
-      {/* Twitter */}
-      <meta name="twitter:card" content="summary_large_image" />
-      <meta name="twitter:title" content={title} />
-      <meta name="twitter:description" content={description} />
-      <meta name="twitter:image" content="https://toolverse.com/og-image.png" />
-      <meta name="twitter:site" content="@toolverse" />
+    // 4. Update Open Graph
+    setMeta('og:type', type, true);
+    setMeta('og:title', title, true);
+    setMeta('og:description', description, true);
+    setMeta('og:url', url, true);
+    setMeta('og:site_name', 'ToolVerse', true);
+    setMeta('og:image', 'https://toolverse.com/og-image.png', true);
 
-      {/* Prevent Flash of Unstyled Content Meta */}
-      <meta name="theme-color" content="#4f46e5" />
-    </Helmet>
-  );
+    // 5. Update Twitter Meta
+    setMeta('twitter:card', 'summary_large_image');
+    setMeta('twitter:title', title);
+    setMeta('twitter:description', description);
+    setMeta('twitter:image', 'https://toolverse.com/og-image.png');
+    setMeta('twitter:site', '@toolverse');
+
+    // 6. Update Canonical Link
+    let link = document.querySelector('link[rel="canonical"]');
+    if (!link) {
+      link = document.createElement('link');
+      link.setAttribute('rel', 'canonical');
+      document.head.appendChild(link);
+    }
+    link.setAttribute('href', url);
+
+  }, [title, description, url, type]);
+
+  return null;
 };
 
 export default SEOHead;

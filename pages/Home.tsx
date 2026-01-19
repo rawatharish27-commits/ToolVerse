@@ -5,6 +5,8 @@ import { TOOLS } from '../data/tools';
 import ToolCard from '../components/ToolCard';
 import AdPlaceholder from '../components/AdPlaceholder';
 import SEOHead from '../components/SEOHead';
+import SpinWheel from '../components/SpinWheel';
+import SiteStatus from '../components/SiteStatus';
 import { getToolPriorityScore } from '../utils/toolPriority';
 
 interface HomeProps {
@@ -42,13 +44,18 @@ const Home: React.FC<HomeProps> = ({ onNavigate, searchQuery = '', favorites, re
       />
       
       {/* Hero Section */}
-      <section className="relative overflow-hidden bg-slate-900 pt-32 pb-48 sm:pt-40 sm:pb-60">
+      <section className="relative overflow-hidden bg-slate-900 pt-16 sm:pt-20">
+        {/* Real-time Status Bar */}
+        <div className="relative z-20">
+          <SiteStatus />
+        </div>
+
         <div className="absolute top-0 left-0 w-full h-full overflow-hidden opacity-30 pointer-events-none">
           <div className="absolute -top-1/4 -left-1/4 w-3/4 h-3/4 bg-indigo-600 rounded-full blur-[160px] animate-pulse"></div>
           <div className="absolute -bottom-1/4 -right-1/4 w-3/4 h-3/4 bg-purple-600 rounded-full blur-[160px] animate-pulse"></div>
         </div>
         
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 text-center">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 text-center pt-16 pb-32 sm:pt-24 sm:pb-48">
           <div className="inline-flex items-center px-4 py-2 rounded-full bg-white/5 border border-white/10 text-indigo-300 text-xs font-black uppercase tracking-[0.2em] mb-8 animate-bounce-slow">
             <span className="relative flex h-2 w-2 mr-3">
               <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-indigo-400 opacity-75"></span>
@@ -86,7 +93,7 @@ const Home: React.FC<HomeProps> = ({ onNavigate, searchQuery = '', favorites, re
 
       {/* Workspace Section */}
       {!searchQuery && (favorites.length > 0 || recent.length > 0) && (
-        <section className="max-w-7xl mx-auto px-4 -mt-32 relative z-20 mb-20">
+        <section className="max-w-7xl mx-auto px-4 -mt-16 sm:-mt-24 relative z-20 mb-20">
           <div className="glass bg-white/90 rounded-[3.5rem] p-10 md:p-16 shadow-2xl border border-white/50 backdrop-blur-3xl shadow-indigo-200/50">
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-12">
                <div>
@@ -139,6 +146,9 @@ const Home: React.FC<HomeProps> = ({ onNavigate, searchQuery = '', favorites, re
           </div>
         </section>
       )}
+
+      {/* Prize Spin Section (New) */}
+      {!searchQuery && <SpinWheel />}
 
       {/* Search Result / Grid Section */}
       <section id="tools-grid" className="max-w-7xl mx-auto px-4 py-24 sm:px-6 lg:px-8">
