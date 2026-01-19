@@ -23,17 +23,27 @@ export interface ToolCategory {
 
 export type ToolType = 'client' | 'ai' | 'server';
 
+export interface ToolFAQ {
+  q: string;
+  a: string;
+}
+
 export interface Tool {
   slug: string;
   title: string;
   category: CategorySlug;
   description: string;
+  seoTitle?: string;
+  seoDescription?: string;
+  useCases?: string[];
   longDescription?: string;
   keywords: string[];
   toolType: ToolType;
   icon?: string;
   howTo?: string[];
-  faqs?: { q: string; a: string }[];
+  features?: string[];
+  faqs?: ToolFAQ[];
+  priority?: number; // Higher number = higher visibility (High CPM priority)
 }
 
 export interface Breadcrumb {

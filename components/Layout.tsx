@@ -1,7 +1,7 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { CATEGORIES } from '../data/categories';
-import { TOOLS } from '../data/tools';
+import InternalLinking from './InternalLinking';
 
 interface LayoutProps {
   children: React.ReactNode;
@@ -10,7 +10,6 @@ interface LayoutProps {
 }
 
 const Layout: React.FC<LayoutProps> = ({ children, onNavigate, onSearch }) => {
-  const [isMobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [searchVal, setSearchVal] = useState('');
 
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -19,60 +18,69 @@ const Layout: React.FC<LayoutProps> = ({ children, onNavigate, onSearch }) => {
     if (onSearch) onSearch(val);
   };
 
+  // Synchronize internal state with parent search query if needed
+  useEffect(() => {
+    const hash = window.location.hash;
+    if (hash === '' || hash === '#') {
+      // Clear search if we're on root but search is empty
+    }
+  }, []);
+
   return (
-    <div className="min-h-screen flex flex-col">
-      <header className="sticky top-0 z-50 glass bg-white/80 border-b border-slate-200">
+    <div className="min-h-screen flex flex-col selection:bg-indigo-100 selection:text-indigo-900 font-sans">
+      <header className="sticky top-0 z-50 glass bg-white/90 border-b border-slate-200 shadow-sm transition-all duration-300">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-16">
+          <div className="flex justify-between items-center h-20">
             <div 
               className="flex items-center cursor-pointer group"
-              onClick={() => onNavigate('home')}
+              onClick={() => { setSearchVal(''); onNavigate('home'); }}
             >
-              <div className="w-10 h-10 bg-indigo-600 rounded-lg flex items-center justify-center text-white font-bold text-xl mr-3 group-hover:scale-110 transition-transform">
+              <div className="w-12 h-12 bg-indigo-600 rounded-2xl flex items-center justify-center text-white font-black text-2xl mr-4 group-hover:scale-110 group-hover:rotate-6 transition-all shadow-xl shadow-indigo-600/20">
                 TV
               </div>
-              <span className="text-2xl font-extrabold tracking-tight text-slate-900">
-                Tool<span className="text-indigo-600">Verse</span>
+              <span className="text-2xl font-black tracking-tighter text-slate-900 group-hover:text-indigo-600 transition-colors">
+                Tool<span className="text-indigo-600 group-hover:text-slate-900 transition-colors">Verse</span>
               </span>
             </div>
 
-            <nav className="hidden lg:flex space-x-8">
-              <button onClick={() => onNavigate('home')} className="text-slate-600 hover:text-indigo-600 font-medium transition-colors">Home</button>
+            <nav className="hidden lg:flex items-center space-x-12">
+              <button onClick={() => { setSearchVal(''); onNavigate('home'); }} className="text-xs font-black text-slate-600 hover:text-indigo-600 uppercase tracking-[0.2em] transition-colors">Hub</button>
               <div className="relative group">
-                <button className="text-slate-600 group-hover:text-indigo-600 font-medium flex items-center transition-colors">
+                <button className="text-xs font-black text-slate-600 group-hover:text-indigo-600 uppercase tracking-[0.2em] flex items-center transition-colors">
                   Categories
-                  <svg className="ml-1 w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" /></svg>
+                  <svg className="ml-2 w-4 h-4 transform group-hover:rotate-180 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M19 9l-7 7-7-7" /></svg>
                 </button>
-                <div className="absolute left-0 mt-2 w-56 glass bg-white rounded-xl shadow-xl border border-slate-200 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
-                  <div className="py-2">
+                <div className="absolute -left-10 mt-6 w-80 glass bg-white rounded-[2.5rem] shadow-2xl border border-slate-100 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 z-50 p-6">
+                  <div className="grid grid-cols-1 gap-2">
                     {CATEGORIES.map(cat => (
                       <button
                         key={cat.id}
-                        onClick={() => onNavigate('category', { id: cat.id })}
-                        className="block w-full text-left px-4 py-2 text-sm text-slate-700 hover:bg-indigo-50 hover:text-indigo-600"
+                        onClick={() => { setSearchVal(''); onNavigate('category', { id: cat.id }); }}
+                        className="flex items-center w-full text-left px-5 py-4 text-sm font-black text-slate-700 hover:bg-indigo-50 hover:text-indigo-600 rounded-2xl transition-all"
                       >
-                        {cat.icon} {cat.name}
+                        <span className="mr-4 text-2xl">{cat.icon}</span>
+                        {cat.name}
                       </button>
                     ))}
                   </div>
                 </div>
               </div>
-              <button className="text-slate-600 hover:text-indigo-600 font-medium transition-colors">Premium</button>
+              <button onClick={() => onNavigate('privacy')} className="text-xs font-black text-slate-600 hover:text-indigo-600 uppercase tracking-[0.2em] transition-colors">Privacy</button>
             </nav>
 
-            <div className="flex items-center space-x-4">
+            <div className="flex items-center space-x-6">
               <div className="hidden sm:flex relative">
                 <input 
                   type="text" 
                   value={searchVal}
                   onChange={handleSearchChange}
-                  placeholder="Search 500+ tools..." 
-                  className="w-64 pl-10 pr-4 py-2 rounded-full border border-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-all"
+                  placeholder="Explore 1,000 tools..." 
+                  className="w-72 pl-12 pr-6 py-4 rounded-2xl border border-slate-200 focus:outline-none focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500 transition-all font-bold text-xs bg-slate-50/50 shadow-inner"
                 />
-                <svg className="absolute left-3 top-2.5 w-5 h-5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
+                <svg className="absolute left-4 top-4.5 w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
               </div>
-              <button className="lg:hidden p-2 text-slate-600" onClick={() => setMobileMenuOpen(!isMobileMenuOpen)}>
-                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h16M4 18h16" /></svg>
+              <button className="lg:hidden p-4 bg-slate-100 rounded-2xl text-slate-600">
+                 <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M4 6h16M4 12h16m-7 6h7" /></svg>
               </button>
             </div>
           </div>
@@ -83,45 +91,51 @@ const Layout: React.FC<LayoutProps> = ({ children, onNavigate, onSearch }) => {
         {children}
       </main>
 
-      <footer className="bg-slate-900 text-slate-400 py-12 mt-auto">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center sm:text-left">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-8 mb-12">
-            <div>
-              <h3 className="text-white font-bold mb-4">Explore</h3>
-              <ul className="space-y-2 text-sm">
-                <li><button onClick={() => onNavigate('home')} className="hover:text-white">Trending Tools</button></li>
-                <li><button className="hover:text-white">Latest Tools</button></li>
-                <li><button className="hover:text-white">API Docs</button></li>
-              </ul>
-            </div>
-            <div>
-              <h3 className="text-white font-bold mb-4">Categories</h3>
-              <ul className="space-y-2 text-sm">
-                {CATEGORIES.slice(0, 4).map(cat => (
-                  <li key={cat.id}><button onClick={() => onNavigate('category', { id: cat.id })} className="hover:text-white">{cat.name}</button></li>
+      <InternalLinking onNavigate={(p, pr) => { setSearchVal(''); onNavigate(p, pr); }} />
+
+      <footer className="bg-slate-950 text-slate-500 py-32 overflow-hidden relative border-t border-slate-800">
+        <div className="absolute top-0 right-0 w-[40rem] h-[40rem] bg-indigo-600/5 rounded-full blur-[160px] pointer-events-none"></div>
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-24 mb-24">
+            <div className="col-span-1 md:col-span-2 space-y-12">
+              <div className="flex items-center">
+                <div className="w-12 h-12 bg-indigo-600 rounded-2xl flex items-center justify-center text-white font-black text-xl mr-5 shadow-2xl shadow-indigo-600/20">TV</div>
+                <span className="text-3xl font-black text-white tracking-tighter">ToolVerse</span>
+              </div>
+              <p className="max-w-lg text-slate-500 text-lg leading-relaxed font-medium">
+                The most extensive free tool ecosystem on the web. Engineered for privacy, speed, and professional-grade performance. Join the 500+ daily utilities revolution.
+              </p>
+              <div className="flex space-x-8">
+                {['Twitter', 'GitHub', 'LinkedIn'].map(social => (
+                  <a key={social} href="#" className="text-slate-600 hover:text-indigo-400 font-black text-[10px] uppercase tracking-widest transition-colors">{social}</a>
                 ))}
-              </ul>
-            </div>
-            <div>
-              <h3 className="text-white font-bold mb-4">Policy</h3>
-              <ul className="space-y-2 text-sm">
-                <li><button className="hover:text-white">Privacy</button></li>
-                <li><button className="hover:text-white">Terms</button></li>
-                <li><button className="hover:text-white">Cookies</button></li>
-              </ul>
-            </div>
-            <div>
-              <h3 className="text-white font-bold mb-4">Follow Us</h3>
-              <p className="text-xs mb-4">Stay updated with our newest free tool releases!</p>
-              <div className="flex justify-center sm:justify-start space-x-3">
-                <div className="w-8 h-8 rounded-lg bg-slate-800 hover:bg-indigo-600 transition-colors cursor-pointer" />
-                <div className="w-8 h-8 rounded-lg bg-slate-800 hover:bg-indigo-600 transition-colors cursor-pointer" />
               </div>
             </div>
+            <div>
+              <h3 className="text-white font-black mb-10 uppercase text-[10px] tracking-[0.4em]">Resource Hub</h3>
+              <ul className="space-y-6 text-sm font-bold">
+                <li><button onClick={() => { setSearchVal(''); onNavigate('home'); }} className="hover:text-indigo-400 transition-colors">Start Portal</button></li>
+                <li><button onClick={() => { setSearchVal(''); onNavigate('category', { id: 'ai' }); }} className="hover:text-indigo-400 transition-colors">AI Studios</button></li>
+                <li><button onClick={() => { setSearchVal(''); onNavigate('category', { id: 'dev' }); }} className="hover:text-indigo-400 transition-colors">Dev Toolkit</button></li>
+                <li><button onClick={() => { setSearchVal(''); onNavigate('category', { id: 'seo' }); }} className="hover:text-indigo-400 transition-colors">SEO Engine</button></li>
+              </ul>
+            </div>
+            <div>
+              <h3 className="text-white font-black mb-10 uppercase text-[10px] tracking-[0.4em]">Integrity</h3>
+              <ul className="space-y-6 text-sm font-bold">
+                <li><button onClick={() => onNavigate('privacy')} className="hover:text-indigo-400 transition-colors">Privacy Policy</button></li>
+                <li><button className="hover:text-indigo-400 transition-colors">Terms of Use</button></li>
+                <li><button className="hover:text-indigo-400 transition-colors">Cookie Data</button></li>
+                <li><button className="hover:text-indigo-400 transition-colors">Contact Hub</button></li>
+              </ul>
+            </div>
           </div>
-          <div className="border-t border-slate-800 pt-8 flex flex-col md:flex-row justify-between items-center text-xs">
-            <p>&copy; 2024 ToolVerse. World's Largest Free Online Tools Platform.</p>
-            <p className="mt-4 md:mt-0 font-bold text-indigo-500">Fast. Secure. 100% Client-Side.</p>
+          <div className="border-t border-white/5 pt-16 flex flex-col md:flex-row justify-between items-center text-[10px] font-black uppercase tracking-[0.3em] text-slate-700">
+            <p>&copy; 2024 ToolVerse Global Ecosystem. All Rights Reserved.</p>
+            <p className="mt-8 md:mt-0 flex items-center bg-white/5 px-6 py-3 rounded-full border border-white/5">
+              <span className="w-2.5 h-2.5 bg-emerald-500 rounded-full mr-4 animate-pulse shadow-[0_0_10px_rgba(16,185,129,0.5)]"></span>
+              All Systems Operational
+            </p>
           </div>
         </div>
       </footer>

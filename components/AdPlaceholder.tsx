@@ -2,22 +2,48 @@
 import React from 'react';
 
 interface AdPlaceholderProps {
-  type: 'banner' | 'sidebar' | 'inline';
+  type: 'leaderboard' | 'rectangle' | 'sidebar' | 'inline';
+  slotId?: string;
 }
 
-const AdPlaceholder: React.FC<AdPlaceholderProps> = ({ type }) => {
+const AdPlaceholder: React.FC<AdPlaceholderProps> = ({ type, slotId = "0000000000" }) => {
   const styles = {
-    banner: "w-full h-24 md:h-32",
-    sidebar: "w-full h-64",
-    inline: "w-full h-48 my-8"
+    leaderboard: "w-full min-h-[90px] md:min-h-[120px] mb-8",
+    rectangle: "w-full aspect-[4/3] md:max-w-[336px] mx-auto",
+    sidebar: "w-full min-h-[600px] sticky top-24",
+    inline: "w-full min-h-[250px] my-12"
+  };
+
+  const labels = {
+    leaderboard: "Top Leaderboard (728x90)",
+    rectangle: "Large Rectangle (336x280)",
+    sidebar: "Vertical Skyscraper (300x600)",
+    inline: "In-Article Ad (Responsive)"
   };
 
   return (
-    <div className={`${styles[type]} bg-slate-100 border border-dashed border-slate-300 rounded-lg flex items-center justify-center overflow-hidden`}>
-      <div className="text-center p-4">
-        <span className="block text-xs font-bold text-slate-400 uppercase tracking-widest mb-1">Advertisement</span>
-        <div className="text-slate-300 font-bold text-lg">AdSense {type.toUpperCase()} Slot</div>
-        <p className="text-[10px] text-slate-400 mt-1 max-w-[200px] mx-auto">High CPM placement ready for Google AdSense integration.</p>
+    <div className={`${styles[type]} bg-slate-50 border border-slate-200 rounded-2xl flex flex-col items-center justify-center overflow-hidden relative group`}>
+      <div className="absolute top-2 left-4 text-[9px] font-black text-slate-300 uppercase tracking-widest pointer-events-none">
+        Advertisement
+      </div>
+      
+      {/* Actual AdSense Tag Placeholder */}
+      {/* 
+        <ins className="adsbygoogle"
+             style={{display: 'block'}}
+             data-ad-client="ca-pub-XXXXXXXXXXXXXXXX"
+             data-ad-slot={slotId}
+             data-ad-format="auto"
+             data-full-width-responsive="true"></ins>
+      */}
+
+      <div className="text-center p-6 transition-all group-hover:scale-105">
+        <div className="text-slate-400 font-bold text-sm mb-1">{labels[type]}</div>
+        <div className="text-[10px] text-slate-300 font-mono">Slot ID: {slotId}</div>
+      </div>
+
+      <div className="absolute bottom-0 w-full h-1 bg-slate-100">
+        <div className="h-full bg-indigo-200 w-1/3 animate-shimmer"></div>
       </div>
     </div>
   );

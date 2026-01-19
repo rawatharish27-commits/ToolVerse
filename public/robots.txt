@@ -1,0 +1,15 @@
+User-agent: *
+Allow: /
+
+# Allow core tool pages and categories
+Allow: /tools/
+Allow: /category/
+
+# Block non-public routes and internal structures
+Disallow: /dev/
+Disallow: /test/
+Disallow: /internal/
+Disallow: /api/
+
+# Sitemap index location
+Sitemap: https://toolverse.com/sitemap-index.xml

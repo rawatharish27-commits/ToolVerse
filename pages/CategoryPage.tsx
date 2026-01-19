@@ -5,13 +5,16 @@ import { TOOLS } from '../data/tools';
 import { CategorySlug } from '../types';
 import ToolCard from '../components/ToolCard';
 import AdPlaceholder from '../components/AdPlaceholder';
+import SEOHead from '../components/SEOHead';
 
 interface CategoryPageProps {
   categoryId: CategorySlug;
   onNavigate: (page: string, params?: any) => void;
+  favorites: string[];
+  onToggleFavorite: (slug: string) => void;
 }
 
-const CategoryPage: React.FC<CategoryPageProps> = ({ categoryId, onNavigate }) => {
+const CategoryPage: React.FC<CategoryPageProps> = ({ categoryId, onNavigate, favorites, onToggleFavorite }) => {
   const category = CATEGORIES.find(c => c.id === categoryId);
   const categoryTools = TOOLS.filter(t => t.category === categoryId);
 
@@ -19,11 +22,17 @@ const CategoryPage: React.FC<CategoryPageProps> = ({ categoryId, onNavigate }) =
 
   return (
     <div className="max-w-7xl mx-auto px-4 py-12 sm:px-6 lg:px-8">
+      <SEOHead 
+        title={`${category.name} - Free Online Collection`}
+        description={category.description + ". Browse the best professional tools in our collection."}
+        url={`https://toolverse.com/#category/${category.id}`}
+      />
+
       {/* Breadcrumbs */}
       <nav className="flex mb-8 text-sm font-medium">
-        <button onClick={() => onNavigate('home')} className="text-slate-400 hover:text-indigo-600">Home</button>
+        <button onClick={() => onNavigate('home')} className="text-slate-400 hover:text-indigo-600 transition-colors">Home</button>
         <span className="mx-2 text-slate-300">/</span>
-        <span className="text-slate-900">{category.name}</span>
+        <span className="text-slate-900 font-bold">{category.name}</span>
       </nav>
 
       <div className="flex flex-col lg:flex-row gap-8">
@@ -45,6 +54,8 @@ const CategoryPage: React.FC<CategoryPageProps> = ({ categoryId, onNavigate }) =
                   key={tool.slug} 
                   tool={tool} 
                   onClick={() => onNavigate('tool', { slug: tool.slug })} 
+                  isFavorite={favorites.includes(tool.slug)}
+                  onToggleFavorite={onToggleFavorite}
                 />
               ))
             ) : (
@@ -60,13 +71,13 @@ const CategoryPage: React.FC<CategoryPageProps> = ({ categoryId, onNavigate }) =
         {/* Sidebar Ads/Featured */}
         <aside className="lg:w-80 flex-shrink-0 space-y-8">
           <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm">
-            <h3 className="font-bold text-slate-900 mb-4">Other Categories</h3>
+            <h3 className="font-bold text-slate-900 mb-4 uppercase text-xs tracking-widest">Other Categories</h3>
             <div className="space-y-2">
               {CATEGORIES.filter(c => c.id !== categoryId).slice(0, 5).map(cat => (
                 <button 
                   key={cat.id}
                   onClick={() => onNavigate('category', { id: cat.id })}
-                  className="flex items-center w-full px-3 py-2 rounded-lg hover:bg-slate-50 text-slate-600 transition-colors"
+                  className="flex items-center w-full px-3 py-2 rounded-xl hover:bg-slate-50 text-slate-600 transition-colors"
                 >
                   <span className="mr-3">{cat.icon}</span>
                   <span className="text-sm font-medium">{cat.name}</span>
