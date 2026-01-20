@@ -3,24 +3,19 @@ import react from '@vitejs/plugin-react';
 
 export default defineConfig({
   plugins: [react()],
-  // Ensure paths are relative for Cloudflare Pages subdomains
+  // Ensure we can use process.env.API_KEY in the browser
+  define: {
+    'process.env.API_KEY': JSON.stringify(process.env.API_KEY)
+  },
   base: './',
   build: {
     outDir: 'dist',
     assetsDir: 'assets',
-    sourcemap: false,
     emptyOutDir: true,
     rollupOptions: {
-      output: {
-        manualChunks: {
-          vendor: ['react', 'react-dom'],
-          utils: ['qrcode', 'pdf-lib', 'xlsx', 'jspdf']
-        }
+      input: {
+        main: './index.html'
       }
     }
-  },
-  server: {
-    port: 3000,
-    open: true
   }
 });

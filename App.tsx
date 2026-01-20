@@ -41,10 +41,14 @@ const App: React.FC = () => {
       trackPageView(hash ? `/${hash}` : '/');
 
       startTransition(() => {
+        // Reset scroll position on every navigation
+        window.scrollTo({ top: 0, behavior: 'instant' });
+
         if (!hash || hash === '' || hash === '/') {
           setNav({ page: 'home' });
           return;
         }
+        
         if (hash === 'about') {
           setNav({ page: 'about' });
         } else if (hash === 'privacy') {
@@ -56,35 +60,33 @@ const App: React.FC = () => {
         } else if (hash.startsWith('category/')) {
           const id = hash.split('/')[1] as CategorySlug;
           setNav({ page: 'category', params: { id } });
-          setSearchQuery(''); // Reset search when entering category
+          setSearchQuery(''); 
         } else if (hash.startsWith('tool/')) {
           const slug = hash.split('/')[1];
           setNav({ page: 'tool', params: { slug } });
-          setSearchQuery(''); // Reset search when entering tool
+          setSearchQuery(''); 
         } else {
+          // Catch-all: If route doesn't match, go home
+          window.location.hash = '';
           setNav({ page: 'home' });
         }
       });
     };
+
     window.addEventListener('hashchange', handleHashChange);
-    handleHashChange();
+    handleHashChange(); // Run once on load
     return () => window.removeEventListener('hashchange', handleHashChange);
   }, []);
 
   const navigate = (page: string, params?: any) => {
-    startTransition(() => {
-      if (page === 'home') {
-        window.location.hash = '';
-        setSearchQuery('');
-      }
-      else if (page === 'about') window.location.hash = 'about';
-      else if (page === 'privacy') window.location.hash = 'privacy';
-      else if (page === 'terms') window.location.hash = 'terms';
-      else if (page === 'contact') window.location.hash = 'contact';
-      else if (page === 'category') window.location.hash = `category/${params.id}`;
-      else if (page === 'tool') window.location.hash = `tool/${params.slug}`;
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-    });
+    // Standardizing navigation - everything goes through hash updates
+    if (page === 'home') window.location.hash = '';
+    else if (page === 'about') window.location.hash = 'about';
+    else if (page === 'privacy') window.location.hash = 'privacy';
+    else if (page === 'terms') window.location.hash = 'terms';
+    else if (page === 'contact') window.location.hash = 'contact';
+    else if (page === 'category') window.location.hash = `category/${params.id}`;
+    else if (page === 'tool') window.location.hash = `tool/${params.slug}`;
   };
 
   const toggleFavorite = (slug: string) => {
@@ -102,8 +104,8 @@ const App: React.FC = () => {
 
   const handleGlobalSearch = (q: string) => {
     setSearchQuery(q);
-    // If not on home, move to home to show results
-    if (window.location.hash !== '' && window.location.hash !== '#') {
+    // If user starts typing and is not on Home, push to Home
+    if (q && window.location.hash !== '' && window.location.hash !== '#') {
       window.location.hash = '';
     }
   };
@@ -139,16 +141,11 @@ const App: React.FC = () => {
             onToggleFavorite={toggleFavorite}
           />
         );
-      case 'about':
-        return <About />;
-      case 'privacy':
-        return <PrivacyPolicy />;
-      case 'terms':
-        return <Terms />;
-      case 'contact':
-        return <Contact />;
-      default:
-        return <Home onNavigate={navigate} searchQuery={searchQuery} favorites={[]} recent={[]} onToggleFavorite={()=>{}} />;
+      case 'about': return <About />;
+      case 'privacy': return <PrivacyPolicy />;
+      case 'terms': return <Terms />;
+      case 'contact': return <Contact />;
+      default: return <Home onNavigate={navigate} favorites={[]} recent={[]} onToggleFavorite={()=>{}} />;
     }
   };
 
@@ -169,8 +166,8 @@ const App: React.FC = () => {
               </div>
             </div>
             <div className="text-center">
-              <h2 className="text-slate-900 font-black uppercase tracking-[0.3em] text-sm mb-2">Engines Synchronizing</h2>
-              <p className="text-slate-400 text-xs font-bold tracking-tight animate-pulse">Initializing ToolVerse Production Core...</p>
+              <h2 className="text-slate-900 font-black uppercase tracking-[0.3em] text-sm mb-2">Syncing Resources</h2>
+              <p className="text-slate-400 text-xs font-bold tracking-tight animate-pulse">ToolVerse Core v2.5 Initializing...</p>
             </div>
           </div>
         </div>

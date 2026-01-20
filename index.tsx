@@ -10,14 +10,24 @@ try {
   console.warn("Analytics failed to load:", e);
 }
 
-const rootElement = document.getElementById('root');
-if (!rootElement) {
-  console.error("Critical Error: Root element '#root' not found in document.");
-} else {
+const renderApp = () => {
+  const rootElement = document.getElementById('root');
+  if (!rootElement) {
+    console.error("Critical Error: Root element '#root' not found in document.");
+    return;
+  }
+  
   const root = ReactDOM.createRoot(rootElement);
   root.render(
     <React.StrictMode>
       <App />
     </React.StrictMode>
   );
+};
+
+// Ensure the DOM is fully loaded before mounting
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', renderApp);
+} else {
+  renderApp();
 }

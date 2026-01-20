@@ -1,7 +1,8 @@
 import React, { useState, lazy, Suspense, useEffect } from 'react';
 import { GoogleGenAI } from "@google/genai";
-import { trackEvent } from '../utils/analytics';
+import { TOOLS } from '../data/tools';
 
+// Lazy Load Group Components
 const VideoAudioTools = lazy(() => import('./tools/VideoAudioTools'));
 const FinanceTools = lazy(() => import('./tools/FinanceTools'));
 const PDFTools = lazy(() => import('./tools/PDFTools'));
@@ -26,50 +27,43 @@ const ToolRenderer: React.FC<ToolRendererProps> = ({ slug, onSuccess, onError })
     setInputText('');
   }, [slug]);
 
-  // CATEGORY ROUTING ENGINE
-  const isVideoAudio = /video|audio|mp3|mp4|gif|mute|merger|speed|reverse|trimmer|noise|vol|join/i.test(slug);
-  const isImage = /image|photo|heic|compressor|resizer|remover|enhancer|ocr|meme|crop|resize|webp|jpg|png|color/i.test(slug) && !slug.includes('video');
-  const isPDF = /pdf|word-to-pdf|doc-to-pdf|pdf-to/i.test(slug);
-  const isFinance = /calculator|emi|sip|loan|gst|tax|interest|rd|fd|roi|bmi|age|percentage|gpa/i.test(slug);
-  const isSEO = /sitemap|robots|schema|og|canonical|meta|ping|keyword|backlink|authority|serp|aud/i.test(slug);
-  const isOffice = /csv|xlsx|excel|json|vcard|docx|word|pptx|email-extractor|text-to-html/i.test(slug) && !isSEO;
-  const isAI = /ai-|writer|generator|summarizer|paraphraser|checker|builder|caption|script|promp/i.test(slug);
-  const isSecurity = /password-strength|hash|token|jwt|crypto/i.test(slug);
-  const isNetwork = /ip|dns|url-en|url-de|port|network/i.test(slug);
-  
-  // GENERAL UTILITY
-  const isGeneral = /json-formatter|base64|minifier|lorem|password-generator|qr|word-counter|case-converter/i.test(slug);
+  const toolData = TOOLS.find(t => t.slug === slug);
+  const category = toolData?.category;
 
-  if (isSecurity) return <Suspense fallback={<Loader label="Security Vault" />}><SecurityTools slug={slug} onSuccess={onSuccess} onError={onError} /></Suspense>;
-  if (isNetwork) return <Suspense fallback={<Loader label="Network Diagnostic" />}><NetworkTools slug={slug} onSuccess={onSuccess} onError={onError} /></Suspense>;
-  if (isSEO) return <Suspense fallback={<Loader label="SEO Engine" />}><SEOTools slug={slug} onSuccess={onSuccess} onError={onError} /></Suspense>;
-  if (isVideoAudio) return <Suspense fallback={<Loader label="Media Lab" />}><VideoAudioTools slug={slug} onSuccess={onSuccess} onError={onError} /></Suspense>;
-  if (isImage) return <Suspense fallback={<Loader label="Image Processor" />}><ImageTools slug={slug} onSuccess={onSuccess} onError={onError} /></Suspense>;
-  if (isPDF) return <Suspense fallback={<Loader label="PDF Hub" />}><PDFTools slug={slug} onSuccess={onSuccess} onError={onError} /></Suspense>;
-  if (isFinance) return <Suspense fallback={<Loader label="Calc Engine" />}><FinanceTools slug={slug} /></Suspense>;
-  if (isOffice) return <Suspense fallback={<Loader label="Office Suite" />}><OfficeTools slug={slug} onSuccess={onSuccess} onError={onError} /></Suspense>;
-  if (isGeneral) return <Suspense fallback={<Loader label="Utility Engine" />}><GeneralTools slug={slug} onSuccess={onSuccess} onError={onError} /></Suspense>;
+  // ROUTING ENGINE BY CATEGORY
+  if (category === 'security') return <Suspense fallback={<Loader label="Security Vault" />}><SecurityTools slug={slug} onSuccess={onSuccess} onError={onError} /></Suspense>;
+  if (category === 'network') return <Suspense fallback={<Loader label="Network Diagnostic" />}><NetworkTools slug={slug} onSuccess={onSuccess} onError={onError} /></Suspense>;
+  if (category === 'seo') return <Suspense fallback={<Loader label="SEO Engine" />}><SEOTools slug={slug} onSuccess={onSuccess} onError={onError} /></Suspense>;
+  if (category === 'video') return <Suspense fallback={<Loader label="Media Lab" />}><VideoAudioTools slug={slug} onSuccess={onSuccess} onError={onError} /></Suspense>;
+  if (category === 'image') return <Suspense fallback={<Loader label="Image Processor" />}><ImageTools slug={slug} onSuccess={onSuccess} onError={onError} /></Suspense>;
+  if (category === 'pdf') return <Suspense fallback={<Loader label="PDF Hub" />}><PDFTools slug={slug} onSuccess={onSuccess} onError={onError} /></Suspense>;
+  if (category === 'calculators') return <Suspense fallback={<Loader label="Calc Engine" />}><FinanceTools slug={slug} /></Suspense>;
+  if (category === 'office') return <Suspense fallback={<Loader label="Office Suite" />}><OfficeTools slug={slug} onSuccess={onSuccess} onError={onError} /></Suspense>;
+  if (category === 'dev' || category === 'utility') return <Suspense fallback={<Loader label="Utility Engine" />}><GeneralTools slug={slug} onSuccess={onSuccess} onError={onError} /></Suspense>;
 
   // AI STUDIO ENGINE
-  if (isAI) {
+  if (category === 'ai' || slug.includes('ai-')) {
     const handleAIGenerate = async () => {
       if (!inputText) { onError("Input is required."); return; }
       setLoading(true);
       try {
         const ai = new GoogleGenAI({ apiKey: process.env.API_KEY as string });
         let sys = "You are a professional digital content creator. Provide structured markdown output.";
-        if (slug.includes('writer')) sys = "Write a comprehensive 1000-word SEO-optimized article.";
+        
+        // Contextual Instructions
+        if (slug.includes('writer')) sys = "Write a comprehensive 1000-word SEO-optimized article based on the prompt.";
+        if (slug.includes('code')) sys = "Analyze and debug the following code. Provide the fixed version and explanation.";
         if (slug.includes('summarizer')) sys = "Provide a concise summary of the following text.";
-        if (slug.includes('resume')) sys = "Build a professional resume structure based on user details.";
 
         const response = await ai.models.generateContent({
           model: 'gemini-3-pro-preview',
           contents: `${sys}\nUser Prompt: ${inputText}`,
         });
+        
         setInputText(response.text || "");
         onSuccess("AI Synthesis Complete");
       } catch (err) {
-        onError("AI Engine capacity reached.");
+        onError("AI Engine capacity reached. Please try in 60s.");
       } finally {
         setLoading(false);
       }
@@ -85,7 +79,7 @@ const ToolRenderer: React.FC<ToolRendererProps> = ({ slug, onSuccess, onError })
         <textarea 
           value={inputText}
           onChange={e => setInputText(e.target.value)}
-          placeholder="Describe your requirements or paste text..."
+          placeholder="Describe your requirements, paste code, or provide topics..."
           className="w-full h-64 md:h-80 p-6 md:p-10 rounded-2xl md:rounded-[3.5rem] border border-slate-200 focus:ring-8 focus:ring-indigo-500/5 outline-none font-sans text-base md:text-lg bg-white shadow-inner transition-all"
         />
         <button onClick={handleAIGenerate} disabled={loading} className="w-full py-5 md:py-7 bg-indigo-600 text-white rounded-2xl md:rounded-[2rem] font-black text-lg md:text-2xl shadow-2xl hover:bg-indigo-700 hover:-translate-y-1 transition-all active:scale-95 disabled:opacity-50">
@@ -95,6 +89,7 @@ const ToolRenderer: React.FC<ToolRendererProps> = ({ slug, onSuccess, onError })
     );
   }
 
+  // Fallback for generic utilities
   return <Suspense fallback={<Loader label="Utility Engine" />}><GeneralTools slug={slug} onSuccess={onSuccess} onError={onError} /></Suspense>;
 };
 

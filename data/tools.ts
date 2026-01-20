@@ -1,36 +1,33 @@
 import { Tool } from '../types';
 
 export const TOOLS: Tool[] = [
-  // --- PREVIOUS TOOLS ---
-  { slug: 'image-compressor', title: 'Image Compressor', category: 'image', priority: 100, description: 'Compress images without quality loss.', keywords: ['compress', 'jpg', 'png'], toolType: 'client' },
-  { slug: 'image-resizer', title: 'Image Resizer', category: 'image', priority: 95, description: 'Change dimensions of any image.', keywords: ['resize', 'dimensions'], toolType: 'client' },
-  { slug: 'background-remover', title: 'Background Remover', category: 'image', priority: 98, description: 'Remove backgrounds using AI.', keywords: ['bg remover', 'transparent'], toolType: 'client' },
+  // --- AI HUB (High Priority) ---
+  { slug: 'ai-article-writer-pro', title: 'AI Article Writer Pro', category: 'ai', priority: 100, description: 'Generate high-quality, SEO-optimized articles using Gemini 3.0.', keywords: ['ai writer', 'blog generator', 'content creator'], toolType: 'ai' },
+  { slug: 'ai-code-debugger', title: 'AI Code Debugger', category: 'ai', priority: 95, description: 'Fix programming errors instantly with AI-powered analysis.', keywords: ['debug', 'code fixer', 'programming'], toolType: 'ai' },
+  { slug: 'ai-image-generator', title: 'AI Image Studio', category: 'ai', priority: 98, description: 'Generate stunning visuals from text prompts.', keywords: ['image gen', 'stable diffusion', 'ai art'], toolType: 'ai' },
+  { slug: 'ai-email-assistant', title: 'AI Email Assistant', category: 'ai', priority: 90, description: 'Write professional emails in seconds.', keywords: ['email ai', 'professional', 'writing'], toolType: 'ai' },
+
+  // --- IMAGE LAB ---
+  { slug: 'image-compressor', title: 'Smart Image Compressor', category: 'image', priority: 100, description: 'Compress PNG/JPG/WebP without quality loss.', keywords: ['compress', 'optimization', 'tinypng'], toolType: 'client' },
+  { slug: 'background-remover', title: 'AI Background Remover', category: 'image', priority: 99, description: 'Remove backgrounds instantly with neural networks.', keywords: ['bg remover', 'transparent'], toolType: 'client' },
+  { slug: 'image-resizer', title: 'Bulk Image Resizer', category: 'image', priority: 92, description: 'Resize hundreds of images to custom dimensions.', keywords: ['resize', 'scaling', 'dimensions'], toolType: 'client' },
+  { slug: 'image-to-text-ocr', title: 'OCR Image to Text', category: 'image', priority: 95, description: 'Extract editable text from scans and photos.', keywords: ['ocr', 'extract text', 'scanner'], toolType: 'client' },
+
+  // --- PDF SUITE ---
+  { slug: 'pdf-merge', title: 'PDF Merger Tool', category: 'pdf', priority: 100, description: 'Combine multiple PDF files into a single document.', keywords: ['merge', 'combine', 'pdf joiner'], toolType: 'client' },
+  { slug: 'pdf-to-word-converter', title: 'PDF to Word Converter', category: 'pdf', priority: 98, description: 'Convert PDF files to editable DOCX format.', keywords: ['pdf to word', 'converter', 'doc'], toolType: 'client' },
+  { slug: 'pdf-split', title: 'PDF Splitter', category: 'pdf', priority: 90, description: 'Extract pages from PDF files effortlessly.', keywords: ['split', 'extract', 'pages'], toolType: 'client' },
+
+  // --- SEO & DEV HUB ---
+  { slug: 'xml-sitemap-generator', title: 'XML Sitemap Generator', category: 'seo', priority: 98, description: 'Generate Google-ready XML sitemaps for any website.', keywords: ['sitemap', 'seo', 'google'], toolType: 'client' },
+  { slug: 'json-ld-schema-pro', title: 'JSON-LD Schema Maker', category: 'seo', priority: 95, description: 'Create rich snippet schemas for better search rankings.', keywords: ['schema', 'json-ld', 'snippets'], toolType: 'client' },
+  { slug: 'json-formatter', title: 'JSON Formatter & Validator', category: 'dev', priority: 96, description: 'Prettify and validate JSON code instantly.', keywords: ['json', 'format', 'pretty'], toolType: 'client' },
+  { slug: 'password-strength-checker', title: 'Advanced Password Auditor', category: 'security', priority: 94, description: 'Check password entropy and security levels.', keywords: ['password', 'security', 'bits'], toolType: 'client' },
+
+  // --- UTILITY HUB ---
+  { slug: 'qr-code-generator', title: 'QR Code Pro Studio', category: 'utility', priority: 97, description: 'Generate high-res QR codes for URLs and text.', keywords: ['qr', 'generator', 'barcode'], toolType: 'client' },
+  { slug: 'what-is-my-ip', title: 'IP Lookup Tool', category: 'network', priority: 100, description: 'Check your public IP and network details.', keywords: ['myip', 'lookup', 'network'], toolType: 'client' },
+  { slug: 'text-to-speech-reader', title: 'AI Voice Reader (TTS)', category: 'office', priority: 93, description: 'Convert text to natural human-like speech.', keywords: ['tts', 'voice', 'speech'], toolType: 'client' },
   
-  // --- SECURITY HUB (NEW TOOLS) ---
-  { slug: 'sha512-hash-generator', title: 'SHA-512 Generator', category: 'security', priority: 85, description: 'Generate high-security SHA-512 cryptographic hashes.', keywords: ['sha512', 'hash', 'encryption'], toolType: 'client' },
-  { slug: 'password-entropy-analyzer', title: 'Password Entropy Analyzer', category: 'security', priority: 88, description: 'Calculate the mathematical strength (bits) of your password.', keywords: ['security', 'bits', 'entropy'], toolType: 'client' },
-  { slug: 'base64-file-encoder', title: 'Base64 File Encoder', category: 'security', priority: 82, description: 'Convert any file to a Base64 string securely.', keywords: ['base64', 'file', 'binary'], toolType: 'client' },
-  { slug: 'password-strength-checker', title: 'Password Strength Meter', category: 'security', priority: 95, description: 'Check the security level of your passwords.', keywords: ['security', 'password', 'check'], toolType: 'client' },
-  { slug: 'sha256-hash-generator', title: 'SHA-256 Generator', category: 'security', priority: 92, description: 'Secure SHA-256 hash generation.', keywords: ['sha256', 'hash', 'security'], toolType: 'client' },
-  { slug: 'jwt-decoder', title: 'JWT Decoder Pro', category: 'security', priority: 88, description: 'Decode JSON Web Tokens instantly.', keywords: ['jwt', 'decode', 'json'], toolType: 'client' },
-
-  // --- NETWORK LAB (NEW TOOLS) ---
-  { slug: 'http-header-inspector', title: 'HTTP Header Inspector', category: 'network', priority: 90, description: 'Inspect browser request headers in real-time.', keywords: ['http', 'headers', 'request'], toolType: 'client' },
-  { slug: 'mac-address-generator', title: 'MAC Address Generator', category: 'network', priority: 70, description: 'Generate random valid MAC addresses.', keywords: ['mac', 'address', 'network'], toolType: 'client' },
-  { slug: 'what-is-my-ip', title: 'What is my IP?', category: 'network', priority: 100, description: 'Check your public IP address and location.', keywords: ['ip', 'myip', 'location'], toolType: 'client' },
-  { slug: 'ip-lookup-pro', title: 'IP Address Lookup', category: 'network', priority: 95, description: 'Find details about any IP address.', keywords: ['ip', 'lookup', 'geo'], toolType: 'client' },
-  { slug: 'url-encoder-pro', title: 'URL Encoder', category: 'network', priority: 80, description: 'Encode strings for URL usage.', keywords: ['url', 'encode', 'link'], toolType: 'client' },
-
-  // --- OFFICE SUITE (NEW TOOLS) ---
-  { slug: 'json-to-yaml-pro', title: 'JSON to YAML', category: 'office', priority: 94, description: 'Convert JSON objects to YAML format.', keywords: ['json', 'yaml', 'convert'], toolType: 'client' },
-  { slug: 'markdown-previewer', title: 'Markdown Previewer', category: 'office', priority: 80, description: 'Real-time Markdown to HTML renderer.', keywords: ['markdown', 'preview', 'html'], toolType: 'client' },
-  { slug: 'text-to-speech-reader', title: 'TTS Reader', category: 'office', priority: 85, description: 'Listen to your text using high-quality browser voices.', keywords: ['tts', 'speech', 'voice'], toolType: 'client' },
-  { slug: 'csv-to-json-pro', title: 'CSV to JSON', category: 'office', priority: 98, description: 'Convert CSV data to JSON format.', keywords: ['csv', 'json', 'convert'], toolType: 'client' },
-  { slug: 'json-to-xml', title: 'JSON to XML', category: 'office', priority: 90, description: 'Transform JSON data into XML tags.', keywords: ['json', 'xml', 'data'], toolType: 'client' },
-  { slug: 'bulk-email-extractor', title: 'Email Extractor', category: 'office', priority: 95, description: 'Extract emails from large text blocks.', keywords: ['email', 'extract', 'leads'], toolType: 'client' },
-
-  // --- OTHERS ---
-  { slug: 'pdf-merge', title: 'PDF Merge', category: 'pdf', priority: 100, description: 'Combine multiple PDFs into one.', keywords: ['merge', 'combine'], toolType: 'client' },
-  { slug: 'ai-article-writer', title: 'AI Article Writer', category: 'ai', priority: 99, description: 'Generate long-form blog posts.', keywords: ['writer', 'blog'], toolType: 'ai' },
-  { slug: 'qr-code-generator', title: 'QR Code Generator', category: 'utility', priority: 92, description: 'Create QR codes for URLs.', keywords: ['qr', 'scan'], toolType: 'client' }
+  // NOTE: More tools can be added following this pattern up to 500+
 ];
