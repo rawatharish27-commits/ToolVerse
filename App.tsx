@@ -4,11 +4,13 @@ import Layout from './components/Layout';
 import Home from './pages/Home';
 import CategoryPage from './pages/CategoryPage';
 import ToolPage from './pages/ToolPage';
+import About from './pages/About';
+import PrivacyPolicy from './pages/PrivacyPolicy';
 import { CategorySlug } from './types';
 import { trackPageView } from './utils/analytics';
 
 interface NavigationState {
-  page: 'home' | 'category' | 'tool';
+  page: 'home' | 'category' | 'tool' | 'about' | 'privacy';
   params?: any;
 }
 
@@ -42,7 +44,11 @@ const App: React.FC = () => {
           setNav({ page: 'home' });
           return;
         }
-        if (hash.startsWith('category/')) {
+        if (hash === 'about') {
+          setNav({ page: 'about' });
+        } else if (hash === 'privacy') {
+          setNav({ page: 'privacy' });
+        } else if (hash.startsWith('category/')) {
           const id = hash.split('/')[1] as CategorySlug;
           setNav({ page: 'category', params: { id } });
         } else if (hash.startsWith('tool/')) {
@@ -64,6 +70,8 @@ const App: React.FC = () => {
         window.location.hash = '';
         setSearchQuery('');
       }
+      else if (page === 'about') window.location.hash = 'about';
+      else if (page === 'privacy') window.location.hash = 'privacy';
       else if (page === 'category') window.location.hash = `category/${params.id}`;
       else if (page === 'tool') window.location.hash = `tool/${params.slug}`;
       window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -114,6 +122,10 @@ const App: React.FC = () => {
             onToggleFavorite={toggleFavorite}
           />
         );
+      case 'about':
+        return <About />;
+      case 'privacy':
+        return <PrivacyPolicy />;
       default:
         return <Home onNavigate={navigate} searchQuery={searchQuery} favorites={[]} recent={[]} onToggleFavorite={()=>{}} />;
     }
