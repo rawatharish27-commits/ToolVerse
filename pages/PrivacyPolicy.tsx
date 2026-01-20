@@ -7,7 +7,7 @@ const PrivacyPolicy: React.FC = () => {
       <SEOHead 
         title="Privacy & Security Center" 
         description="ToolVerse is a privacy-first platform. Our zero-upload policy means your data never leaves your device. Learn about our client-side processing." 
-        url="https://toolverse.com/#privacy" 
+        url="https://toolverse-4gr.pages.dev/privacy" 
       />
 
       <div className="max-w-4xl mx-auto">

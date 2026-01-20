@@ -7,7 +7,7 @@ const Terms: React.FC = () => {
       <SEOHead 
         title="Terms of Service - Professional Usage Agreement" 
         description="Read the ToolVerse Terms of Service. Clear, transparent, and fair usage policies for our 500+ free online professional utilities." 
-        url="https://toolverse.com/#terms" 
+        url="https://toolverse-4gr.pages.dev/terms" 
       />
 
       <div className="max-w-4xl mx-auto">

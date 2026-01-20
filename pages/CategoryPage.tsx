@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { CATEGORIES } from '../data/categories';
 import { TOOLS } from '../data/tools';
@@ -25,7 +24,7 @@ const CategoryPage: React.FC<CategoryPageProps> = ({ categoryId, onNavigate, fav
       <SEOHead 
         title={`${category.name} - Free Online Collection`}
         description={category.description + ". Browse the best professional tools in our collection."}
-        url={`https://toolverse.com/#category/${category.id}`}
+        url={`https://toolverse-4gr.pages.dev/category/${category.id}`}
       />
 
       {/* Breadcrumbs */}

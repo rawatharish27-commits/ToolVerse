@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { TOOLS } from '../data/tools';
 import { CATEGORIES } from '../data/categories';
@@ -49,15 +48,15 @@ const ToolPage: React.FC<ToolPageProps> = ({ slug, onNavigate, onToolUsed, favor
     footer: isAdSlotEnabled(tool.category, 'footer')
   } : { header: true, mid: false, sidebar: false, footer: true };
 
-  // Use the current URL hash as a key prefix to force AdSense refresh
-  const routeKey = window.location.hash || slug;
+  // Use the current URL path as a key prefix to force AdSense refresh
+  const routeKey = window.location.pathname || slug;
 
   return (
     <div className="max-w-7xl mx-auto px-4 py-6 md:py-16 sm:px-6 lg:px-8">
       <SEOHead 
         title={tool.seoTitle || `${tool.title} Online – Free Browser Tool`}
         description={tool.seoDescription || `${tool.description}. Safe, fast, and 100% free professional utility.`}
-        url={`https://toolverse.com/#tool/${tool.slug}`}
+        url={`https://toolverse-4gr.pages.dev/tool/${tool.slug}`}
         type="article"
       />
 

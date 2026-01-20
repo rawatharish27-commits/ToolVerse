@@ -11,5 +11,5 @@ Disallow: /test/
 Disallow: /internal/
 Disallow: /api/
 
-# Sitemap index location
-Sitemap: https://toolverse.com/sitemap-index.xml
+# Sitemap location
+Sitemap: https://toolverse-4gr.pages.dev/sitemap.xml

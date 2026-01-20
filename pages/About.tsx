@@ -1,4 +1,3 @@
-
 import React from 'react';
 import SEOHead from '../components/SEOHead';
 
@@ -8,7 +7,7 @@ const About: React.FC = () => {
       <SEOHead 
         title="About ToolVerse - Our Mission & Privacy Standards" 
         description="Learn about ToolVerse, the world's largest free online tools platform. Privacy-first, ultra-fast, and 100% browser-native utilities." 
-        url="https://toolverse.com/#about" 
+        url="https://toolverse-4gr.pages.dev/about" 
       />
 
       <div className="max-w-4xl">

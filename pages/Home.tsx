@@ -70,7 +70,7 @@ const Home: React.FC<HomeProps> = ({ onNavigate, searchQuery = '', favorites, re
       <SEOHead 
         title="ToolVerse - World's Largest Free Online Tools Platform"
         description="Access 500+ free online tools for PDF, Images, Video, AI, SEO, and Development. Safe, fast, and 100% client-side processing."
-        url="https://toolverse.com/"
+        url="https://toolverse-4gr.pages.dev/"
       />
       
       {/* Hero Section */}

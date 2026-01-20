@@ -20,7 +20,7 @@ const Contact: React.FC = () => {
       <SEOHead 
         title="Contact Us - ToolVerse Support Hub" 
         description="Get in touch with the ToolVerse team. We're here to help with tool suggestions, technical support, or licensing inquiries." 
-        url="https://toolverse.com/#contact" 
+        url="https://toolverse-4gr.pages.dev/contact" 
       />
 
       <div className="max-w-5xl mx-auto">

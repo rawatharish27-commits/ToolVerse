@@ -1,4 +1,3 @@
-
 import React, { useEffect } from 'react';
 
 interface SEOHeadProps {
@@ -43,13 +42,13 @@ const SEOHead: React.FC<SEOHeadProps> = ({ title, description, url, type = 'webs
     setMeta('og:description', description, true);
     setMeta('og:url', url, true);
     setMeta('og:site_name', 'ToolVerse', true);
-    setMeta('og:image', 'https://toolverse.com/og-image.png', true);
+    setMeta('og:image', 'https://toolverse-4gr.pages.dev/og-image.png', true);
 
     // 5. Update Twitter Meta
     setMeta('twitter:card', 'summary_large_image');
     setMeta('twitter:title', title);
     setMeta('twitter:description', description);
-    setMeta('twitter:image', 'https://toolverse.com/og-image.png');
+    setMeta('twitter:image', 'https://toolverse-4gr.pages.dev/og-image.png');
     setMeta('twitter:site', '@toolverse');
 
     // 6. Update Canonical Link

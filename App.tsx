@@ -35,58 +35,51 @@ const App: React.FC = () => {
     localStorage.setItem('tv_recent', JSON.stringify(recent));
   }, [recent]);
 
+  const handlePathChange = () => {
+    const path = window.location.pathname;
+    trackPageView(path);
+
+    startTransition(() => {
+      window.scrollTo({ top: 0, behavior: 'instant' });
+
+      if (path === '/' || path === '') {
+        setNav({ page: 'home' });
+      } else if (path === '/about') {
+        setNav({ page: 'about' });
+      } else if (path === '/privacy') {
+        setNav({ page: 'privacy' });
+      } else if (path === '/terms') {
+        setNav({ page: 'terms' });
+      } else if (path === '/contact') {
+        setNav({ page: 'contact' });
+      } else if (path.startsWith('/category/')) {
+        const id = path.split('/')[2] as CategorySlug;
+        setNav({ page: 'category', params: { id } });
+        setSearchQuery(''); 
+      } else if (path.startsWith('/tool/')) {
+        const slug = path.split('/')[2];
+        setNav({ page: 'tool', params: { slug } });
+        setSearchQuery(''); 
+      } else {
+        setNav({ page: 'home' });
+      }
+    });
+  };
+
   useEffect(() => {
-    const handleHashChange = () => {
-      const hash = window.location.hash.slice(1);
-      trackPageView(hash ? `/${hash}` : '/');
-
-      startTransition(() => {
-        // Reset scroll position on every navigation
-        window.scrollTo({ top: 0, behavior: 'instant' });
-
-        if (!hash || hash === '' || hash === '/') {
-          setNav({ page: 'home' });
-          return;
-        }
-        
-        if (hash === 'about') {
-          setNav({ page: 'about' });
-        } else if (hash === 'privacy') {
-          setNav({ page: 'privacy' });
-        } else if (hash === 'terms') {
-          setNav({ page: 'terms' });
-        } else if (hash === 'contact') {
-          setNav({ page: 'contact' });
-        } else if (hash.startsWith('category/')) {
-          const id = hash.split('/')[1] as CategorySlug;
-          setNav({ page: 'category', params: { id } });
-          setSearchQuery(''); 
-        } else if (hash.startsWith('tool/')) {
-          const slug = hash.split('/')[1];
-          setNav({ page: 'tool', params: { slug } });
-          setSearchQuery(''); 
-        } else {
-          // Catch-all: If route doesn't match, go home
-          window.location.hash = '';
-          setNav({ page: 'home' });
-        }
-      });
-    };
-
-    window.addEventListener('hashchange', handleHashChange);
-    handleHashChange(); // Run once on load
-    return () => window.removeEventListener('hashchange', handleHashChange);
+    window.addEventListener('popstate', handlePathChange);
+    handlePathChange(); // Run once on load
+    return () => window.removeEventListener('popstate', handlePathChange);
   }, []);
 
   const navigate = (page: string, params?: any) => {
-    // Standardizing navigation - everything goes through hash updates
-    if (page === 'home') window.location.hash = '';
-    else if (page === 'about') window.location.hash = 'about';
-    else if (page === 'privacy') window.location.hash = 'privacy';
-    else if (page === 'terms') window.location.hash = 'terms';
-    else if (page === 'contact') window.location.hash = 'contact';
-    else if (page === 'category') window.location.hash = `category/${params.id}`;
-    else if (page === 'tool') window.location.hash = `tool/${params.slug}`;
+    let newPath = '/';
+    if (page === 'category') newPath = `/category/${params.id}`;
+    else if (page === 'tool') newPath = `/tool/${params.slug}`;
+    else if (['about', 'privacy', 'terms', 'contact'].includes(page)) newPath = `/${page}`;
+
+    window.history.pushState({}, '', newPath);
+    handlePathChange();
   };
 
   const toggleFavorite = (slug: string) => {
@@ -104,9 +97,9 @@ const App: React.FC = () => {
 
   const handleGlobalSearch = (q: string) => {
     setSearchQuery(q);
-    // If user starts typing and is not on Home, push to Home
-    if (q && window.location.hash !== '' && window.location.hash !== '#') {
-      window.location.hash = '';
+    if (q && window.location.pathname !== '/') {
+      window.history.pushState({}, '', '/');
+      handlePathChange();
     }
   };
 
@@ -167,7 +160,7 @@ const App: React.FC = () => {
             </div>
             <div className="text-center">
               <h2 className="text-slate-900 font-black uppercase tracking-[0.3em] text-sm mb-2">Syncing Resources</h2>
-              <p className="text-slate-400 text-xs font-bold tracking-tight animate-pulse">ToolVerse Core v2.5 Initializing...</p>
+              <p className="text-slate-400 text-xs font-bold tracking-tight animate-pulse">ToolVerse Core v2.5 Clean URLs Active...</p>
             </div>
           </div>
         </div>

@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { TOOLS } from '../../data/tools';
 import { CATEGORIES } from '../../data/categories';
@@ -11,7 +10,7 @@ interface ToolProps {
 
 const SEOTools: React.FC<ToolProps> = ({ slug, onSuccess, onError }) => {
   const [inputText, setInputText] = useState('');
-  const [baseUrl, setBaseUrl] = useState('https://toolverse.com');
+  const [baseUrl, setBaseUrl] = useState('https://toolverse-4gr.pages.dev');
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState('');
 
@@ -30,14 +29,14 @@ const SEOTools: React.FC<ToolProps> = ({ slug, onSuccess, onError }) => {
             // Root
             sitemap += `  <url>\n    <loc>${baseUrl}/</loc>\n    <lastmod>${today}</lastmod>\n    <priority>1.0</priority>\n  </url>\n`;
             
-            // Categories
+            // Categories (Clean URLs)
             CATEGORIES.forEach(cat => {
-              sitemap += `  <url>\n    <loc>${baseUrl}/#category/${cat.id}</loc>\n    <lastmod>${today}</lastmod>\n    <priority>0.8</priority>\n  </url>\n`;
+              sitemap += `  <url>\n    <loc>${baseUrl}/category/${cat.id}</loc>\n    <lastmod>${today}</lastmod>\n    <priority>0.8</priority>\n  </url>\n`;
             });
 
-            // 300+ Tools Batch Processing
+            // 300+ Tools Batch Processing (Clean URLs)
             TOOLS.forEach(tool => {
-              sitemap += `  <url>\n    <loc>${baseUrl}/#tool/${tool.slug}</loc>\n    <lastmod>${today}</lastmod>\n    <priority>0.7</priority>\n    <changefreq>monthly</changefreq>\n  </url>\n`;
+              sitemap += `  <url>\n    <loc>${baseUrl}/tool/${tool.slug}</loc>\n    <lastmod>${today}</lastmod>\n    <priority>0.7</priority>\n    <changefreq>monthly</changefreq>\n  </url>\n`;
             });
 
             sitemap += '</urlset>';
@@ -79,7 +78,7 @@ const SEOTools: React.FC<ToolProps> = ({ slug, onSuccess, onError }) => {
           }
 
           case 'index-now-ping': {
-            setResult(`POST https://bing.com/indexnow\nContent-Type: application/json\n\n{\n  "host": "${baseUrl.replace('https://', '').replace('http://', '')}",\n  "key": "TOOLVERSE_SECRET_KEY_PRO",\n  "keyLocation": "${baseUrl}/key.txt",\n  "urlList": [\n    "${baseUrl}/#tool/${inputText}"\n  ]\n}`);
+            setResult(`POST https://bing.com/indexnow\nContent-Type: application/json\n\n{\n  "host": "${baseUrl.replace('https://', '').replace('http://', '')}",\n  "key": "TOOLVERSE_SECRET_KEY_PRO",\n  "keyLocation": "${baseUrl}/key.txt",\n  "urlList": [\n    "${baseUrl}/tool/${inputText}"\n  ]\n}`);
             onSuccess("IndexNow Configuration Ready!");
             break;
           }
