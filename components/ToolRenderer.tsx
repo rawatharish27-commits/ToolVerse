@@ -9,6 +9,7 @@ const PDFTools = lazy(() => import('./tools/PDFTools'));
 const ImageTools = lazy(() => import('./tools/ImageTools'));
 const SEOTools = lazy(() => import('./tools/SEOTools'));
 const OfficeTools = lazy(() => import('./tools/OfficeTools'));
+const GeneralTools = lazy(() => import('./tools/GeneralTools'));
 
 interface ToolRendererProps {
   slug: string;
@@ -32,6 +33,9 @@ const ToolRenderer: React.FC<ToolRendererProps> = ({ slug, onSuccess, onError })
   const isSEO = /sitemap|robots|schema|og|canonical|meta|ping|keyword|backlink|authority|serp|aud/i.test(slug);
   const isOffice = /csv|xlsx|excel|json|vcard|docx|word|pptx/i.test(slug) && !isSEO;
   const isAI = /ai-|writer|generator|summarizer|paraphraser|checker|builder|caption|script|promp/i.test(slug);
+  
+  // GENERAL UTILITY (Case converter, Word count, Password Gen, etc)
+  const isGeneral = /json-formatter|base64|minifier|lorem|password|qr|word-counter|case-converter/i.test(slug);
 
   if (isSEO) return <Suspense fallback={<Loader label="SEO Engine" />}><SEOTools slug={slug} onSuccess={onSuccess} onError={onError} /></Suspense>;
   if (isVideoAudio) return <Suspense fallback={<Loader label="Media Lab" />}><VideoAudioTools slug={slug} onSuccess={onSuccess} onError={onError} /></Suspense>;
@@ -39,6 +43,7 @@ const ToolRenderer: React.FC<ToolRendererProps> = ({ slug, onSuccess, onError })
   if (isPDF) return <Suspense fallback={<Loader label="PDF Hub" />}><PDFTools slug={slug} onSuccess={onSuccess} onError={onError} /></Suspense>;
   if (isFinance) return <Suspense fallback={<Loader label="Calc Engine" />}><FinanceTools slug={slug} /></Suspense>;
   if (isOffice) return <Suspense fallback={<Loader label="Office Suite" />}><OfficeTools slug={slug} onSuccess={onSuccess} onError={onError} /></Suspense>;
+  if (isGeneral) return <Suspense fallback={<Loader label="Utility Engine" />}><GeneralTools slug={slug} onSuccess={onSuccess} onError={onError} /></Suspense>;
 
   // AI STUDIO ENGINE
   if (isAI) {
@@ -85,53 +90,8 @@ const ToolRenderer: React.FC<ToolRendererProps> = ({ slug, onSuccess, onError })
     );
   }
 
-  // UNIVERSAL FALLBACK ENGINE (Word Counter, Pass Gen, QR, etc)
-  const handleUniversal = async (type: string) => {
-    let result = inputText;
-    try {
-      switch(type) {
-        case 'UPPER': result = inputText.toUpperCase(); break;
-        case 'lower': result = inputText.toLowerCase(); break;
-        case 'QR': 
-           onSuccess("QR Generator Active. See results below.");
-           return;
-        case 'PASS': result = Math.random().toString(36).slice(-10) + "!" + Math.random().toString(36).toUpperCase().slice(-5); break;
-        case 'COUNT': result = `Words: ${inputText.trim().split(/\s+/).filter(Boolean).length}\nChars: ${inputText.length}\nReading Time: ${Math.ceil(inputText.split(' ').length / 200)}m`; break;
-        case 'JSON_P': result = JSON.stringify(JSON.parse(inputText), null, 4); break;
-        case 'B64_E': result = btoa(inputText); break;
-        case 'COPY': navigator.clipboard.writeText(inputText); onSuccess("Copied!"); return;
-        case 'CLEAR': setInputText(''); return;
-      }
-      setInputText(result);
-      onSuccess("Action applied.");
-    } catch(e) {
-      onError("Operation failed for this format.");
-    }
-  };
-
-  return (
-    <div className="space-y-8 md:space-y-10">
-      <div className="flex justify-between items-center px-2">
-         <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Utility Workspace</span>
-         <button onClick={() => handleUniversal('CLEAR')} className="text-red-500 font-bold text-[10px] uppercase tracking-tighter">Clear Workspace</button>
-      </div>
-      <textarea 
-        value={inputText}
-        onChange={(e) => setInputText(e.target.value)}
-        placeholder={`Workspace for ${slug.replace(/-/g, ' ')}...`}
-        className="w-full h-64 md:h-72 p-6 md:p-10 rounded-[2rem] md:rounded-[3rem] border border-slate-200 focus:ring-8 focus:ring-indigo-500/5 outline-none font-mono text-xs md:text-sm bg-white shadow-inner"
-      />
-      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2 md:gap-3">
-        <UtilBtn onClick={() => handleUniversal('UPPER')} label="Uppercase" />
-        <UtilBtn onClick={() => handleUniversal('lower')} label="Lowercase" />
-        <UtilBtn onClick={() => handleUniversal('COUNT')} label="Word Stats" />
-        <UtilBtn onClick={() => handleUniversal('PASS')} label="Gen Pass" />
-        <UtilBtn onClick={() => handleUniversal('JSON_P')} label="JSON Pretty" />
-        <UtilBtn onClick={() => handleUniversal('B64_E')} label="Base64 Enc" />
-        <button onClick={() => handleUniversal('COPY')} className="col-span-full py-4 md:py-5 bg-indigo-600 text-white rounded-xl md:rounded-[1.5rem] font-black text-xs md:text-sm shadow-xl hover:bg-indigo-700 transition-all">📋 Copy Final Result</button>
-      </div>
-    </div>
-  );
+  // LAST RESORT FALLBACK - Simple Text Processor
+  return <Suspense fallback={<Loader label="Utility Engine" />}><GeneralTools slug={slug} onSuccess={onSuccess} onError={onError} /></Suspense>;
 };
 
 const Loader = ({ label }: { label: string }) => (
@@ -139,15 +99,6 @@ const Loader = ({ label }: { label: string }) => (
     <div className="w-10 h-10 md:w-12 md:h-12 border-[4px] border-slate-100 border-t-indigo-600 rounded-full animate-spin"></div>
     <div className="animate-pulse text-indigo-500 font-black uppercase tracking-widest text-[9px] md:text-[10px]">Booting {label}...</div>
   </div>
-);
-
-const UtilBtn = ({ onClick, label }: any) => (
-  <button 
-    onClick={onClick} 
-    className="px-3 py-4 rounded-xl md:rounded-2xl text-[9px] md:text-[10px] font-black tracking-widest transition-all active:scale-95 border bg-white text-slate-600 border-slate-100 hover:bg-slate-900 hover:text-white"
-  >
-    {label}
-  </button>
 );
 
 export default ToolRenderer;

@@ -1,20 +1,28 @@
 
 import { FFmpeg } from "@ffmpeg/ffmpeg";
-import { fetchFile } from "@ffmpeg/util";
+import { fetchFile, toBlobURL } from "@ffmpeg/util";
 
 /**
- * PHASE-2 STEP-6: Global Performance Layer
- * Queue management, concurrency control, and parallel batching.
+ * PHASE-3: Production Engine Stability
+ * Handles WASM lifecycle and error-resistant worker management.
  */
+
+const FFMPEG_VERSION = '0.12.6';
+const CORE_URL = `https://unpkg.com/@ffmpeg/core@${FFMPEG_VERSION}/dist/ffmpeg-core.js`;
+const WASM_URL = `https://unpkg.com/@ffmpeg/core@${FFMPEG_VERSION}/dist/ffmpeg-core.wasm`;
 
 // --- FFmpeg Engine (Video/Audio) ---
 let ffmpegInstance: FFmpeg | null = null;
 export const getFFmpeg = async () => {
   if (ffmpegInstance) return ffmpegInstance;
   ffmpegInstance = new FFmpeg();
+  
+  // Use toBlobURL to ensure the browser fetches and treats the wasm/js correctly
   await ffmpegInstance.load({
-    coreURL: "https://unpkg.com/@ffmpeg/core@0.12.6/dist/ffmpeg-core.js",
+    coreURL: await toBlobURL(CORE_URL, 'text/javascript'),
+    wasmURL: await toBlobURL(WASM_URL, 'application/wasm'),
   });
+  
   return ffmpegInstance;
 };
 
@@ -30,9 +38,7 @@ export const getImageCompression = () => import("browser-image-compression");
 
 /**
  * Concurrency-limited Queue Runner
- * Process multiple files in parallel without crashing the main thread.
  */
-// Explicitly typing the results array to aid generic type inference
 export const runBatchTask = async <T, R>(
   items: T[],
   task: (item: T, index: number) => Promise<R>,
@@ -72,40 +78,49 @@ export const runMediaTask = async (
 ) => {
   const ff = await getFFmpeg();
   
-  if (onProgress) {
-    ff.on('progress', ({ progress }) => onProgress(progress * 100));
-  }
+  const progressHandler = ({ progress }: { progress: number }) => {
+    if (onProgress) onProgress(progress * 100);
+  };
 
-  for (const file of inputFiles) {
-    await ff.writeFile(file.name, await fetchFile(file.data));
-  }
+  ff.on('progress', progressHandler);
 
-  await ff.exec(args);
-  const data = await ff.readFile(outputName);
-  
-  // Explicit Memory Cleanup
-  for (const file of inputFiles) {
-    try { await ff.deleteFile(file.name); } catch(e) {}
+  try {
+    for (const file of inputFiles) {
+      await ff.writeFile(file.name, await fetchFile(file.data));
+    }
+
+    await ff.exec(args);
+    const data = await ff.readFile(outputName);
+    
+    // Explicit Memory Cleanup
+    for (const file of inputFiles) {
+      try { await ff.deleteFile(file.name); } catch(e) {}
+    }
+    
+    return data;
+  } finally {
+    ff.off('progress', progressHandler);
   }
-  
-  return data;
 };
 
 /**
- * OCR Engine with Auto-termination for Batch
+ * OCR Engine with standard v5 API
  */
 export const runOCRTask = async (
-  image: Blob | string,
+  image: Blob | File | string,
   onProgress?: (p: number) => void
 ) => {
   const { createWorker } = await getTesseract();
-  const worker = await createWorker('eng', 1, {
+  const worker = await createWorker({
     logger: m => {
       if (m.status === 'recognizing text' && onProgress) {
         onProgress(m.progress);
       }
     }
   });
+  
+  await worker.loadLanguage('eng');
+  await worker.initialize('eng');
   const ret = await worker.recognize(image);
   await worker.terminate();
   return ret.data.text;
@@ -119,7 +134,8 @@ export const renderPdfToImages = async (
   onProgress?: (p: number) => void
 ) => {
   const pdfjs = await getPdfJs();
-  pdfjs.GlobalWorkerOptions.workerSrc = `https://unpkg.com/pdfjs-dist@${pdfjs.version}/build/pdf.worker.min.js`;
+  // Ensure worker is available
+  pdfjs.GlobalWorkerOptions.workerSrc = `https://unpkg.com/pdfjs-dist@${pdfjs.version}/build/pdf.worker.min.mjs`;
   
   const arrayBuffer = await pdfBlob.arrayBuffer();
   const pdf = await pdfjs.getDocument({ data: arrayBuffer }).promise;
@@ -151,6 +167,6 @@ export const triggerBatchDownload = (urls: {url: string, name: string}[]) => {
       a.href = url;
       a.download = name;
       a.click();
-    }, index * 300); // 300ms gap to prevent browser block
+    }, index * 300);
   });
 };

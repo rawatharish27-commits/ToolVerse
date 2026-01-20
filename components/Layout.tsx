@@ -1,5 +1,4 @@
-
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { CATEGORIES } from '../data/categories';
 import InternalLinking from './InternalLinking';
 
@@ -66,7 +65,8 @@ const Layout: React.FC<LayoutProps> = ({ children, onNavigate, onSearch }) => {
                   </div>
                 </div>
               </div>
-              <button onClick={() => closeMenuAndNavigate('privacy')} className="text-[10px] font-black text-slate-600 hover:text-indigo-600 uppercase tracking-[0.2em] transition-colors">Privacy</button>
+              <a href="/about.html" className="text-[10px] font-black text-slate-600 hover:text-indigo-600 uppercase tracking-[0.2em] transition-colors">About</a>
+              <a href="/privacy-policy.html" className="text-[10px] font-black text-slate-600 hover:text-indigo-600 uppercase tracking-[0.2em] transition-colors">Privacy</a>
             </nav>
 
             {/* Search and Mobile Toggle */}
@@ -127,7 +127,9 @@ const Layout: React.FC<LayoutProps> = ({ children, onNavigate, onSearch }) => {
 
               <div className="pt-6 border-t border-slate-100 space-y-4">
                 <button onClick={() => closeMenuAndNavigate('home')} className="block w-full text-left font-black text-slate-600 text-xs uppercase tracking-widest">Home Portal</button>
-                <button onClick={() => closeMenuAndNavigate('privacy')} className="block w-full text-left font-black text-slate-600 text-xs uppercase tracking-widest">Privacy Center</button>
+                <a href="/about.html" className="block w-full text-left font-black text-slate-600 text-xs uppercase tracking-widest">About Us</a>
+                <a href="/contact.html" className="block w-full text-left font-black text-slate-600 text-xs uppercase tracking-widest">Contact Hub</a>
+                <a href="/privacy-policy.html" className="block w-full text-left font-black text-slate-600 text-xs uppercase tracking-widest">Privacy Center</a>
               </div>
             </div>
           </div>
@@ -157,15 +159,15 @@ const Layout: React.FC<LayoutProps> = ({ children, onNavigate, onSearch }) => {
                 <h3 className="text-white font-black mb-6 md:mb-10 uppercase text-[10px] tracking-[0.4em]">Resource</h3>
                 <ul className="space-y-4 md:space-y-6 text-xs font-bold">
                   <li><button onClick={() => closeMenuAndNavigate('home')} className="hover:text-indigo-400 transition-colors">Start Portal</button></li>
-                  <li><button onClick={() => closeMenuAndNavigate('category', { id: 'ai' })} className="hover:text-indigo-400 transition-colors">AI Studio</button></li>
-                  <li><button onClick={() => closeMenuAndNavigate('category', { id: 'dev' })} className="hover:text-indigo-400 transition-colors">Dev Toolkit</button></li>
+                  <li><a href="/about.html" className="hover:text-indigo-400 transition-colors">About Story</a></li>
+                  <li><a href="/contact.html" className="hover:text-indigo-400 transition-colors">Contact Support</a></li>
                 </ul>
               </div>
               <div>
                 <h3 className="text-white font-black mb-6 md:mb-10 uppercase text-[10px] tracking-[0.4em]">Legal</h3>
                 <ul className="space-y-4 md:space-y-6 text-xs font-bold">
-                  <li><button onClick={() => onNavigate('privacy')} className="hover:text-indigo-400 transition-colors">Privacy Policy</button></li>
-                  <li><button className="hover:text-indigo-400 transition-colors">Terms of Use</button></li>
+                  <li><a href="/privacy-policy.html" className="hover:text-indigo-400 transition-colors">Privacy Policy</a></li>
+                  <li><a href="/terms.html" className="hover:text-indigo-400 transition-colors">Terms of Use</a></li>
                 </ul>
               </div>
             </div>

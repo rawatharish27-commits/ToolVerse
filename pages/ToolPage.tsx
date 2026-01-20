@@ -29,27 +29,7 @@ const ToolPage: React.FC<ToolPageProps> = ({ slug, onNavigate, onToolUsed, favor
   useEffect(() => {
     if (tool) {
       trackEvent('tool_view', tool.slug);
-      if (tool.category) {
-        trackEvent('category_view', tool.category);
-      }
-
-      const existingScript = document.getElementById('tool-schema');
-      if (existingScript) existingScript.remove();
-
-      const script = document.createElement('script');
-      script.id = 'tool-schema';
-      script.type = 'application/ld+json';
-      script.text = JSON.stringify({
-        "@context": "https://schema.org",
-        "@type": "WebApplication",
-        "name": tool.title,
-        "description": tool.description,
-        "applicationCategory": tool.category + " Tool",
-        "url": window.location.href,
-        "operatingSystem": "Any",
-        "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" }
-      });
-      document.head.appendChild(script);
+      window.scrollTo(0, 0);
     }
   }, [tool]);
 
@@ -69,8 +49,11 @@ const ToolPage: React.FC<ToolPageProps> = ({ slug, onNavigate, onToolUsed, favor
     footer: isAdSlotEnabled(tool.category, 'footer')
   } : { header: true, mid: false, sidebar: false, footer: true };
 
+  // Use the current URL hash as a key prefix to force AdSense refresh
+  const routeKey = window.location.hash || slug;
+
   return (
-    <div className="max-w-7xl mx-auto px-4 py-6 md:py-12 sm:px-6 lg:px-8 overflow-x-hidden">
+    <div className="max-w-7xl mx-auto px-4 py-6 md:py-16 sm:px-6 lg:px-8">
       <SEOHead 
         title={tool.seoTitle || `${tool.title} Online – Free Browser Tool`}
         description={tool.seoDescription || `${tool.description}. Safe, fast, and 100% free professional utility.`}
@@ -78,74 +61,74 @@ const ToolPage: React.FC<ToolPageProps> = ({ slug, onNavigate, onToolUsed, favor
         type="article"
       />
 
-      <nav className="flex mb-6 md:mb-10 text-[10px] md:text-sm font-medium overflow-x-auto whitespace-nowrap pb-2 scrollbar-hide">
-        <button onClick={() => onNavigate('home')} className="text-slate-400 hover:text-indigo-600 transition-colors">Home</button>
-        <span className="mx-2 text-slate-300">/</span>
-        <button onClick={() => onNavigate('category', { id: tool.category })} className="text-slate-400 hover:text-indigo-600 transition-colors">{category?.name}</button>
-        <span className="mx-2 text-slate-300">/</span>
-        <span className="text-slate-900 font-bold">{tool.title}</span>
-      </nav>
+      <div className="flex flex-col lg:flex-row gap-12">
+        <div className="flex-grow w-full">
+          {/* Ad Slot - Header (Keyed for fresh mount) */}
+          {adSlots.header && <AdSlot key={`${routeKey}-header`} id={AD_CONFIG.slots.header} className="mb-12" />}
 
-      {/* REVENUE SLOT: TOP BANNER */}
-      {adSlots.header && <AdSlot id={AD_CONFIG.slots.header} className="mb-8" />}
-
-      <div className="flex flex-col lg:flex-row gap-8 lg:gap-12">
-        <div className="flex-grow w-full lg:max-w-[calc(100%-22rem)]">
-          <div className="mb-8 md:mb-12">
-            <h1 className="text-3xl md:text-5xl font-black text-slate-900 mb-4 tracking-tight leading-tight">{tool.title}</h1>
-            <p className="text-slate-500 text-base md:text-xl font-medium leading-relaxed">{tool.description}</p>
+          <div className="mb-12">
+            <h1 className="text-4xl md:text-6xl font-black text-slate-900 mb-6 tracking-tight leading-none">
+              {tool.title}
+            </h1>
+            <p className="text-xl md:text-2xl text-slate-500 font-medium leading-relaxed max-w-3xl">
+              {tool.description}
+            </p>
           </div>
 
-          <div className="mb-12 bg-white rounded-[2rem] md:rounded-[3.5rem] p-6 md:p-16 shadow-2xl shadow-indigo-100/50 border border-slate-100 min-h-[400px]">
+          <div className="bg-white rounded-[2.5rem] md:rounded-[4rem] p-6 md:p-16 shadow-[0_50px_100px_-20px_rgba(79,70,229,0.1)] border border-slate-100 min-h-[500px]">
             <ToolRenderer slug={tool.slug} onSuccess={handleSuccess} onError={setError} />
           </div>
 
-          {/* REVENUE SLOT: MID CONTENT */}
-          {adSlots.mid && <AdSlot id={AD_CONFIG.slots.mid_content} />}
+          {/* Ad Slot - Mid Content */}
+          {adSlots.mid && <AdSlot key={`${routeKey}-mid`} id={AD_CONFIG.slots.mid_content} className="my-16" />}
 
           <ToolSEOContent tool={tool} />
-          <RelatedTools currentSlug={tool.slug} category={tool.category} onNavigate={onNavigate} />
           
-          {adSlots.footer && <AdSlot id={AD_CONFIG.slots.footer} className="mt-12" />}
+          <RelatedTools currentSlug={tool.slug} category={tool.category} onNavigate={onNavigate} />
         </div>
 
         <aside className="w-full lg:w-80 flex-shrink-0 space-y-8">
-          <div className="bg-white p-6 md:p-8 rounded-[2rem] border border-slate-200 shadow-sm lg:sticky lg:top-24">
-            <h3 className="font-black text-slate-900 mb-6 uppercase text-[10px] tracking-[0.3em]">Options</h3>
-            <div className="space-y-3">
-              <button 
-                onClick={() => onToggleFavorite(tool.slug)}
-                className={`w-full py-4 rounded-2xl text-[11px] font-black uppercase tracking-widest transition-all ${favorites.includes(tool.slug) ? 'bg-yellow-100 text-yellow-700' : 'bg-slate-50 text-slate-500 hover:bg-slate-100'}`}
-              >
-                {favorites.includes(tool.slug) ? '★ Favorited' : '☆ Save Tool'}
-              </button>
-              <button 
-                onClick={() => {
-                  navigator.share?.({ title: tool.title, url: window.location.href });
-                }}
-                className="w-full py-4 rounded-2xl text-[11px] font-black uppercase tracking-widest bg-indigo-50 text-indigo-600 hover:bg-indigo-100 transition-all"
-              >
-                📤 Share Tool
-              </button>
-            </div>
+          <div className="bg-slate-50 p-8 rounded-[2.5rem] border border-slate-200 lg:sticky lg:top-24">
+             <div className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-6 px-2">Tool Engine Status</div>
+             <div className="flex items-center space-x-3 mb-8 px-2">
+                <span className="relative flex h-3 w-3">
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                  <span className="relative inline-flex rounded-full h-3 w-3 bg-emerald-500"></span>
+                </span>
+                <span className="text-xs font-black text-emerald-600 uppercase tracking-widest">Client-Side Active</span>
+             </div>
+             
+             <div className="space-y-4">
+               <button 
+                 onClick={() => onToggleFavorite(tool.slug)}
+                 className={`w-full py-5 rounded-2xl text-xs font-black uppercase tracking-widest flex items-center justify-center transition-all ${favorites.includes(tool.slug) ? 'bg-indigo-600 text-white shadow-lg' : 'bg-white text-slate-600 border border-slate-200 hover:border-indigo-400 hover:text-indigo-600'}`}
+               >
+                 {favorites.includes(tool.slug) ? '★ Favorited' : '☆ Add to Fav'}
+               </button>
+               <button 
+                 onClick={() => navigator.share?.({ title: tool.title, url: window.location.href })}
+                 className="w-full py-5 rounded-2xl text-xs font-black uppercase tracking-widest bg-white border border-slate-200 text-slate-600 hover:bg-slate-50 transition-all flex items-center justify-center"
+               >
+                 Share Tool
+               </button>
+             </div>
 
-            {/* REVENUE SLOT: SIDEBAR */}
-            {adSlots.sidebar && (
-              <div className="mt-8 hidden lg:block">
-                 <AdSlot id={AD_CONFIG.slots.sidebar} className="min-h-[600px]" />
-              </div>
-            )}
+             {adSlots.sidebar && (
+               <div className="mt-12">
+                 <AdSlot key={`${routeKey}-sidebar`} id={AD_CONFIG.slots.sidebar} className="min-h-[250px]" />
+               </div>
+             )}
           </div>
         </aside>
       </div>
 
       {success && (
-        <div className="fixed bottom-6 md:bottom-10 left-1/2 -translate-x-1/2 z-[100] bg-emerald-600 text-white px-6 md:px-10 py-4 rounded-2xl shadow-2xl font-black text-sm animate-in slide-in-from-bottom-5">
+        <div className="fixed bottom-10 left-1/2 -translate-x-1/2 z-[100] bg-emerald-600 text-white px-10 py-5 rounded-[2rem] shadow-2xl font-black text-sm animate-in slide-in-from-bottom-5">
           {success}
         </div>
       )}
       {error && (
-        <div className="fixed bottom-6 md:bottom-10 left-1/2 -translate-x-1/2 z-[100] bg-red-600 text-white px-6 md:px-10 py-4 rounded-2xl shadow-2xl font-black text-sm animate-in slide-in-from-bottom-5">
+        <div className="fixed bottom-10 left-1/2 -translate-x-1/2 z-[100] bg-red-600 text-white px-10 py-5 rounded-[2rem] shadow-2xl font-black text-sm animate-in slide-in-from-bottom-5">
           {error}
         </div>
       )}

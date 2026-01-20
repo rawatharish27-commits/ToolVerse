@@ -17,7 +17,6 @@ const InternalLinking: React.FC<InternalLinkingProps> = ({ onNavigate }) => {
         
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-x-12 gap-y-16">
           {CATEGORIES.map(cat => {
-            // Sort category tools by revenue priority before slicing
             const catTools = TOOLS
               .filter(t => t.category === cat.id)
               .sort((a, b) => (b.priority || 0) - (a.priority || 0))
@@ -58,6 +57,20 @@ const InternalLinking: React.FC<InternalLinkingProps> = ({ onNavigate }) => {
               </div>
             );
           })}
+
+          {/* New Static Links Group */}
+          <div className="space-y-4">
+            <h3 className="text-sm font-black text-slate-900 flex items-center">
+              <span className="mr-2 opacity-50">📑</span>
+              Platform
+            </h3>
+            <ul className="space-y-2">
+              <li><a href="about.html" className="text-xs text-slate-500 hover:text-indigo-500 hover:underline transition-all">About Our Mission</a></li>
+              <li><a href="contact.html" className="text-xs text-slate-500 hover:text-indigo-500 hover:underline transition-all">Contact Support</a></li>
+              <li><a href="privacy-policy.html" className="text-xs text-slate-500 hover:text-indigo-500 hover:underline transition-all">Privacy Policy</a></li>
+              <li><a href="terms.html" className="text-xs text-slate-500 hover:text-indigo-500 hover:underline transition-all">Terms of Service</a></li>
+            </ul>
+          </div>
         </div>
       </div>
     </section>

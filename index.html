@@ -1,37 +1,38 @@
-
 <!DOCTYPE html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <base href="/" />
     <title>ToolVerse | World's Largest Free Online Tools Platform</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
-      body {
-        font-family: 'Inter', sans-serif;
-      }
+      body { font-family: 'Inter', sans-serif; }
       .glass {
         background: rgba(255, 255, 255, 0.7);
         backdrop-filter: blur(10px);
         border: 1px solid rgba(255, 255, 255, 0.2);
       }
-      /* Custom scrollbar */
-      ::-webkit-scrollbar {
-        width: 8px;
-      }
-      ::-webkit-scrollbar-track {
-        background: #f1f1f1;
-      }
-      ::-webkit-scrollbar-thumb {
-        background: #c7d2fe;
-        border-radius: 10px;
-      }
-      ::-webkit-scrollbar-thumb:hover {
-        background: #818cf8;
-      }
+      ::-webkit-scrollbar { width: 8px; }
+      ::-webkit-scrollbar-track { background: #f1f1f1; }
+      ::-webkit-scrollbar-thumb { background: #c7d2fe; border-radius: 10px; }
+      ::-webkit-scrollbar-thumb:hover { background: #818cf8; }
       
-      /* Celebratory Animations */
+      .ad-container {
+        display: block !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        min-height: 250px;
+        clear: both;
+      }
+      .adsbygoogle {
+        display: block !important;
+        width: 100% !important;
+        min-width: 250px !important;
+        min-height: 250px !important;
+      }
+
       @keyframes confetti-fall {
         0% { transform: translateY(-100vh) rotate(0deg); opacity: 1; }
         100% { transform: translateY(100vh) rotate(720deg); opacity: 0; }
@@ -50,47 +51,41 @@
         50% { box-shadow: 0 0 60px rgba(79, 70, 229, 0.8); }
         100% { box-shadow: 0 0 20px rgba(79, 70, 229, 0.4); }
       }
-      .glow-active {
-        animation: glow-pulse 2s infinite;
-      }
+      .glow-active { animation: glow-pulse 2s infinite; }
 
-      /* Slow spin animation for wheel background */
       @keyframes spin-slow {
         from { transform: rotate(0deg); }
         to { transform: rotate(360deg); }
       }
-      .animate-spin-slow {
-        animation: spin-slow 15s linear infinite;
-      }
+      .animate-spin-slow { animation: spin-slow 15s linear infinite; }
     </style>
-  <script type="importmap">
-{
-  "imports": {
-    "react-dom/": "https://esm.sh/react-dom@^19.2.3/",
-    "react/": "https://esm.sh/react@^19.2.3/",
-    "react": "https://esm.sh/react@^19.2.3",
-    "@google/genai": "https://esm.sh/@google/genai@^1.37.0",
-    "qrcode": "https://esm.sh/qrcode@^1.5.4",
-    "pdf-lib": "https://esm.sh/pdf-lib@^1.17.1",
-    "jsqr": "https://esm.sh/jsqr@^1.4.0",
-    "@ffmpeg/ffmpeg": "https://esm.sh/@ffmpeg/ffmpeg@0.12.10",
-    "@ffmpeg/util": "https://esm.sh/@ffmpeg/util@0.12.1",
-    "pptxgenjs": "https://esm.sh/pptxgenjs@3.12.0",
-    "audiobuffer-to-wav": "https://esm.sh/audiobuffer-to-wav",
-    "gifshot": "https://esm.sh/gifshot",
-    "xlsx": "https://esm.sh/xlsx@0.18.5",
-    "jspdf": "https://esm.sh/jspdf@2.5.1",
-    "html2canvas": "https://esm.sh/html2canvas@1.4.1",
-    "browser-image-compression": "https://esm.sh/browser-image-compression@2.0.2",
-    "pdfjs-dist": "https://esm.sh/pdfjs-dist@4.0.379",
-    "tesseract.js": "https://esm.sh/tesseract.js@5.1.0"
-  }
-}
-</script>
-</head>
+    <script type="importmap">
+    {
+      "imports": {
+        "react-dom/": "https://esm.sh/react-dom@^19.2.3/",
+        "react/": "https://esm.sh/react@^19.2.3/",
+        "react": "https://esm.sh/react@^19.2.3",
+        "@google/genai": "https://esm.sh/@google/genai@^1.37.0",
+        "qrcode": "https://esm.sh/qrcode@^1.5.4",
+        "pdf-lib": "https://esm.sh/pdf-lib@^1.17.1",
+        "jsqr": "https://esm.sh/jsqr@^1.4.0",
+        "@ffmpeg/ffmpeg": "https://esm.sh/@ffmpeg/ffmpeg@0.12.10",
+        "@ffmpeg/util": "https://esm.sh/@ffmpeg/util@0.12.1",
+        "pptxgenjs": "https://esm.sh/pptxgenjs@3.12.0",
+        "audiobuffer-to-wav": "https://esm.sh/audiobuffer-to-wav",
+        "gifshot": "https://esm.sh/gifshot",
+        "xlsx": "https://esm.sh/xlsx@0.18.5",
+        "jspdf": "https://esm.sh/jspdf@2.5.1",
+        "html2canvas": "https://esm.sh/html2canvas@1.4.1",
+        "browser-image-compression": "https://esm.sh/browser-image-compression@2.0.2",
+        "pdfjs-dist": "https://esm.sh/pdfjs-dist@4.0.379",
+        "tesseract.js": "https://esm.sh/tesseract.js@5.1.0"
+      }
+    }
+    </script>
+  </head>
   <body class="bg-slate-50 text-slate-900">
     <div id="root"></div>
-    <!-- AdSense Script Entry -->
     <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-XXXXXXXXXXXXXXXX" crossorigin="anonymous"></script>
   </body>
 </html>
