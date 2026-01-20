@@ -1,5 +1,4 @@
-
-import React, { useMemo } from 'react';
+import React, { useMemo, useDeferredValue } from 'react';
 import { CATEGORIES } from '../data/categories';
 import { TOOLS } from '../data/tools';
 import ToolCard from '../components/ToolCard';
@@ -17,20 +16,51 @@ interface HomeProps {
   onToggleFavorite: (slug: string) => void;
 }
 
+const HOME_FAQS = [
+  {
+    q: "Is ToolVerse really free to use?",
+    a: "Yes, 100%. ToolVerse provides all 500+ professional utilities without any subscription fees, hidden charges, or usage limits. We are supported by non-intrusive advertisements."
+  },
+  {
+    q: "How does ToolVerse protect my privacy?",
+    a: "Unlike traditional online tools, we process your data locally in your browser using WebAssembly (WASM). Your files, images, and documents never touch our servers."
+  },
+  {
+    q: "Do I need to create an account or register?",
+    a: "No. You can start using any tool instantly. We don't require emails, passwords, or registration, keeping your experience completely anonymous."
+  },
+  {
+    q: "Why are ToolVerse tools faster than others?",
+    a: "Because there is no upload or download delay. By processing data directly on your hardware, we eliminate the latency of sending large files to a remote server."
+  },
+  {
+    q: "Can I use ToolVerse for professional commercial work?",
+    a: "Absolutely. Our tools are engineered for professional-grade performance and are used daily by developers, designers, and students worldwide."
+  },
+  {
+    q: "Do these tools work on mobile devices?",
+    a: "Yes. ToolVerse is a fully responsive PWA (Progressive Web App). All our utilities work perfectly on Chrome, Safari, and Firefox across iPhone, Android, and tablets."
+  }
+];
+
 const Home: React.FC<HomeProps> = ({ onNavigate, searchQuery = '', favorites, recent, onToggleFavorite }) => {
+  // Performance: Defer the search update to keep input typing fluid
+  const deferredSearch = useDeferredValue(searchQuery);
+
   const filteredTools = useMemo(() => {
-    const q = searchQuery.toLowerCase().trim();
-    let list = q 
-      ? TOOLS.filter(t => 
-          t.title.toLowerCase().includes(q) || 
-          t.description.toLowerCase().includes(q) ||
-          t.keywords.some(k => k.toLowerCase().includes(q)) ||
-          t.category.toLowerCase().includes(q)
-        )
-      : [...TOOLS];
+    const query = deferredSearch.toLowerCase().trim();
+    if (!query) return [...TOOLS].sort((a, b) => getToolPriorityScore(b) - getToolPriorityScore(a));
+
+    const queryTerms = query.split(/\s+/);
+
+    const list = TOOLS.filter(tool => {
+      const searchBlob = `${tool.title} ${tool.description} ${tool.category} ${tool.keywords.join(' ')}`.toLowerCase();
+      // Multi-term logic: every word in query must match something in the tool metadata
+      return queryTerms.every(term => searchBlob.includes(term));
+    });
     
     return list.sort((a, b) => getToolPriorityScore(b) - getToolPriorityScore(a));
-  }, [searchQuery]);
+  }, [deferredSearch]);
 
   const favoriteTools = TOOLS.filter(t => favorites.includes(t.slug));
   const recentTools = TOOLS.filter(t => recent.includes(t.slug));
@@ -44,55 +74,56 @@ const Home: React.FC<HomeProps> = ({ onNavigate, searchQuery = '', favorites, re
       />
       
       {/* Hero Section */}
-      <section className="relative overflow-hidden bg-slate-900 pt-16 sm:pt-20">
-        {/* Real-time Status Bar */}
-        <div className="relative z-20">
-          <SiteStatus />
-        </div>
+      {!deferredSearch && (
+        <section className="relative overflow-hidden bg-slate-900 pt-16 sm:pt-20">
+          <div className="relative z-20">
+            <SiteStatus />
+          </div>
 
-        <div className="absolute top-0 left-0 w-full h-full overflow-hidden opacity-30 pointer-events-none">
-          <div className="absolute -top-1/4 -left-1/4 w-3/4 h-3/4 bg-indigo-600 rounded-full blur-[160px] animate-pulse"></div>
-          <div className="absolute -bottom-1/4 -right-1/4 w-3/4 h-3/4 bg-purple-600 rounded-full blur-[160px] animate-pulse"></div>
-        </div>
-        
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 text-center pt-16 pb-32 sm:pt-24 sm:pb-48">
-          <div className="inline-flex items-center px-4 py-2 rounded-full bg-white/5 border border-white/10 text-indigo-300 text-xs font-black uppercase tracking-[0.2em] mb-8 animate-bounce-slow">
-            <span className="relative flex h-2 w-2 mr-3">
-              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-indigo-400 opacity-75"></span>
-              <span className="relative inline-flex rounded-full h-2 w-2 bg-indigo-500"></span>
-            </span>
-            Live: 500+ Pro Tools Ready
+          <div className="absolute top-0 left-0 w-full h-full overflow-hidden opacity-30 pointer-events-none">
+            <div className="absolute -top-1/4 -left-1/4 w-3/4 h-3/4 bg-indigo-600 rounded-full blur-[160px] animate-pulse"></div>
+            <div className="absolute -bottom-1/4 -right-1/4 w-3/4 h-3/4 bg-purple-600 rounded-full blur-[160px] animate-pulse"></div>
           </div>
-          <h1 className="text-5xl sm:text-8xl font-black text-white tracking-tight mb-8 leading-[1.1]">
-            One Hub.<br />
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 via-white to-purple-400">Unlimited Power.</span>
-          </h1>
-          <p className="max-w-2xl mx-auto text-xl text-slate-400 mb-12 font-medium leading-relaxed">
-            Stop switching tabs. ToolVerse brings every professional utility together in a privacy-first, ultra-fast browser ecosystem.
-          </p>
-          <div className="flex flex-col sm:flex-row justify-center items-center space-y-4 sm:space-y-0 sm:space-x-8">
-            <button 
-              onClick={() => {
-                const el = document.getElementById('tools-grid');
-                el?.scrollIntoView({ behavior: 'smooth' });
-              }}
-              className="w-full sm:w-auto px-12 py-6 bg-indigo-600 hover:bg-indigo-700 text-white rounded-[2rem] font-black text-lg shadow-2xl shadow-indigo-600/30 transition-all transform hover:-translate-y-2 active:scale-95"
-            >
-              Start Exploring
-            </button>
-            <div className="text-slate-600 font-black hidden sm:block">OR</div>
-            <button 
-              onClick={() => document.querySelector('input')?.focus()}
-              className="w-full sm:w-auto px-12 py-6 bg-white/5 border border-white/10 text-white rounded-[2rem] font-black text-lg hover:bg-white/10 transition-all backdrop-blur-xl"
-            >
-              Search Tools
-            </button>
+          
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 text-center pt-16 pb-32 sm:pt-24 sm:pb-48">
+            <div className="inline-flex items-center px-4 py-2 rounded-full bg-white/5 border border-white/10 text-indigo-300 text-xs font-black uppercase tracking-[0.2em] mb-8 animate-bounce-slow">
+              <span className="relative flex h-2 w-2 mr-3">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-indigo-400 opacity-75"></span>
+                <span className="relative inline-flex rounded-full h-2 w-2 bg-indigo-500"></span>
+              </span>
+              Live: 500+ Pro Tools Ready
+            </div>
+            <h1 className="text-5xl sm:text-8xl font-black text-white tracking-tight mb-8 leading-[1.1]">
+              One Hub.<br />
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 via-white to-purple-400">Unlimited Power.</span>
+            </h1>
+            <p className="max-w-2xl mx-auto text-xl text-slate-400 mb-12 font-medium leading-relaxed">
+              Stop switching tabs. ToolVerse brings every professional utility together in a privacy-first, ultra-fast browser ecosystem.
+            </p>
+            <div className="flex flex-col sm:flex-row justify-center items-center space-y-4 sm:space-y-0 sm:space-x-8">
+              <button 
+                onClick={() => {
+                  const el = document.getElementById('tools-grid');
+                  el?.scrollIntoView({ behavior: 'smooth' });
+                }}
+                className="w-full sm:w-auto px-12 py-6 bg-indigo-600 hover:bg-indigo-700 text-white rounded-[2rem] font-black text-lg shadow-2xl shadow-indigo-600/30 transition-all transform hover:-translate-y-2 active:scale-95"
+              >
+                Start Exploring
+              </button>
+              <div className="text-slate-600 font-black hidden sm:block">OR</div>
+              <button 
+                onClick={() => document.querySelector('input')?.focus()}
+                className="w-full sm:w-auto px-12 py-6 bg-white/5 border border-white/10 text-white rounded-[2rem] font-black text-lg hover:bg-white/10 transition-all backdrop-blur-xl"
+              >
+                Search Tools
+              </button>
+            </div>
           </div>
-        </div>
-      </section>
+        </section>
+      )}
 
       {/* Workspace Section */}
-      {!searchQuery && (favorites.length > 0 || recent.length > 0) && (
+      {!deferredSearch && (favorites.length > 0 || recent.length > 0) && (
         <section className="max-w-7xl mx-auto px-4 -mt-16 sm:-mt-24 relative z-20 mb-20">
           <div className="glass bg-white/90 rounded-[3.5rem] p-10 md:p-16 shadow-2xl border border-white/50 backdrop-blur-3xl shadow-indigo-200/50">
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-12">
@@ -147,23 +178,31 @@ const Home: React.FC<HomeProps> = ({ onNavigate, searchQuery = '', favorites, re
         </section>
       )}
 
-      {/* Prize Spin Section (New) */}
-      {!searchQuery && <SpinWheel />}
+      {/* Prize Spin Section */}
+      {!deferredSearch && <SpinWheel />}
 
       {/* Search Result / Grid Section */}
-      <section id="tools-grid" className="max-w-7xl mx-auto px-4 py-24 sm:px-6 lg:px-8">
-        <div className="flex flex-col md:flex-row md:items-end justify-between mb-16">
+      <section id="tools-grid" className={`max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 ${deferredSearch ? 'pt-16 md:pt-24' : 'py-24'}`}>
+        <div className="flex flex-col md:flex-row md:items-end justify-between mb-16 gap-6">
           <div className="max-w-2xl">
+            {deferredSearch && (
+              <div className="inline-flex items-center px-3 py-1 bg-indigo-50 text-indigo-600 rounded-full text-[10px] font-black uppercase tracking-widest mb-4">
+                Global Index Search
+              </div>
+            )}
             <h2 className="text-4xl font-black text-slate-900 mb-4 tracking-tight">
-              {searchQuery ? `Displaying results for "${searchQuery}"` : "Global Tool Library"}
+              {deferredSearch ? `Found ${filteredTools.length} Utilities` : "Global Tool Library"}
             </h2>
             <p className="text-lg text-slate-500 font-medium leading-relaxed">
-              {searchQuery ? `Found ${filteredTools.length} utilities matching your search criteria.` : "Browse our verified collection of 500+ professional tools across 12 categories."}
+              {deferredSearch ? `Displaying matching tools for "${deferredSearch}".` : "Browse our verified collection of 500+ professional tools across 12 categories."}
             </p>
           </div>
-          {searchQuery && (
-            <button onClick={() => onNavigate('home')} className="mt-4 md:mt-0 text-indigo-600 font-bold hover:underline flex items-center">
-              Clear Search <span className="ml-2">✕</span>
+          {deferredSearch && (
+            <button 
+              onClick={() => onNavigate('home')} 
+              className="px-6 py-3 bg-slate-100 text-slate-600 font-black rounded-xl text-xs uppercase tracking-widest hover:bg-slate-200 transition-all"
+            >
+              Clear Search
             </button>
           )}
         </div>
@@ -181,16 +220,26 @@ const Home: React.FC<HomeProps> = ({ onNavigate, searchQuery = '', favorites, re
             ))}
           </div>
         ) : (
-          <div className="text-center py-40 bg-white rounded-[3rem] border-4 border-dashed border-slate-100 flex flex-col items-center">
-            <div className="text-8xl mb-8 animate-bounce-slow">🔍</div>
+          <div className="text-center py-40 bg-white rounded-[3rem] border-4 border-dashed border-slate-100 flex flex-col items-center animate-in zoom-in-95">
+            <div className="text-8xl mb-8 opacity-20">🔎</div>
             <h3 className="text-3xl font-black text-slate-900 mb-4">No utilities found</h3>
             <p className="text-slate-400 max-w-sm mx-auto font-medium">We couldn't find a tool matching that query. Try broader terms like "PDF", "Video", or "Text".</p>
-            <button onClick={() => onNavigate('home')} className="mt-8 px-10 py-4 bg-indigo-600 text-white rounded-2xl font-black shadow-xl shadow-indigo-100">Explore All Tools</button>
+            <div className="mt-12 flex flex-wrap justify-center gap-4">
+               {['PDF', 'AI', 'IMAGE', 'CONVERTER'].map(term => (
+                 <button 
+                  key={term} 
+                  onClick={() => document.querySelector('input')?.setAttribute('value', term)} 
+                  className="px-6 py-2 bg-indigo-50 text-indigo-600 font-black rounded-xl text-[10px] tracking-widest hover:bg-indigo-100 transition-all"
+                 >
+                   Try "{term}"
+                 </button>
+               ))}
+            </div>
           </div>
         )}
       </section>
 
-      {!searchQuery && (
+      {!deferredSearch && (
         <>
           <section id="categories" className="bg-slate-900 py-32 overflow-hidden relative">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
@@ -214,6 +263,24 @@ const Home: React.FC<HomeProps> = ({ onNavigate, searchQuery = '', favorites, re
                     <div className="text-xs font-black text-indigo-400 uppercase tracking-widest flex items-center group-hover:translate-x-2 transition-transform">
                       Browse Hub <span className="ml-2">→</span>
                     </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </section>
+
+          {/* FAQ Section */}
+          <section className="py-32 bg-white">
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+              <div className="text-center mb-20">
+                <h2 className="text-xs font-black text-indigo-600 uppercase tracking-[0.4em] mb-4">Common Questions</h2>
+                <h3 className="text-4xl md:text-5xl font-black text-slate-900 tracking-tight">Everything you need to know</h3>
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                {HOME_FAQS.map((faq, i) => (
+                  <div key={i} className="p-10 bg-slate-50 rounded-[2.5rem] border border-slate-100 hover:border-indigo-200 transition-all group">
+                    <h4 className="text-lg font-black text-slate-900 mb-4 leading-tight group-hover:text-indigo-600 transition-colors">{faq.q}</h4>
+                    <p className="text-slate-500 font-medium leading-relaxed">{faq.a}</p>
                   </div>
                 ))}
               </div>

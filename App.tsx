@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect, Suspense, startTransition } from 'react';
 import Layout from './components/Layout';
 import Home from './pages/Home';
@@ -6,11 +5,13 @@ import CategoryPage from './pages/CategoryPage';
 import ToolPage from './pages/ToolPage';
 import About from './pages/About';
 import PrivacyPolicy from './pages/PrivacyPolicy';
+import Terms from './pages/Terms';
+import Contact from './pages/Contact';
 import { CategorySlug } from './types';
 import { trackPageView } from './utils/analytics';
 
 interface NavigationState {
-  page: 'home' | 'category' | 'tool' | 'about' | 'privacy';
+  page: 'home' | 'category' | 'tool' | 'about' | 'privacy' | 'terms' | 'contact';
   params?: any;
 }
 
@@ -48,12 +49,18 @@ const App: React.FC = () => {
           setNav({ page: 'about' });
         } else if (hash === 'privacy') {
           setNav({ page: 'privacy' });
+        } else if (hash === 'terms') {
+          setNav({ page: 'terms' });
+        } else if (hash === 'contact') {
+          setNav({ page: 'contact' });
         } else if (hash.startsWith('category/')) {
           const id = hash.split('/')[1] as CategorySlug;
           setNav({ page: 'category', params: { id } });
+          setSearchQuery(''); // Reset search when entering category
         } else if (hash.startsWith('tool/')) {
           const slug = hash.split('/')[1];
           setNav({ page: 'tool', params: { slug } });
+          setSearchQuery(''); // Reset search when entering tool
         } else {
           setNav({ page: 'home' });
         }
@@ -72,6 +79,8 @@ const App: React.FC = () => {
       }
       else if (page === 'about') window.location.hash = 'about';
       else if (page === 'privacy') window.location.hash = 'privacy';
+      else if (page === 'terms') window.location.hash = 'terms';
+      else if (page === 'contact') window.location.hash = 'contact';
       else if (page === 'category') window.location.hash = `category/${params.id}`;
       else if (page === 'tool') window.location.hash = `tool/${params.slug}`;
       window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -89,6 +98,14 @@ const App: React.FC = () => {
       const filtered = prev.filter(s => s !== slug);
       return [slug, ...filtered].slice(0, 8);
     });
+  };
+
+  const handleGlobalSearch = (q: string) => {
+    setSearchQuery(q);
+    // If not on home, move to home to show results
+    if (window.location.hash !== '' && window.location.hash !== '#') {
+      window.location.hash = '';
+    }
   };
 
   const renderContent = () => {
@@ -126,20 +143,21 @@ const App: React.FC = () => {
         return <About />;
       case 'privacy':
         return <PrivacyPolicy />;
+      case 'terms':
+        return <Terms />;
+      case 'contact':
+        return <Contact />;
       default:
         return <Home onNavigate={navigate} searchQuery={searchQuery} favorites={[]} recent={[]} onToggleFavorite={()=>{}} />;
     }
   };
 
   return (
-    <Layout onNavigate={navigate} onSearch={(q) => {
-      startTransition(() => {
-        setSearchQuery(q);
-        if (window.location.hash !== '' && window.location.hash !== '#') {
-          window.location.hash = ''; 
-        }
-      });
-    }}>
+    <Layout 
+      searchQuery={searchQuery}
+      onNavigate={navigate} 
+      onSearch={handleGlobalSearch}
+    >
       <Suspense fallback={
         <div className="flex items-center justify-center min-h-[70vh] bg-slate-50/50 backdrop-blur-sm">
           <div className="flex flex-col items-center space-y-8 p-12 bg-white rounded-[3rem] shadow-2xl border border-slate-100 animate-in zoom-in-95 duration-300">

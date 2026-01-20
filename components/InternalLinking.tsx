@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { CATEGORIES } from '../data/categories';
 import { TOOLS } from '../data/tools';
@@ -58,17 +57,17 @@ const InternalLinking: React.FC<InternalLinkingProps> = ({ onNavigate }) => {
             );
           })}
 
-          {/* New Static Links Group */}
+          {/* Platform Links Group */}
           <div className="space-y-4">
             <h3 className="text-sm font-black text-slate-900 flex items-center">
               <span className="mr-2 opacity-50">📑</span>
               Platform
             </h3>
             <ul className="space-y-2">
-              <li><a href="about.html" className="text-xs text-slate-500 hover:text-indigo-500 hover:underline transition-all">About Our Mission</a></li>
-              <li><a href="contact.html" className="text-xs text-slate-500 hover:text-indigo-500 hover:underline transition-all">Contact Support</a></li>
-              <li><a href="privacy-policy.html" className="text-xs text-slate-500 hover:text-indigo-500 hover:underline transition-all">Privacy Policy</a></li>
-              <li><a href="terms.html" className="text-xs text-slate-500 hover:text-indigo-500 hover:underline transition-all">Terms of Service</a></li>
+              <li><button onClick={() => onNavigate('about')} className="text-xs text-slate-500 hover:text-indigo-500 hover:underline transition-all">About Our Mission</button></li>
+              <li><button onClick={() => onNavigate('contact')} className="text-xs text-slate-500 hover:text-indigo-500 hover:underline transition-all">Contact Support</button></li>
+              <li><button onClick={() => onNavigate('privacy')} className="text-xs text-slate-500 hover:text-indigo-500 hover:underline transition-all">Privacy Policy</button></li>
+              <li><button onClick={() => onNavigate('terms')} className="text-xs text-slate-500 hover:text-indigo-500 hover:underline transition-all">Terms of Service</button></li>
             </ul>
           </div>
         </div>

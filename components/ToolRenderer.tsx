@@ -1,4 +1,3 @@
-
 import React, { useState, lazy, Suspense, useEffect } from 'react';
 import { GoogleGenAI } from "@google/genai";
 import { trackEvent } from '../utils/analytics';
@@ -10,6 +9,8 @@ const ImageTools = lazy(() => import('./tools/ImageTools'));
 const SEOTools = lazy(() => import('./tools/SEOTools'));
 const OfficeTools = lazy(() => import('./tools/OfficeTools'));
 const GeneralTools = lazy(() => import('./tools/GeneralTools'));
+const SecurityTools = lazy(() => import('./tools/SecurityTools'));
+const NetworkTools = lazy(() => import('./tools/NetworkTools'));
 
 interface ToolRendererProps {
   slug: string;
@@ -31,12 +32,16 @@ const ToolRenderer: React.FC<ToolRendererProps> = ({ slug, onSuccess, onError })
   const isPDF = /pdf|word-to-pdf|doc-to-pdf|pdf-to/i.test(slug);
   const isFinance = /calculator|emi|sip|loan|gst|tax|interest|rd|fd|roi|bmi|age|percentage|gpa/i.test(slug);
   const isSEO = /sitemap|robots|schema|og|canonical|meta|ping|keyword|backlink|authority|serp|aud/i.test(slug);
-  const isOffice = /csv|xlsx|excel|json|vcard|docx|word|pptx/i.test(slug) && !isSEO;
+  const isOffice = /csv|xlsx|excel|json|vcard|docx|word|pptx|email-extractor|text-to-html/i.test(slug) && !isSEO;
   const isAI = /ai-|writer|generator|summarizer|paraphraser|checker|builder|caption|script|promp/i.test(slug);
+  const isSecurity = /password-strength|hash|token|jwt|crypto/i.test(slug);
+  const isNetwork = /ip|dns|url-en|url-de|port|network/i.test(slug);
   
-  // GENERAL UTILITY (Case converter, Word count, Password Gen, etc)
-  const isGeneral = /json-formatter|base64|minifier|lorem|password|qr|word-counter|case-converter/i.test(slug);
+  // GENERAL UTILITY
+  const isGeneral = /json-formatter|base64|minifier|lorem|password-generator|qr|word-counter|case-converter/i.test(slug);
 
+  if (isSecurity) return <Suspense fallback={<Loader label="Security Vault" />}><SecurityTools slug={slug} onSuccess={onSuccess} onError={onError} /></Suspense>;
+  if (isNetwork) return <Suspense fallback={<Loader label="Network Diagnostic" />}><NetworkTools slug={slug} onSuccess={onSuccess} onError={onError} /></Suspense>;
   if (isSEO) return <Suspense fallback={<Loader label="SEO Engine" />}><SEOTools slug={slug} onSuccess={onSuccess} onError={onError} /></Suspense>;
   if (isVideoAudio) return <Suspense fallback={<Loader label="Media Lab" />}><VideoAudioTools slug={slug} onSuccess={onSuccess} onError={onError} /></Suspense>;
   if (isImage) return <Suspense fallback={<Loader label="Image Processor" />}><ImageTools slug={slug} onSuccess={onSuccess} onError={onError} /></Suspense>;
@@ -90,7 +95,6 @@ const ToolRenderer: React.FC<ToolRendererProps> = ({ slug, onSuccess, onError })
     );
   }
 
-  // LAST RESORT FALLBACK - Simple Text Processor
   return <Suspense fallback={<Loader label="Utility Engine" />}><GeneralTools slug={slug} onSuccess={onSuccess} onError={onError} /></Suspense>;
 };
 

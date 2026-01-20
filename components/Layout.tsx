@@ -1,26 +1,35 @@
-
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { CATEGORIES } from '../data/categories';
 import InternalLinking from './InternalLinking';
 
 interface LayoutProps {
   children: React.ReactNode;
   onNavigate: (page: string, params?: any) => void;
-  onSearch?: (query: string) => void;
+  onSearch: (query: string) => void;
+  searchQuery: string;
 }
 
-const Layout: React.FC<LayoutProps> = ({ children, onNavigate, onSearch }) => {
-  const [searchVal, setSearchVal] = useState('');
+const Layout: React.FC<LayoutProps> = ({ children, onNavigate, onSearch, searchQuery }) => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const searchInputRef = useRef<HTMLInputElement>(null);
+
+  // Keyboard shortcut: Press '/' to focus search
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === '/' && document.activeElement?.tagName !== 'INPUT' && document.activeElement?.tagName !== 'TEXTAREA') {
+        e.preventDefault();
+        searchInputRef.current?.focus();
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, []);
 
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const val = e.target.value;
-    setSearchVal(val);
-    if (onSearch) onSearch(val);
+    onSearch(e.target.value);
   };
 
   const closeMenuAndNavigate = (page: string, params?: any) => {
-    setSearchVal('');
     setIsMobileMenuOpen(false);
     onNavigate(page, params);
   };
@@ -72,15 +81,29 @@ const Layout: React.FC<LayoutProps> = ({ children, onNavigate, onSearch }) => {
 
             {/* Search and Mobile Toggle */}
             <div className="flex items-center space-x-3 md:space-x-6">
-              <div className="hidden md:flex relative">
+              <div className="hidden md:flex relative group">
                 <input 
+                  ref={searchInputRef}
                   type="text" 
-                  value={searchVal}
+                  value={searchQuery}
                   onChange={handleSearchChange}
                   placeholder="Search 500+ tools..." 
-                  className="w-48 lg:w-64 xl:w-72 pl-10 pr-4 py-3 rounded-xl border border-slate-200 focus:outline-none focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500 transition-all font-bold text-xs bg-slate-50/50"
+                  className="w-48 lg:w-64 xl:w-72 pl-10 pr-10 py-3 rounded-xl border border-slate-200 focus:outline-none focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500 transition-all font-bold text-xs bg-slate-50/50"
                 />
-                <svg className="absolute left-3.5 top-3.5 w-3.5 h-3.5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
+                <svg className="absolute left-3.5 top-3.5 w-3.5 h-3.5 text-slate-400 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
+                
+                {searchQuery ? (
+                  <button 
+                    onClick={() => onSearch('')}
+                    className="absolute right-3 top-2.5 p-1 text-slate-400 hover:text-indigo-600 transition-colors"
+                  >
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M6 18L18 6M6 6l12 12" /></svg>
+                  </button>
+                ) : (
+                  <div className="absolute right-3 top-3 text-[9px] font-black text-slate-300 border border-slate-200 rounded px-1 group-hover:border-indigo-200 group-hover:text-indigo-300 pointer-events-none transition-colors">
+                    /
+                  </div>
+                )}
               </div>
               
               <button 
@@ -105,12 +128,17 @@ const Layout: React.FC<LayoutProps> = ({ children, onNavigate, onSearch }) => {
               <div className="relative">
                 <input 
                   type="text" 
-                  value={searchVal}
+                  value={searchQuery}
                   onChange={handleSearchChange}
                   placeholder="Search tools..." 
-                  className="w-full pl-10 pr-4 py-4 rounded-2xl border border-slate-200 font-bold text-sm bg-slate-50"
+                  className="w-full pl-10 pr-10 py-4 rounded-2xl border border-slate-200 font-bold text-sm bg-slate-50"
                 />
                 <svg className="absolute left-4 top-4.5 w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
+                {searchQuery && (
+                  <button onClick={() => onSearch('')} className="absolute right-4 top-4.5 p-0.5 text-slate-400">
+                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" /></svg>
+                  </button>
+                )}
               </div>
 
               <div className="grid grid-cols-2 gap-3">
@@ -130,6 +158,7 @@ const Layout: React.FC<LayoutProps> = ({ children, onNavigate, onSearch }) => {
                 <button onClick={() => closeMenuAndNavigate('home')} className="block w-full text-left font-black text-slate-600 text-xs uppercase tracking-widest">Home Portal</button>
                 <button onClick={() => closeMenuAndNavigate('about')} className="block w-full text-left font-black text-slate-600 text-xs uppercase tracking-widest">About Us</button>
                 <button onClick={() => closeMenuAndNavigate('privacy')} className="block w-full text-left font-black text-slate-600 text-xs uppercase tracking-widest">Privacy Center</button>
+                <button onClick={() => closeMenuAndNavigate('terms')} className="block w-full text-left font-black text-slate-600 text-xs uppercase tracking-widest">Terms of Use</button>
               </div>
             </div>
           </div>
@@ -160,14 +189,14 @@ const Layout: React.FC<LayoutProps> = ({ children, onNavigate, onSearch }) => {
                 <ul className="space-y-4 md:space-y-6 text-xs font-bold">
                   <li><button onClick={() => closeMenuAndNavigate('home')} className="hover:text-indigo-400 transition-colors">Start Portal</button></li>
                   <li><button onClick={() => closeMenuAndNavigate('about')} className="hover:text-indigo-400 transition-colors">About Story</button></li>
-                  <li><button onClick={() => closeMenuAndNavigate('contact')} className="hover:text-indigo-400 transition-colors">Contact Support</button></li>
+                  <li><button onClick={() => closeMenuAndNavigate('contact')} className="hover:text-indigo-400 transition-colors text-left">Contact Support</button></li>
                 </ul>
               </div>
               <div>
                 <h3 className="text-white font-black mb-6 md:mb-10 uppercase text-[10px] tracking-[0.4em]">Legal</h3>
                 <ul className="space-y-4 md:space-y-6 text-xs font-bold">
-                  <li><button onClick={() => closeMenuAndNavigate('privacy')} className="hover:text-indigo-400 transition-colors">Privacy Policy</button></li>
-                  <li><button onClick={() => closeMenuAndNavigate('terms')} className="hover:text-indigo-400 transition-colors">Terms of Use</button></li>
+                  <li><button onClick={() => closeMenuAndNavigate('privacy')} className="hover:text-indigo-400 transition-colors text-left">Privacy Policy</button></li>
+                  <li><button onClick={() => closeMenuAndNavigate('terms')} className="hover:text-indigo-400 transition-colors text-left">Terms of Use</button></li>
                 </ul>
               </div>
             </div>
