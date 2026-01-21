@@ -48,6 +48,7 @@ export const TOOLS: Tool[] = [
   // --- OFFICE TOOLS ---
   { slug: 'word-counter', title: 'Word Counter', category: 'office', priority: 98, description: 'Professional text analyzer for word count, character count, and reading time estimates.', keywords: ['word counter', 'character count', 'text statistics', 'writing tool'], toolType: 'client' },
   { slug: 'text-to-speech-reader', title: 'AI Voice Reader (TTS)', category: 'office', priority: 93, description: 'Convert text into natural sounding speech with customizable voice parameters.', keywords: ['tts', 'voice reader', 'speech synthesis', 'read aloud'], toolType: 'client' },
+  { slug: 'text-compare', title: 'Text Compare', category: 'office', priority: 95, description: 'Compare two texts to find differences instantly. Professional side-by-side diff checker.', keywords: ['diff checker', 'compare text', 'text difference', 'plagiarism checker'], toolType: 'client' },
 
   // --- PDF SUITE ---
   { slug: 'pdf-merge', title: 'PDF Merger Tool', category: 'pdf', priority: 100, description: 'Combine multiple PDF files into a single document.', keywords: ['merge', 'combine', 'pdf joiner'], toolType: 'client' },

@@ -45,3 +45,25 @@ export const ttsConfig = {
     }
   ],
 };
+
+export const textCompareConfig = {
+  slug: "text-compare",
+  title: "Visual Diff Checker",
+  description: "Compare two versions of text side-by-side. Instantly highlight additions, deletions, and modifications with professional accuracy.",
+  icon: "⚖️",
+  colorClass: "bg-indigo-700",
+  options: [
+    {
+      id: "caseSensitive",
+      label: "Case Sensitive",
+      type: "toggle",
+      default: false
+    },
+    {
+      id: "ignoreWhitespace",
+      label: "Ignore Whitespace",
+      type: "toggle",
+      default: true
+    }
+  ],
+};
