@@ -1,6 +1,8 @@
-
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { runMediaTask, getFFmpeg } from '../../lib/wasm-engines';
+import ToolLayout from '../ToolLayout';
+import OptionsPanel from '../OptionsPanel';
+import { videoCompressorConfig, videoConverterConfig, videoToGifConfig, videoTrimmerConfig, videoMergerConfig } from '../../config/videoTools';
 
 interface ToolProps {
   slug: string;
@@ -8,201 +10,321 @@ interface ToolProps {
   onError: (msg: string) => void;
 }
 
+const RESOLUTION_MAP: Record<string, string> = {
+  "1080p": "1920:1080",
+  "720p": "1280:720",
+  "480p": "854:480",
+  "360p": "640:360",
+};
+
+const BITRATE_MAP: Record<string, string> = {
+  "High": "4000k",
+  "Medium": "2000k",
+  "Low": "1000k",
+  "Ultra Low": "500k",
+};
+
 const VideoAudioTools: React.FC<ToolProps> = ({ slug, onSuccess, onError }) => {
   const [files, setFiles] = useState<FileList | null>(null);
   const [loading, setLoading] = useState(false);
   const [outputUrl, setOutputUrl] = useState<string | null>(null);
   const [progress, setProgress] = useState(0);
   const [processedOutType, setProcessedOutType] = useState('video/mp4');
-  const [targetFormat, setTargetFormat] = useState('mp4');
+  const [resultSize, setResultSize] = useState<number>(0);
+
+  const [options, setOptions] = useState<Record<string, any>>(() => {
+    const initial: Record<string, any> = {};
+    const configs = [videoCompressorConfig, videoConverterConfig, videoToGifConfig, videoTrimmerConfig, videoMergerConfig];
+    const target = configs.find(c => c.slug === slug || (slug.includes('converter') && c.slug.includes('converter')));
+    if (target) {
+      target.options.forEach(opt => initial[opt.id] = opt.default);
+    }
+    return initial;
+  });
+
+  const handleOptionChange = (id: string, value: any) => {
+    setOptions(prev => ({ ...prev, [id]: value }));
+  };
 
   const processMedia = async () => {
     if (!files || files.length === 0) return;
     try {
       setLoading(true);
       setProgress(0);
+      setOutputUrl(null);
+      
       let args: string[] = [];
-      let outName = "out.mp4";
+      let outName = "output.mp4";
       let outType = "video/mp4";
-
-      const file = files[0];
-      const inExt = file.name.split('.').pop()?.toLowerCase() || 'mp4';
-      const inName = `in.${inExt}`;
+      let allInputs: { name: string, data: File | Blob }[] = [];
 
       switch (slug) {
-        case "video-converter-pro":
-        case "video-converter":
-          outName = `out.${targetFormat}`;
-          outType = targetFormat === 'webm' ? 'video/webm' : 'video/mp4';
-          args = ["-i", inName, outName];
-          break;
-        case "audio-converter-pro":
-        case "audio-converter":
-          outName = `out.${targetFormat || 'wav'}`;
-          outType = `audio/${targetFormat || 'wav'}`;
-          args = ["-i", inName, outName];
-          break;
-        case "video-mute":
-          args = ["-i", inName, "-an", "-vcodec", "copy", "out.mp4"];
-          break;
-        case "video-speed-changer":
-          args = ["-i", inName, "-filter:v", "setpts=0.5*PTS", "-filter:a", "atempo=2.0", "out.mp4"];
-          break;
-        case "audio-reverse":
-          args = ["-i", inName, "-af", "areverse", "out.mp3"];
-          outName = "out.mp3";
-          outType = "audio/mp3";
-          break;
-        case "video-to-gif-high-res":
-        case "gif-maker":
-          args = ["-i", inName, "-vf", "fps=15,scale=480:-1:flags=lanczos,split[s0][s1];[s0]palettegen[p];[s1][p]paletteuse", "out.gif"];
-          outName = "out.gif";
-          outType = "image/gif";
-          break;
         case "video-merger": {
-          if (files.length < 2) {
-             onError("Please select at least 2 videos to merge.");
-             setLoading(false);
-             return;
-          }
-          const inputArgs: string[] = [];
-          let filterStr = "";
-          for(let i=0; i<files.length; i++) {
-            inputArgs.push("-i", `file${i}.mp4`);
-            filterStr += `[${i}:v][${i}:a]`;
-          }
-          filterStr += `concat=n=${files.length}:v=1:a=1[v][a]`;
-          args = [...inputArgs, "-filter_complex", filterStr, "-map", "[v]", "-map", "[a]", "out.mp4"];
+          if (files.length < 2) throw new Error("Select at least 2 videos to merge.");
+          const targetFormat = options.format || 'mp4';
+          outName = `merged_${Date.now()}.${targetFormat}`;
+          outType = `video/${targetFormat}`;
           
-          const ff = await getFFmpeg();
-          const { fetchFile } = await import("@ffmpeg/util");
-          for (let i = 0; i < files.length; i++) {
-             await ff.writeFile(`file${i}.mp4`, await fetchFile(files[i]));
+          const fileArray = Array.from(files) as File[];
+          const inputFiles = fileArray.map((f, i) => ({
+            name: `input${i}.${f.name.split('.').pop()}`,
+            data: f
+          }));
+
+          const concatContent = inputFiles.map(f => `file '${f.name}'`).join('\n');
+          const concatBlob = new Blob([concatContent], { type: 'text/plain' });
+          
+          allInputs = [...inputFiles, { name: 'concat.txt', data: concatBlob }];
+          
+          args = ["-f", "concat", "-safe", "0", "-i", "concat.txt"];
+          if (options.fastCopy) {
+            args.push("-c", "copy");
+          } else {
+            args.push("-c:v", "libx264", "-crf", "23", "-c:a", "aac");
           }
-          ff.on('progress', ({ progress }) => setProgress(progress * 100));
-          await ff.exec(args);
-          const data = await ff.readFile("out.mp4");
-          const blob = new Blob([data as any], { type: 'video/mp4' });
-          setProcessedOutType('video/mp4');
-          setOutputUrl(URL.createObjectURL(blob));
-          onSuccess("Batch Merger Complete!");
-          setLoading(false);
-          return;
+          args.push(outName);
+          break;
         }
-        case "video-compressor":
-          args = ["-i", inName, "-vcodec", "libx264", "-crf", "28", "out.mp4"];
+
+        case "video-trimmer": {
+          const file = files[0];
+          const inExt = file.name.split('.').pop()?.toLowerCase() || 'mp4';
+          const inName = `input.${inExt}`;
+          allInputs = [{ name: inName, data: file }];
+
+          const targetFormat = options.format || 'mp4';
+          outName = `trimmed_${file.name.split('.')[0]}.${targetFormat}`;
+          outType = `video/${targetFormat}`;
+          
+          args = [
+            "-ss", options.start || "00:00:00",
+            "-i", inName,
+            "-to", options.end || "00:00:10"
+          ];
+
+          if (options.fastCopy) {
+            args.push("-c", "copy");
+          } else {
+            args.push("-c:v", "libx264", "-crf", "23", "-c:a", "aac");
+          }
+
+          args.push(outName);
           break;
-        case "video-to-mp3":
-          args = ["-i", inName, "-q:a", "0", "-map", "a", "out.mp3"];
-          outName = "out.mp3";
-          outType = "audio/mp3";
+        }
+
+        case "video-compressor": {
+          const file = files[0];
+          const inExt = file.name.split('.').pop()?.toLowerCase() || 'mp4';
+          const inName = `input.${inExt}`;
+          allInputs = [{ name: inName, data: file }];
+
+          outName = `compressed_${file.name.split('.')[0]}.${options.format || 'mp4'}`;
+          outType = (options.format === 'webm') ? 'video/webm' : 'video/mp4';
+          
+          args = ["-i", inName];
+          const filters = [];
+          if (options.resolution !== 'Original') {
+            filters.push(`scale=${RESOLUTION_MAP[options.resolution]}`);
+          }
+          if (filters.length > 0) args.push("-vf", filters.join(','));
+          if (options.fps !== 'Original') args.push("-r", String(options.fps));
+          args.push("-b:v", BITRATE_MAP[options.bitrate]);
+          if (options.mute) args.push("-an");
+          args.push(outName);
           break;
+        }
+        
+        case "video-converter-pro":
+        case "video-converter": {
+          const file = files[0];
+          const inExt = file.name.split('.').pop()?.toLowerCase() || 'mp4';
+          const inName = `input.${inExt}`;
+          allInputs = [{ name: inName, data: file }];
+
+          const targetFormat = options.format || 'mp4';
+          outName = `converted_${file.name.split('.')[0]}.${targetFormat}`;
+          outType = targetFormat === 'gif' ? 'image/gif' : `video/${targetFormat}`;
+          
+          args = ["-i", inName];
+          const filters = [];
+          if (options.resolution && options.resolution !== 'Original') {
+            filters.push(`scale=${RESOLUTION_MAP[options.resolution]}`);
+          }
+          if (targetFormat === 'gif') {
+            filters.push("fps=10,scale=480:-1:flags=lanczos,split[s0][s1];[s0]palettegen[p];[s1][p]paletteuse");
+          }
+          if (filters.length > 0) args.push("-vf", filters.join(','));
+          if (options.audio === false && targetFormat !== 'gif') {
+            args.push("-an");
+          }
+          args.push(outName);
+          break;
+        }
+
+        case "video-to-gif-high-res":
+        case "gif-maker": {
+          const file = files[0];
+          const inExt = file.name.split('.').pop()?.toLowerCase() || 'mp4';
+          const inName = `input.${inExt}`;
+          allInputs = [{ name: inName, data: file }];
+
+          const w = options.width || 480;
+          const fps = options.fps || 15;
+          const start = options.start || "00:00:00";
+          const duration = options.duration || 5;
+          
+          // High quality palette generation for GIF
+          const paletteFilter = `fps=${fps},scale=${w}:-1:flags=lanczos,split[s0][s1];[s0]palettegen[p];[s1][p]paletteuse`;
+          
+          outName = "output.gif";
+          outType = "image/gif";
+          
+          args = [
+            "-ss", start,
+            "-t", String(duration),
+            "-i", inName,
+            "-vf", paletteFilter
+          ];
+
+          // -loop 0 for infinite, -loop -1 for no loop (plays once)
+          if (options.loop) {
+            args.push("-loop", "0");
+          } else {
+            args.push("-loop", "-1");
+          }
+
+          args.push(outName);
+          break;
+        }
+
         default:
-          args = ["-i", inName, "out.mp4"];
+          const file = files[0];
+          const inExt = file.name.split('.').pop()?.toLowerCase() || 'mp4';
+          const inName = `input.${inExt}`;
+          allInputs = [{ name: inName, data: file }];
+          args = ["-i", inName, "output.mp4"];
       }
 
       const data = await runMediaTask(
-        [{ name: inName, data: file }],
+        allInputs,
         args,
         outName,
         p => setProgress(p)
       );
 
       const blob = new Blob([data as any], { type: outType });
+      setResultSize(blob.size);
       setProcessedOutType(outType);
       setOutputUrl(URL.createObjectURL(blob));
-      onSuccess("Media Task Finished Successfully.");
-    } catch (err) {
+      onSuccess("Media Processing Complete!");
+    } catch (err: any) {
       console.error(err);
-      onError("Media engine failure. Format may not be supported.");
+      onError(err.message || "Media engine encountered an error.");
     } finally {
       setLoading(false);
       setProgress(0);
     }
   };
 
-  return (
-    <div className="py-16 text-center space-y-12 max-w-xl mx-auto">
-      <div className="w-32 h-32 bg-indigo-50 rounded-[3rem] flex items-center justify-center text-6xl mx-auto shadow-inner">
-        {slug.includes('audio') ? '📻' : '🎥'}
-      </div>
-      
-      <div className="space-y-6">
-        <label className="block text-[11px] font-black text-slate-400 uppercase tracking-[0.3em]">
-           Cloud Source Interface
-        </label>
-        <div className="relative group">
-          <input 
-            type="file" 
-            multiple={slug === 'video-merger'}
-            accept={slug.includes('audio') ? "audio/*" : "video/*"} 
-            onChange={e => setFiles(e.target.files)} 
-            className="block w-full text-sm text-slate-500 file:mr-4 file:py-4 file:px-8 file:rounded-3xl file:border-0 file:text-[11px] file:font-black file:uppercase file:tracking-widest file:bg-indigo-600 file:text-white hover:file:bg-indigo-700 transition-all cursor-pointer bg-slate-50 p-6 rounded-[2.5rem] border border-dashed border-slate-200 group-hover:border-indigo-300" 
-          />
-        </div>
-      </div>
+  const currentConfig = slug === 'video-compressor' ? videoCompressorConfig : 
+                       (slug === 'video-converter-pro' || slug === 'video-converter') ? videoConverterConfig :
+                       (slug === 'video-to-gif-high-res' || slug === 'gif-maker') ? videoToGifConfig :
+                       slug === 'video-trimmer' ? videoTrimmerConfig :
+                       slug === 'video-merger' ? videoMergerConfig : null;
 
-      {(slug.includes('converter')) && (
-        <div className="grid grid-cols-1 gap-4">
-          <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest text-left px-2">Output Target Format</label>
-          <select 
-            value={targetFormat} 
-            onChange={e => setTargetFormat(e.target.value)}
-            className="w-full p-5 rounded-3xl border border-slate-200 bg-white font-black text-indigo-600 focus:ring-4 focus:ring-indigo-500/10 outline-none shadow-sm"
-          >
-            {slug.includes('video') ? (
-              <>
-                <option value="mp4">MP4 (Standard)</option>
-                <option value="webm">WebM (Modern)</option>
-                <option value="avi">AVI (Legacy)</option>
-              </>
-            ) : (
-              <>
-                <option value="mp3">MP3 (Audio)</option>
-                <option value="wav">WAV (Lossless)</option>
-                <option value="aac">AAC</option>
-              </>
-            )}
-          </select>
+  const inputSlot = (
+    <div className="space-y-6">
+      <div className="p-10 md:p-16 border-4 border-dashed border-slate-100 rounded-[3rem] text-center hover:border-purple-100 transition-all cursor-pointer group relative">
+        <input 
+          type="file" 
+          accept={slug.includes('audio') ? "audio/*" : "video/*"} 
+          multiple={slug === 'video-merger'}
+          onChange={e => setFiles(e.target.files)} 
+          className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10" 
+        />
+        <div className="text-7xl mb-6 group-hover:scale-110 transition-transform">
+          {slug.includes('audio') ? '📻' : '🎥'}
         </div>
-      )}
+        <p className="text-slate-900 font-black text-xl">
+          {files ? `${files.length} File(s) Ready` : `Drop ${slug.includes('audio') ? 'Audio' : 'Video'} Here`}
+        </p>
+        <p className="text-slate-400 text-xs font-bold mt-2 uppercase tracking-widest">
+          {slug === 'video-merger' ? "Select multiple clips to combine" : "MP4, WebM, AVI, MOV supported"}
+        </p>
+      </div>
+    </div>
+  );
 
-      <div className="space-y-6">
-        <button 
-          disabled={loading || !files} 
-          onClick={processMedia} 
-          className="w-full py-7 bg-indigo-600 text-white rounded-[2rem] font-black text-2xl shadow-2xl hover:bg-indigo-700 hover:-translate-y-1 transition-all active:scale-95 disabled:opacity-50"
-        >
-          {loading ? "Engines Working..." : "Initialize Process"}
-        </button>
-        
-        {loading && (
-          <div className="w-full bg-slate-100 h-3 rounded-full overflow-hidden shadow-inner">
-            <div 
-              className="bg-gradient-to-r from-indigo-500 to-indigo-700 h-full transition-all duration-300" 
-              style={{ width: `${progress}%` }}
-            />
-          </div>
+  const optionsSlot = currentConfig ? (
+    <OptionsPanel 
+      options={currentConfig.options as any} 
+      values={options} 
+      onChange={handleOptionChange} 
+    />
+  ) : undefined;
+
+  const actionsSlot = (
+    <button 
+      disabled={loading || !files} 
+      onClick={processMedia} 
+      className="w-full py-7 bg-purple-600 text-white rounded-[2rem] font-black text-2xl shadow-2xl hover:bg-purple-700 transition-all active:scale-95 disabled:opacity-50"
+    >
+      {loading ? `Engine Working (${Math.round(progress)}%)...` : "Start Processing"}
+    </button>
+  );
+
+  const resultSlot = outputUrl && (
+    <div className="space-y-8 animate-in fade-in slide-in-from-bottom-10">
+      <div className="bg-slate-900 p-4 rounded-[3rem] shadow-2xl border-4 border-white overflow-hidden">
+        {processedOutType.includes('gif') ? (
+          <img src={outputUrl} className="w-full rounded-[2rem]" alt="Result" />
+        ) : processedOutType.includes('video') ? (
+          <video src={outputUrl} controls className="w-full rounded-[2rem]" />
+        ) : (
+          <audio src={outputUrl} controls className="w-full mt-4" />
         )}
       </div>
+      <div className="flex justify-center">
+        <a 
+          href={outputUrl} 
+          download={`toolverse_${slug}_${Date.now()}.${processedOutType.split('/')[1]}`} 
+          className="inline-flex items-center px-12 py-6 bg-emerald-600 text-white rounded-[2rem] font-black text-xl shadow-2xl hover:bg-emerald-700 transition-all transform hover:scale-105"
+        >
+          <span className="mr-3">⚡</span> Download Ready File
+        </a>
+      </div>
+    </div>
+  );
 
-      {outputUrl && (
-        <div className="space-y-8 pt-12 animate-in fade-in slide-in-from-bottom-10">
-          <div className="bg-slate-900 p-4 rounded-[3rem] shadow-2xl border-4 border-white">
-            {processedOutType.includes('gif') ? (
-              <img src={outputUrl} className="w-full rounded-[2rem]" />
-            ) : processedOutType.includes('video') ? (
-              <video src={outputUrl} controls className="w-full rounded-[2rem]" />
-            ) : (
-              <audio src={outputUrl} controls className="w-full mt-4" />
-            )}
-          </div>
-          <a href={outputUrl} download={`toolverse_export_${Date.now()}.${processedOutType.split('/')[1]}`} className="inline-flex items-center px-12 py-6 bg-emerald-600 text-white rounded-[2rem] font-black text-xl shadow-2xl hover:bg-emerald-700 transition-all transform hover:scale-105">
-            <span className="mr-3">⚡</span> Download Ready File
-          </a>
+  // Fix: Explicitly cast the Array.from result to File[] to access the 'size' property and fix arithmetic operation errors
+  const totalInputSize = files ? (Array.from(files) as File[]).reduce((acc, f) => acc + f.size, 0) : 0;
+
+  return (
+    <ToolLayout
+      title={currentConfig?.title || slug.replace(/-/g, ' ')}
+      description={currentConfig?.description || "High-performance browser-native video tool."}
+      icon={currentConfig?.icon || "🎥"}
+      colorClass={currentConfig?.colorClass || "bg-purple-600"}
+      input={inputSlot}
+      options={optionsSlot}
+      actions={actionsSlot}
+      result={resultSlot}
+      comparison={files && outputUrl && (
+        <div className="flex flex-col md:flex-row items-center justify-between gap-6">
+           <div className="text-center md:text-left">
+              <div className="text-slate-400 text-[10px] font-black uppercase tracking-widest mb-1">Source Size</div>
+              <div className="text-3xl font-black">{(totalInputSize / 1024 / 1024).toFixed(2)} MB</div>
+           </div>
+           <div className="w-12 h-12 flex items-center justify-center text-purple-400 text-2xl font-black">»</div>
+           <div className="text-center md:text-right">
+              <div className="text-purple-400 text-[10px] font-black uppercase tracking-widest mb-1">Processed Result</div>
+              <div className="text-3xl font-black text-emerald-400">
+                {(resultSize / 1024 / 1024).toFixed(2)} MB
+              </div>
+           </div>
         </div>
       )}
-    </div>
+    />
   );
 };
 

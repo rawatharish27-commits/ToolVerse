@@ -4,6 +4,7 @@ import { TOOLS } from '../data/tools';
 
 // Lazy Load Group Components
 const VideoAudioTools = lazy(() => import('./tools/VideoAudioTools'));
+const AudioTools = lazy(() => import('./tools/AudioTools'));
 const FinanceTools = lazy(() => import('./tools/FinanceTools'));
 const PDFTools = lazy(() => import('./tools/PDFTools'));
 const ImageTools = lazy(() => import('./tools/ImageTools'));
@@ -12,6 +13,8 @@ const OfficeTools = lazy(() => import('./tools/OfficeTools'));
 const GeneralTools = lazy(() => import('./tools/GeneralTools'));
 const SecurityTools = lazy(() => import('./tools/SecurityTools'));
 const NetworkTools = lazy(() => import('./tools/NetworkTools'));
+const FileTools = lazy(() => import('./tools/FileTools'));
+const DevTools = lazy(() => import('./tools/DevTools'));
 
 interface ToolRendererProps {
   slug: string;
@@ -35,11 +38,14 @@ const ToolRenderer: React.FC<ToolRendererProps> = ({ slug, onSuccess, onError })
   if (category === 'network') return <Suspense fallback={<Loader label="Network Diagnostic" />}><NetworkTools slug={slug} onSuccess={onSuccess} onError={onError} /></Suspense>;
   if (category === 'seo') return <Suspense fallback={<Loader label="SEO Engine" />}><SEOTools slug={slug} onSuccess={onSuccess} onError={onError} /></Suspense>;
   if (category === 'video') return <Suspense fallback={<Loader label="Media Lab" />}><VideoAudioTools slug={slug} onSuccess={onSuccess} onError={onError} /></Suspense>;
+  if (category === 'audio') return <Suspense fallback={<Loader label="Audio Studio" />}><AudioTools slug={slug} onSuccess={onSuccess} onError={onError} /></Suspense>;
   if (category === 'image') return <Suspense fallback={<Loader label="Image Processor" />}><ImageTools slug={slug} onSuccess={onSuccess} onError={onError} /></Suspense>;
   if (category === 'pdf') return <Suspense fallback={<Loader label="PDF Hub" />}><PDFTools slug={slug} onSuccess={onSuccess} onError={onError} /></Suspense>;
   if (category === 'calculators') return <Suspense fallback={<Loader label="Calc Engine" />}><FinanceTools slug={slug} /></Suspense>;
   if (category === 'office') return <Suspense fallback={<Loader label="Office Suite" />}><OfficeTools slug={slug} onSuccess={onSuccess} onError={onError} /></Suspense>;
-  if (category === 'dev' || category === 'utility') return <Suspense fallback={<Loader label="Utility Engine" />}><GeneralTools slug={slug} onSuccess={onSuccess} onError={onError} /></Suspense>;
+  if (category === 'file') return <Suspense fallback={<Loader label="File Lab" />}><FileTools slug={slug} onSuccess={onSuccess} onError={onError} /></Suspense>;
+  if (category === 'dev') return <Suspense fallback={<Loader label="Dev Studio" />}><DevTools slug={slug} onSuccess={onSuccess} onError={onError} /></Suspense>;
+  if (category === 'utility') return <Suspense fallback={<Loader label="Utility Engine" />}><GeneralTools slug={slug} onSuccess={onSuccess} onError={onError} /></Suspense>;
 
   // AI STUDIO ENGINE
   if (category === 'ai' || slug.includes('ai-')) {

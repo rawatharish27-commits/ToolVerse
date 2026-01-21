@@ -1,6 +1,6 @@
-
 import { FFmpeg } from "@ffmpeg/ffmpeg";
 import { fetchFile, toBlobURL } from "@ffmpeg/util";
+import JSZip from "jszip";
 
 /**
  * PHASE-3: Production Engine Stability
@@ -17,7 +17,6 @@ export const getFFmpeg = async () => {
   if (ffmpegInstance) return ffmpegInstance;
   ffmpegInstance = new FFmpeg();
   
-  // Use toBlobURL to ensure the browser fetches and treats the wasm/js correctly
   await ffmpegInstance.load({
     coreURL: await toBlobURL(CORE_URL, 'text/javascript'),
     wasmURL: await toBlobURL(WASM_URL, 'application/wasm'),
@@ -68,6 +67,23 @@ export const runBatchTask = async <T, R>(
 };
 
 /**
+ * Packaging Utility
+ */
+export const downloadZip = async (files: {url: string, name: string}[], zipName: string) => {
+  const zip = new JSZip();
+  for (const file of files) {
+    const response = await fetch(file.url);
+    const blob = await response.blob();
+    zip.file(file.name, blob);
+  }
+  const content = await zip.generateAsync({ type: "blob" });
+  const link = document.createElement("a");
+  link.href = URL.createObjectURL(content);
+  link.download = zipName;
+  link.click();
+};
+
+/**
  * Helper to run FFmpeg commands with progress
  */
 export const runMediaTask = async (
@@ -92,7 +108,6 @@ export const runMediaTask = async (
     await ff.exec(args);
     const data = await ff.readFile(outputName);
     
-    // Explicit Memory Cleanup
     for (const file of inputFiles) {
       try { await ff.deleteFile(file.name); } catch(e) {}
     }
@@ -104,7 +119,7 @@ export const runMediaTask = async (
 };
 
 /**
- * OCR Engine with standard v5 API
+ * OCR Engine
  */
 export const runOCRTask = async (
   image: Blob | File | string,
@@ -134,7 +149,6 @@ export const renderPdfToImages = async (
   onProgress?: (p: number) => void
 ) => {
   const pdfjs = await getPdfJs();
-  // Ensure worker is available
   pdfjs.GlobalWorkerOptions.workerSrc = `https://unpkg.com/pdfjs-dist@${pdfjs.version}/build/pdf.worker.min.mjs`;
   
   const arrayBuffer = await pdfBlob.arrayBuffer();

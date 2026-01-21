@@ -6,6 +6,8 @@ export const CATEGORIES: ToolCategory[] = [
   { id: 'image', name: 'Image Tools', description: 'Compress, resize, and edit images online', icon: '🖼️', color: 'bg-emerald-500' },
   { id: 'pdf', name: 'PDF Tools', description: 'Merge, split, and convert PDF documents', icon: '📄', color: 'bg-red-500' },
   { id: 'video', name: 'Video Tools', description: 'Convert, trim and edit video files', icon: '🎥', color: 'bg-purple-500' },
+  { id: 'audio', name: 'Audio Tools', description: 'Convert, compress and edit audio files', icon: '🎧', color: 'bg-blue-500' },
+  { id: 'file', name: 'File Tools', description: 'Convert, compress and manage system files', icon: '📁', color: 'bg-amber-600' },
   { id: 'dev', name: 'Developer Tools', description: 'JSON, Code, and Debugging utilities', icon: '💻', color: 'bg-slate-800' },
   { id: 'seo', name: 'SEO Tools', description: 'Keyword and Meta tag optimization', icon: '🔍', color: 'bg-blue-500' },
   { id: 'calculators', name: 'Calculators', description: 'Financial and Mathematical tools', icon: '🔢', color: 'bg-orange-500' },
