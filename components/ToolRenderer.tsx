@@ -6,6 +6,7 @@ import { TOOLS } from '../data/tools';
 const VideoAudioTools = lazy(() => import('./tools/VideoAudioTools'));
 const AudioTools = lazy(() => import('./tools/AudioTools'));
 const FinanceTools = lazy(() => import('./tools/FinanceTools'));
+const UnitConverterTools = lazy(() => import('./tools/UnitConverterTools'));
 const PDFTools = lazy(() => import('./tools/PDFTools'));
 const ImageTools = lazy(() => import('./tools/ImageTools'));
 const SEOTools = lazy(() => import('./tools/SEOTools'));
@@ -15,6 +16,7 @@ const SecurityTools = lazy(() => import('./tools/SecurityTools'));
 const NetworkTools = lazy(() => import('./tools/NetworkTools'));
 const FileTools = lazy(() => import('./tools/FileTools'));
 const DevTools = lazy(() => import('./tools/DevTools'));
+const DataTools = lazy(() => import('./tools/DataTools'));
 
 interface ToolRendererProps {
   slug: string;
@@ -41,9 +43,11 @@ const ToolRenderer: React.FC<ToolRendererProps> = ({ slug, onSuccess, onError })
   if (category === 'audio') return <Suspense fallback={<Loader label="Audio Studio" />}><AudioTools slug={slug} onSuccess={onSuccess} onError={onError} /></Suspense>;
   if (category === 'image') return <Suspense fallback={<Loader label="Image Processor" />}><ImageTools slug={slug} onSuccess={onSuccess} onError={onError} /></Suspense>;
   if (category === 'pdf') return <Suspense fallback={<Loader label="PDF Hub" />}><PDFTools slug={slug} onSuccess={onSuccess} onError={onError} /></Suspense>;
-  if (category === 'calculators') return <Suspense fallback={<Loader label="Calc Engine" />}><FinanceTools slug={slug} /></Suspense>;
+  if (category === 'calculators') return <Suspense fallback={<Loader label="Calc Engine" />}><FinanceTools slug={slug} onSuccess={onSuccess} onError={onError} /></Suspense>;
+  if (category === 'unit-converters') return <Suspense fallback={<Loader label="Conversion Lab" />}><UnitConverterTools slug={slug} onSuccess={onSuccess} onError={onError} /></Suspense>;
   if (category === 'office') return <Suspense fallback={<Loader label="Office Suite" />}><OfficeTools slug={slug} onSuccess={onSuccess} onError={onError} /></Suspense>;
   if (category === 'file') return <Suspense fallback={<Loader label="File Lab" />}><FileTools slug={slug} onSuccess={onSuccess} onError={onError} /></Suspense>;
+  if (category === 'data') return <Suspense fallback={<Loader label="Data Hub" />}><DataTools slug={slug} onSuccess={onSuccess} onError={onError} /></Suspense>;
   if (category === 'dev') return <Suspense fallback={<Loader label="Dev Studio" />}><DevTools slug={slug} onSuccess={onSuccess} onError={onError} /></Suspense>;
   if (category === 'utility') return <Suspense fallback={<Loader label="Utility Engine" />}><GeneralTools slug={slug} onSuccess={onSuccess} onError={onError} /></Suspense>;
 

@@ -1,12 +1,14 @@
 
 import { CategorySlug } from '../types';
 
+// Fix: Change 'const' to 'type' for correct TypeScript union type definition
 export type RPMLevel = 'HIGH' | 'MEDIUM' | 'LOW';
 
-// Fixed: Added missing 'audio' and 'file' property to CATEGORY_RPM to satisfy Record<CategorySlug, RPMLevel>
+// Add missing 'data' category to mapping to ensure all CategorySlug values are covered
 export const CATEGORY_RPM: Record<CategorySlug, RPMLevel> = {
   'ai': 'HIGH',
   'calculators': 'HIGH',
+  'unit-converters': 'HIGH',
   'seo': 'HIGH',
   'pdf': 'MEDIUM',
   'image': 'MEDIUM',
@@ -14,6 +16,7 @@ export const CATEGORY_RPM: Record<CategorySlug, RPMLevel> = {
   'audio': 'MEDIUM',
   'file': 'MEDIUM',
   'office': 'MEDIUM',
+  'data': 'MEDIUM',
   'dev': 'LOW',
   'security': 'LOW',
   'utility': 'LOW',

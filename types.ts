@@ -1,4 +1,3 @@
-
 export type CategorySlug = 
   | 'ai' 
   | 'image' 
@@ -8,12 +7,14 @@ export type CategorySlug =
   | 'dev' 
   | 'seo' 
   | 'calculators' 
+  | 'unit-converters'
   | 'utility' 
   | 'security' 
   | 'network' 
   | 'office' 
   | 'education'
-  | 'file';
+  | 'file'
+  | 'data';
 
 export interface ToolCategory {
   id: CategorySlug;

@@ -1,4 +1,3 @@
-
 import { ToolCategory } from '../types';
 
 export const CATEGORIES: ToolCategory[] = [
@@ -8,10 +7,12 @@ export const CATEGORIES: ToolCategory[] = [
   { id: 'video', name: 'Video Tools', description: 'Convert, trim and edit video files', icon: '🎥', color: 'bg-purple-500' },
   { id: 'audio', name: 'Audio Tools', description: 'Convert, compress and edit audio files', icon: '🎧', color: 'bg-blue-500' },
   { id: 'file', name: 'File Tools', description: 'Convert, compress and manage system files', icon: '📁', color: 'bg-amber-600' },
+  { id: 'data', name: 'Data Tools', description: 'View, convert and clean data structures', icon: '📊', color: 'bg-cyan-500' },
   { id: 'dev', name: 'Developer Tools', description: 'JSON, Code, and Debugging utilities', icon: '💻', color: 'bg-slate-800' },
   { id: 'seo', name: 'SEO Tools', description: 'Keyword and Meta tag optimization', icon: '🔍', color: 'bg-blue-500' },
   { id: 'calculators', name: 'Calculators', description: 'Financial and Mathematical tools', icon: '🔢', color: 'bg-orange-500' },
-  { id: 'utility', name: 'Utility', description: 'Unit converters and Text tools', icon: '🛠️', color: 'bg-pink-500' },
+  { id: 'unit-converters', name: 'Unit Converters', description: 'Instant measurement conversions', icon: '📏', color: 'bg-emerald-600' },
+  { id: 'utility', name: 'Utility', description: 'Text tools and miscellaneous utilities', icon: '🛠️', color: 'bg-pink-500' },
   { id: 'security', name: 'Security', description: 'Passwords and Encryption', icon: '🛡️', color: 'bg-teal-500' },
   { id: 'network', name: 'Network Tools', description: 'IP, DNS and Speed testing', icon: '🌐', color: 'bg-cyan-500' },
   { id: 'office', name: 'Office Tools', description: 'Word, Excel and Productivity', icon: '📁', color: 'bg-blue-600' },
