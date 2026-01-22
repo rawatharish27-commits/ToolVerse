@@ -20,6 +20,7 @@ const DataTools = lazy(() => import('./tools/DataTools'));
 const AITextTools = lazy(() => import('./tools/AITextTools'));
 const AIImageTools = lazy(() => import('./tools/AIImageTools'));
 const SocialTools = lazy(() => import('./tools/SocialTools'));
+const EducationTools = lazy(() => import('./tools/EducationTools'));
 
 interface ToolRendererProps {
   slug: string;
@@ -40,8 +41,10 @@ const ToolRenderer: React.FC<ToolRendererProps> = ({ slug, onSuccess, onError })
 
   // ROUTING ENGINE BY CATEGORY & SLUG
   if (slug.startsWith('ai-image')) return <Suspense fallback={<Loader label="Art Director" />}><AIImageTools slug={slug} onSuccess={onSuccess} onError={onError} /></Suspense>;
+  if (slug.startsWith('edu-')) return <Suspense fallback={<Loader label="Academic Dean" />}><EducationTools slug={slug} onSuccess={onSuccess} onError={onError} /></Suspense>;
   if (category === 'ai') return <Suspense fallback={<Loader label="Orchestrator" />}><AITextTools slug={slug} onSuccess={onSuccess} onError={onError} /></Suspense>;
   if (category === 'social') return <Suspense fallback={<Loader label="Social Strategist" />}><SocialTools slug={slug} onSuccess={onSuccess} onError={onError} /></Suspense>;
+  if (category === 'education') return <Suspense fallback={<Loader label="Learning Coach" />}><EducationTools slug={slug} onSuccess={onSuccess} onError={onError} /></Suspense>;
   if (category === 'security') return <Suspense fallback={<Loader label="Security Vault" />}><SecurityTools slug={slug} onSuccess={onSuccess} onError={onError} /></Suspense>;
   if (category === 'network') return <Suspense fallback={<Loader label="Network Diagnostic" />}><NetworkTools slug={slug} onSuccess={onSuccess} onError={onError} /></Suspense>;
   if (category === 'seo') return <Suspense fallback={<Loader label="SEO Engine" />}><SEOTools slug={slug} onSuccess={onSuccess} onError={onError} /></Suspense>;
