@@ -3,7 +3,16 @@ import Cropper from 'react-easy-crop';
 import { getImageCompression, runOCRTask, runBatchTask, triggerBatchDownload, downloadZip } from '../../lib/wasm-engines';
 import ToolLayout from '../ToolLayout';
 import OptionsPanel from '../OptionsPanel';
-import { imageCompressorConfig, backgroundRemoverConfig, imageResizerConfig, imageCropperConfig, imageConverterConfig } from '../../config/imageTools';
+import { 
+  imageCompressorConfig, 
+  backgroundRemoverConfig, 
+  imageResizerConfig, 
+  imageCropperConfig, 
+  imageConverterConfig,
+  imageRotatorConfig,
+  imageWatermarkConfig,
+  imageMetadataRemoverConfig
+} from '../../config/imageTools';
 
 interface ToolProps {
   slug: string;
@@ -34,16 +43,10 @@ const ImageTools: React.FC<ToolProps> = ({ slug, onSuccess, onError }) => {
 
   const [options, setOptions] = useState<Record<string, any>>(() => {
     const initial: Record<string, any> = {};
-    const configMap: Record<string, any> = {
-      'image-compressor': imageCompressorConfig,
-      'background-remover': backgroundRemoverConfig,
-      'image-resizer': imageResizerConfig,
-      'image-cropper': imageCropperConfig,
-      'image-converter': imageConverterConfig
-    };
-    const activeConfig = configMap[slug];
-    if (activeConfig) {
-      activeConfig.options.forEach((opt: any) => initial[opt.id] = opt.default);
+    const configs = [imageCompressorConfig, backgroundRemoverConfig, imageResizerConfig, imageCropperConfig, imageConverterConfig, imageRotatorConfig, imageWatermarkConfig, imageMetadataRemoverConfig];
+    const target = configs.find(c => c.slug === slug);
+    if (target) {
+      target.options.forEach((opt: any) => initial[opt.id] = (opt as any).default);
     }
     return initial;
   });
@@ -60,7 +63,7 @@ const ImageTools: React.FC<ToolProps> = ({ slug, onSuccess, onError }) => {
     const selectedFiles = e.target.files;
     setFiles(selectedFiles);
     
-    if (slug === 'image-cropper' && selectedFiles && selectedFiles.length > 0) {
+    if ((slug === 'image-cropper' || slug === 'image-rotator') && selectedFiles && selectedFiles.length > 0) {
       const reader = new FileReader();
       reader.addEventListener('load', () => setImageSrc(reader.result as string));
       reader.readAsDataURL(selectedFiles[0]);
@@ -97,6 +100,92 @@ const ImageTools: React.FC<ToolProps> = ({ slug, onSuccess, onError }) => {
 
         try {
           switch (slug) {
+            case 'image-watermark': {
+               const img = new Image();
+               img.src = URL.createObjectURL(file);
+               await img.decode();
+               const canvas = document.createElement('canvas');
+               const ctx = canvas.getContext('2d')!;
+               canvas.width = img.width;
+               canvas.height = img.height;
+               ctx.drawImage(img, 0, 0);
+
+               const scaleFactor = img.width / 1000;
+               const fontSize = (options.fontSize || 40) * scaleFactor;
+               ctx.font = `bold ${fontSize}px Inter, sans-serif`;
+               ctx.fillStyle = options.color.toLowerCase();
+               ctx.globalAlpha = (options.opacity || 50) / 100;
+               
+               const text = options.text || "© ToolVerse";
+               const metrics = ctx.measureText(text);
+               const padding = 20 * scaleFactor;
+               let x = padding, y = padding + fontSize;
+
+               if (options.position === "Center") {
+                 x = (canvas.width - metrics.width) / 2;
+                 y = (canvas.height + fontSize) / 2;
+               } else if (options.position === "Top-Right") {
+                 x = canvas.width - metrics.width - padding;
+               } else if (options.position === "Bottom-Left") {
+                 y = canvas.height - padding;
+               } else if (options.position === "Bottom-Right") {
+                 x = canvas.width - metrics.width - padding;
+                 y = canvas.height - padding;
+               }
+
+               ctx.fillText(text, x, y);
+               outUrl = canvas.toDataURL('image/png', 0.95);
+               finalSize = Math.round(outUrl.length * 0.75);
+               outName = `${outName}_watermarked.png`;
+               break;
+            }
+
+            case 'image-metadata-remover': {
+               // Drawing to canvas naturally strips all EXIF metadata as it only copies visual pixels
+               const img = new Image();
+               img.src = URL.createObjectURL(file);
+               await img.decode();
+               const canvas = document.createElement('canvas');
+               const ctx = canvas.getContext('2d')!;
+               canvas.width = img.width;
+               canvas.height = img.height;
+               ctx.drawImage(img, 0, 0);
+               
+               const format = `image/${options.format || 'jpeg'}`;
+               outUrl = canvas.toDataURL(format, (options.quality || 95) / 100);
+               finalSize = Math.round(outUrl.length * 0.75);
+               outName = `${outName}_clean.${options.format || 'jpg'}`;
+               break;
+            }
+
+            case 'image-rotator': {
+               const img = new Image();
+               img.src = URL.createObjectURL(file);
+               await img.decode();
+               const canvas = document.createElement('canvas');
+               const ctx = canvas.getContext('2d')!;
+               const deg = parseInt(options.rotation || "0");
+               
+               if (deg === 90 || deg === 270) {
+                 canvas.width = img.height;
+                 canvas.height = img.width;
+               } else {
+                 canvas.width = img.width;
+                 canvas.height = img.height;
+               }
+
+               ctx.translate(canvas.width / 2, canvas.height / 2);
+               ctx.rotate((deg * Math.PI) / 180);
+               ctx.scale(options.flipH ? -1 : 1, options.flipV ? -1 : 1);
+               ctx.drawImage(img, -img.width / 2, -img.height / 2);
+
+               const mime = `image/${options.format || 'png'}`;
+               outUrl = canvas.toDataURL(mime, 0.95);
+               finalSize = Math.round(outUrl.length * 0.75);
+               outName = `${outName}_rotated.${options.format || 'png'}`;
+               break;
+            }
+
             case 'background-remover': {
               const img = new Image();
               img.src = URL.createObjectURL(file);
@@ -126,7 +215,6 @@ const ImageTools: React.FC<ToolProps> = ({ slug, onSuccess, onError }) => {
               
               ctx.putImageData(imageData, 0, 0);
               
-              // Apply edge smoothing if needed
               if (options.edgeSmoothing > 0) {
                 ctx.filter = `blur(${options.edgeSmoothing / 2}px)`;
                 ctx.globalCompositeOperation = 'destination-in';
@@ -278,17 +366,28 @@ const ImageTools: React.FC<ToolProps> = ({ slug, onSuccess, onError }) => {
             onZoomChange={setZoom}
           />
         </div>
+      ) : (slug === 'image-rotator' || slug === 'image-watermark') && imageSrc ? (
+        <div className="relative p-8 bg-slate-100 rounded-[2.5rem] flex items-center justify-center min-h-[300px] border border-slate-200">
+           <img 
+            src={imageSrc} 
+            alt="Preview" 
+            className="max-w-full max-h-[400px] shadow-xl rounded-xl transition-all duration-300" 
+            style={slug === 'image-rotator' ? { 
+              transform: `rotate(${options.rotation}deg) scaleX(${options.flipH ? -1 : 1}) scaleY(${options.flipV ? -1 : 1})` 
+            } : {}} 
+           />
+        </div>
       ) : (
         <div className="p-10 md:p-16 border-4 border-dashed border-slate-100 rounded-[3rem] text-center hover:border-emerald-100 transition-all cursor-pointer group relative">
           <input 
             type="file" 
             accept="image/*" 
-            multiple={slug !== 'image-cropper'}
+            multiple={slug !== 'image-cropper' && slug !== 'image-rotator' && slug !== 'image-watermark'}
             onChange={handleFileChange} 
             className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10" 
           />
           <div className="text-7xl mb-6 group-hover:scale-110 transition-transform">
-            {slug === 'image-resizer' ? '📏' : slug === 'image-cropper' ? '✂️' : slug === 'image-converter' ? '🔄' : slug === 'background-remover' ? '🪄' : '🖼️'}
+            {slug === 'image-resizer' ? '📏' : slug === 'image-cropper' ? '✂️' : slug === 'image-converter' ? '🔄' : slug === 'background-remover' ? '🪄' : slug === 'image-rotator' ? '🔃' : slug === 'image-watermark' ? '🖋️' : slug === 'image-metadata-remover' ? '🕵️' : '🖼️'}
           </div>
           <p className="text-slate-900 font-black text-xl">
             {files ? `${files.length} Image(s) Ready` : "Drop Images Here"}
@@ -313,7 +412,7 @@ const ImageTools: React.FC<ToolProps> = ({ slug, onSuccess, onError }) => {
     </div>
   );
 
-  const activeConfig = slug === 'image-compressor' ? imageCompressorConfig : slug === 'background-remover' ? backgroundRemoverConfig : slug === 'image-resizer' ? imageResizerConfig : slug === 'image-cropper' ? imageCropperConfig : slug === 'image-converter' ? imageConverterConfig : null;
+  const activeConfig = slug === 'image-compressor' ? imageCompressorConfig : slug === 'background-remover' ? backgroundRemoverConfig : slug === 'image-resizer' ? imageResizerConfig : slug === 'image-cropper' ? imageCropperConfig : slug === 'image-converter' ? imageConverterConfig : slug === 'image-rotator' ? imageRotatorConfig : slug === 'image-watermark' ? imageWatermarkConfig : slug === 'image-metadata-remover' ? imageMetadataRemoverConfig : null;
 
   const optionsSlot = activeConfig ? (
     <OptionsPanel 
@@ -359,7 +458,7 @@ const ImageTools: React.FC<ToolProps> = ({ slug, onSuccess, onError }) => {
               onClick={() => {
                 results.forEach(r => URL.revokeObjectURL(r.url));
                 setResults([]);
-                if(slug === 'image-cropper') { setImageSrc(null); setFiles(null); }
+                if(slug === 'image-cropper' || slug === 'image-rotator' || slug === 'image-watermark') { setImageSrc(null); setFiles(null); }
               }} 
               className="py-5 px-10 bg-slate-100 text-slate-500 rounded-2xl font-black text-lg hover:bg-slate-200 transition-all"
              >

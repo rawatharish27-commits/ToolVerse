@@ -66,3 +66,40 @@ export const videoToGifConfig = {
     { id: "loop", type: "toggle", label: "Infinite Loop", default: true },
   ],
 };
+
+export const videoThumbnailConfig = {
+  slug: "video-thumbnail-extractor",
+  title: "Video Thumbnail Extractor",
+  description: "Extract perfect high-quality still frames from any point in your video. Ideal for YouTube thumbnails and social media.",
+  icon: "🖼️",
+  colorClass: "bg-purple-600",
+  options: [
+    { id: "time", type: "text", label: "Extract at (HH:MM:SS)", default: "00:00:01" },
+    { id: "format", type: "select", label: "Image Format", values: ["jpg", "png"], default: "jpg" },
+    { id: "scale", type: "select", label: "Image Resolution", values: ["Source", "1080p", "720p"], default: "Source" },
+  ],
+};
+
+export const videoAudioExtractorConfig = {
+  slug: "video-audio-extractor",
+  title: "Video Audio Extractor",
+  description: "Extract clear audio tracks from video files without re-encoding when possible. High-fidelity output.",
+  icon: "🎵",
+  colorClass: "bg-indigo-600",
+  options: [
+    { id: "format", type: "select", label: "Audio Format", values: ["mp3", "wav", "aac"], default: "mp3" },
+    { id: "bitrate", type: "select", label: "Bitrate", values: ["320k", "192k", "128k"], default: "320k" },
+  ],
+};
+
+export const videoSpeedConfig = {
+  slug: "video-speed-controller",
+  title: "Video Speed Master",
+  description: "Change video playback speed precisely. Supports slow-motion (0.25x) and fast-motion (up to 4x).",
+  icon: "⏩",
+  colorClass: "bg-purple-700",
+  options: [
+    { id: "speed", type: "select", label: "Speed Multiplier", values: ["0.25", "0.5", "1.25", "1.5", "2.0", "3.0", "4.0"], default: "2.0" },
+    { id: "pitch", type: "toggle", label: "Maintain Audio Pitch", default: true },
+  ],
+};

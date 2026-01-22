@@ -17,6 +17,9 @@ const NetworkTools = lazy(() => import('./tools/NetworkTools'));
 const FileTools = lazy(() => import('./tools/FileTools'));
 const DevTools = lazy(() => import('./tools/DevTools'));
 const DataTools = lazy(() => import('./tools/DataTools'));
+const AITextTools = lazy(() => import('./tools/AITextTools'));
+const AIImageTools = lazy(() => import('./tools/AIImageTools'));
+const SocialTools = lazy(() => import('./tools/SocialTools'));
 
 interface ToolRendererProps {
   slug: string;
@@ -35,7 +38,10 @@ const ToolRenderer: React.FC<ToolRendererProps> = ({ slug, onSuccess, onError })
   const toolData = TOOLS.find(t => t.slug === slug);
   const category = toolData?.category;
 
-  // ROUTING ENGINE BY CATEGORY
+  // ROUTING ENGINE BY CATEGORY & SLUG
+  if (slug.startsWith('ai-image')) return <Suspense fallback={<Loader label="Art Director" />}><AIImageTools slug={slug} onSuccess={onSuccess} onError={onError} /></Suspense>;
+  if (category === 'ai') return <Suspense fallback={<Loader label="Orchestrator" />}><AITextTools slug={slug} onSuccess={onSuccess} onError={onError} /></Suspense>;
+  if (category === 'social') return <Suspense fallback={<Loader label="Social Strategist" />}><SocialTools slug={slug} onSuccess={onSuccess} onError={onError} /></Suspense>;
   if (category === 'security') return <Suspense fallback={<Loader label="Security Vault" />}><SecurityTools slug={slug} onSuccess={onSuccess} onError={onError} /></Suspense>;
   if (category === 'network') return <Suspense fallback={<Loader label="Network Diagnostic" />}><NetworkTools slug={slug} onSuccess={onSuccess} onError={onError} /></Suspense>;
   if (category === 'seo') return <Suspense fallback={<Loader label="SEO Engine" />}><SEOTools slug={slug} onSuccess={onSuccess} onError={onError} /></Suspense>;
@@ -50,54 +56,6 @@ const ToolRenderer: React.FC<ToolRendererProps> = ({ slug, onSuccess, onError })
   if (category === 'data') return <Suspense fallback={<Loader label="Data Hub" />}><DataTools slug={slug} onSuccess={onSuccess} onError={onError} /></Suspense>;
   if (category === 'dev') return <Suspense fallback={<Loader label="Dev Studio" />}><DevTools slug={slug} onSuccess={onSuccess} onError={onError} /></Suspense>;
   if (category === 'utility') return <Suspense fallback={<Loader label="Utility Engine" />}><GeneralTools slug={slug} onSuccess={onSuccess} onError={onError} /></Suspense>;
-
-  // AI STUDIO ENGINE
-  if (category === 'ai' || slug.includes('ai-')) {
-    const handleAIGenerate = async () => {
-      if (!inputText) { onError("Input is required."); return; }
-      setLoading(true);
-      try {
-        const ai = new GoogleGenAI({ apiKey: process.env.API_KEY as string });
-        let sys = "You are a professional digital content creator. Provide structured markdown output.";
-        
-        // Contextual Instructions
-        if (slug.includes('writer')) sys = "Write a comprehensive 1000-word SEO-optimized article based on the prompt.";
-        if (slug.includes('code')) sys = "Analyze and debug the following code. Provide the fixed version and explanation.";
-        if (slug.includes('summarizer')) sys = "Provide a concise summary of the following text.";
-
-        const response = await ai.models.generateContent({
-          model: 'gemini-3-pro-preview',
-          contents: `${sys}\nUser Prompt: ${inputText}`,
-        });
-        
-        setInputText(response.text || "");
-        onSuccess("AI Synthesis Complete");
-      } catch (err) {
-        onError("AI Engine capacity reached. Please try in 60s.");
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    return (
-      <div className="space-y-8 md:space-y-12 animate-in fade-in duration-500">
-        <div className="text-center">
-          <div className="w-16 h-16 md:w-24 md:h-24 bg-indigo-600 rounded-2xl md:rounded-[2.5rem] flex items-center justify-center text-white text-3xl md:text-5xl mx-auto shadow-2xl mb-4 md:mb-6">✨</div>
-          <h3 className="text-2xl md:text-3xl font-black text-slate-900 capitalize">{slug.replace(/-/g, ' ')}</h3>
-          <p className="text-slate-400 text-xs md:text-sm mt-1 md:mt-2">Next-Gen Content Engineering via Gemini 3.0</p>
-        </div>
-        <textarea 
-          value={inputText}
-          onChange={e => setInputText(e.target.value)}
-          placeholder="Describe your requirements, paste code, or provide topics..."
-          className="w-full h-64 md:h-80 p-6 md:p-10 rounded-2xl md:rounded-[3.5rem] border border-slate-200 focus:ring-8 focus:ring-indigo-500/5 outline-none font-sans text-base md:text-lg bg-white shadow-inner transition-all"
-        />
-        <button onClick={handleAIGenerate} disabled={loading} className="w-full py-5 md:py-7 bg-indigo-600 text-white rounded-2xl md:rounded-[2rem] font-black text-lg md:text-2xl shadow-2xl hover:bg-indigo-700 hover:-translate-y-1 transition-all active:scale-95 disabled:opacity-50">
-          {loading ? "Engaging AI Core..." : "Generate Masterpiece"}
-        </button>
-      </div>
-    );
-  }
 
   // Fallback for generic utilities
   return <Suspense fallback={<Loader label="Utility Engine" />}><GeneralTools slug={slug} onSuccess={onSuccess} onError={onError} /></Suspense>;

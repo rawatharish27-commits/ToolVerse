@@ -40,6 +40,19 @@ export const audioCutterConfig = {
   ],
 };
 
+export const audioSpeedPitchConfig = {
+  slug: "audio-speed-pitch-control",
+  title: "Audio Tempo & Pitch Master",
+  description: "Adjust playback speed (0.5x to 2.0x) and shift pitch independently for musical or vocal editing.",
+  icon: "🎹",
+  colorClass: "bg-blue-600",
+  options: [
+    { id: "tempo", type: "slider", label: "Playback Speed (Tempo)", min: 0.5, max: 2.0, default: 1.0 },
+    { id: "pitch", type: "slider", label: "Pitch Shift (Semitones)", min: -12, max: 12, default: 0 },
+    { id: "format", type: "select", label: "Output Format", values: ["mp3", "wav"], default: "mp3" },
+  ],
+};
+
 export const audioNoiseRemoverConfig = {
   slug: "audio-noise-remover",
   title: "AI Audio Denoiser",

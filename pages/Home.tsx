@@ -112,7 +112,8 @@ const Home: React.FC<HomeProps> = ({ onNavigate, searchQuery = '', favorites, re
               </button>
               <div className="text-slate-600 font-black hidden sm:block">OR</div>
               <button 
-                onClick={() => document.querySelector('input')?.focus()}
+                // Fix: Cast the element to HTMLInputElement to access the .focus() method in TypeScript
+                onClick={() => (document.querySelector('header input') as HTMLInputElement | null)?.focus()}
                 className="w-full sm:w-auto px-12 py-6 bg-white/5 border border-white/10 text-white rounded-[2rem] font-black text-lg hover:bg-white/10 transition-all backdrop-blur-xl"
               >
                 Search Tools
@@ -194,7 +195,7 @@ const Home: React.FC<HomeProps> = ({ onNavigate, searchQuery = '', favorites, re
               {deferredSearch ? `Found ${filteredTools.length} Utilities` : "Global Tool Library"}
             </h2>
             <p className="text-lg text-slate-500 font-medium leading-relaxed">
-              {deferredSearch ? `Displaying matching tools for "${deferredSearch}".` : "Browse our verified collection of 500+ professional tools across 12 categories."}
+              {deferredSearch ? `Displaying matching tools for "${deferredSearch}".` : "Browse our verified collection of 500+ professional tools across 17 specialized categories."}
             </p>
           </div>
           {deferredSearch && (
@@ -224,17 +225,6 @@ const Home: React.FC<HomeProps> = ({ onNavigate, searchQuery = '', favorites, re
             <div className="text-8xl mb-8 opacity-20">🔎</div>
             <h3 className="text-3xl font-black text-slate-900 mb-4">No utilities found</h3>
             <p className="text-slate-400 max-w-sm mx-auto font-medium">We couldn't find a tool matching that query. Try broader terms like "PDF", "Video", or "Text".</p>
-            <div className="mt-12 flex flex-wrap justify-center gap-4">
-               {['PDF', 'AI', 'IMAGE', 'CONVERTER'].map(term => (
-                 <button 
-                  key={term} 
-                  onClick={() => document.querySelector('input')?.setAttribute('value', term)} 
-                  className="px-6 py-2 bg-indigo-50 text-indigo-600 font-black rounded-xl text-[10px] tracking-widest hover:bg-indigo-100 transition-all"
-                 >
-                   Try "{term}"
-                 </button>
-               ))}
-            </div>
           </div>
         )}
       </section>
@@ -244,24 +234,37 @@ const Home: React.FC<HomeProps> = ({ onNavigate, searchQuery = '', favorites, re
           <section id="categories" className="bg-slate-900 py-32 overflow-hidden relative">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
               <div className="text-center mb-24">
-                <h2 className="text-4xl sm:text-5xl font-black text-white mb-6 tracking-tight">Explore 12 Specialized Hubs</h2>
+                <h2 className="text-4xl sm:text-5xl font-black text-white mb-6 tracking-tight">Explore 17 Specialized Hubs</h2>
                 <p className="text-slate-400 max-w-2xl mx-auto text-lg">Every category is a dedicated workspace with its own high-performance engine.</p>
               </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
                 {CATEGORIES.map(cat => (
                   <div 
                     key={cat.id}
                     onClick={() => onNavigate('category', { id: cat.id })}
-                    className="group relative p-10 rounded-[3rem] bg-white/5 border border-white/10 hover:bg-white/10 hover:border-white/20 transition-all cursor-pointer overflow-hidden"
+                    className="group relative p-10 rounded-[3rem] bg-white/5 border border-white/10 hover:bg-white/10 hover:border-white/20 transition-all cursor-pointer overflow-hidden aspect-[4/5] flex flex-col"
                   >
-                    <div className={`w-16 h-16 ${cat.color} text-white rounded-2xl flex items-center justify-center text-3xl mb-8 shadow-2xl shadow-black/50 group-hover:scale-110 group-hover:rotate-3 transition-all duration-500`}>
-                      {cat.icon}
+                    <div className="absolute inset-0 z-0">
+                       <img 
+                        src={cat.images[0]} 
+                        className="w-full h-full object-cover opacity-10 group-hover:opacity-40 group-hover:scale-110 transition-all duration-700" 
+                        alt={cat.name}
+                       />
+                       <div className="absolute inset-0 bg-gradient-to-t from-slate-900 via-slate-900/40 to-transparent"></div>
                     </div>
-                    <h3 className="text-2xl font-black text-white mb-4 tracking-tight">{cat.name}</h3>
-                    <p className="text-slate-400 text-sm leading-relaxed mb-6">{cat.description}</p>
-                    <div className="text-xs font-black text-indigo-400 uppercase tracking-widest flex items-center group-hover:translate-x-2 transition-transform">
-                      Browse Hub <span className="ml-2">→</span>
+                    
+                    <div className="relative z-10 flex flex-col h-full">
+                      <div className={`w-16 h-16 ${cat.color} text-white rounded-2xl flex items-center justify-center text-3xl mb-8 shadow-2xl shadow-black/50 group-hover:scale-110 group-hover:rotate-3 transition-all duration-500`}>
+                        {cat.icon}
+                      </div>
+                      <h3 className="text-3xl font-black text-white mb-4 tracking-tight leading-none uppercase">{cat.name}</h3>
+                      <p className="text-slate-400 text-sm leading-relaxed mb-6 font-medium line-clamp-2">{cat.description}</p>
+                      <div className="mt-auto pt-6">
+                        <div className="text-[10px] font-black text-indigo-400 uppercase tracking-[0.2em] flex items-center group-hover:translate-x-2 transition-transform">
+                          Enter Workspace Hub <span className="ml-3">→</span>
+                        </div>
+                      </div>
                     </div>
                   </div>
                 ))}
@@ -280,7 +283,7 @@ const Home: React.FC<HomeProps> = ({ onNavigate, searchQuery = '', favorites, re
                 {HOME_FAQS.map((faq, i) => (
                   <div key={i} className="p-10 bg-slate-50 rounded-[2.5rem] border border-slate-100 hover:border-indigo-200 transition-all group">
                     <h4 className="text-lg font-black text-slate-900 mb-4 leading-tight group-hover:text-indigo-600 transition-colors">{faq.q}</h4>
-                    <p className="text-slate-500 font-medium leading-relaxed">{faq.a}</p>
+                    <p className="text-sm text-slate-500 font-medium leading-relaxed">{faq.a}</p>
                   </div>
                 ))}
               </div>

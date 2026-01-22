@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { runMediaTask } from '../../lib/wasm-engines';
 import ToolLayout from '../ToolLayout';
 import OptionsPanel from '../OptionsPanel';
-import { audioConverterConfig, audioCompressorConfig, audioCutterConfig, audioNoiseRemoverConfig, audioMergerConfig } from '../../config/audioTools';
+import { audioConverterConfig, audioCompressorConfig, audioCutterConfig, audioNoiseRemoverConfig, audioMergerConfig, audioSpeedPitchConfig } from '../../config/audioTools';
 
 interface ToolProps {
   slug: string;
@@ -20,7 +20,7 @@ const AudioTools: React.FC<ToolProps> = ({ slug, onSuccess, onError }) => {
 
   const [options, setOptions] = useState<Record<string, any>>(() => {
     const initial: Record<string, any> = {};
-    const configs = [audioConverterConfig, audioCompressorConfig, audioCutterConfig, audioNoiseRemoverConfig, audioMergerConfig];
+    const configs = [audioConverterConfig, audioCompressorConfig, audioCutterConfig, audioNoiseRemoverConfig, audioMergerConfig, audioSpeedPitchConfig];
     const target = configs.find(c => c.slug === slug);
     if (target) {
       target.options.forEach(opt => initial[opt.id] = opt.default);
@@ -52,6 +52,31 @@ const AudioTools: React.FC<ToolProps> = ({ slug, onSuccess, onError }) => {
       let outType = "audio/mpeg";
 
       switch (slug) {
+        case "audio-speed-pitch-control": {
+          const file = files[0];
+          const inName = `input.${file.name.split('.').pop()}`;
+          allInputs = [{ name: inName, data: file }];
+          const format = options.format || 'mp3';
+          outName = `adjusted_audio.${format}`;
+          outType = mimeMap[format] || 'audio/mpeg';
+
+          const tempo = options.tempo || 1.0;
+          const pitch = options.pitch || 0;
+          
+          // Calculate sample rate shift for pitch (1.0 = normal, 2^(semitones/12))
+          const pitchFactor = Math.pow(2, pitch / 12);
+          const targetSampleRate = 44100 * pitchFactor;
+          
+          // Filter sequence: Resample to shift pitch -> asetrate back to standard -> adjust tempo
+          // Note: asetrate shifts both pitch and speed. atempo corrects speed.
+          args = [
+            "-i", inName,
+            "-af", `asetrate=44100*${pitchFactor},atempo=${(tempo / pitchFactor).toFixed(4)},aresample=44100`,
+            outName
+          ];
+          break;
+        }
+
         case "audio-merger": {
           if (files.length < 2) throw new Error("Select at least 2 audio files to merge.");
           const targetFormat = options.format || 'mp3';
@@ -199,7 +224,8 @@ const AudioTools: React.FC<ToolProps> = ({ slug, onSuccess, onError }) => {
                        slug === 'audio-compressor' ? audioCompressorConfig :
                        slug === 'audio-cutter' ? audioCutterConfig :
                        slug === 'audio-noise-remover' ? audioNoiseRemoverConfig :
-                       slug === 'audio-merger' ? audioMergerConfig : null;
+                       slug === 'audio-merger' ? audioMergerConfig : 
+                       slug === 'audio-speed-pitch-control' ? audioSpeedPitchConfig : null;
 
   const inputSlot = (
     <div className="space-y-6">
@@ -212,7 +238,7 @@ const AudioTools: React.FC<ToolProps> = ({ slug, onSuccess, onError }) => {
           className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10" 
         />
         <div className="text-7xl mb-6 group-hover:scale-110 transition-transform">
-          {slug === 'audio-compressor' ? '📉' : slug === 'audio-cutter' ? '✂️' : slug === 'audio-noise-remover' ? '🧹' : slug === 'audio-merger' ? '🧩' : '🎧'}
+          {slug === 'audio-compressor' ? '📉' : slug === 'audio-cutter' ? '✂️' : slug === 'audio-noise-remover' ? '🧹' : slug === 'audio-merger' ? '🧩' : slug === 'audio-speed-pitch-control' ? '🎹' : '🎧'}
         </div>
         <p className="text-slate-900 font-black text-xl">
           {files ? `${files.length} File(s) Ready` : slug === 'audio-merger' ? "Drop Audio Files to Merge" : "Drop Audio File Here"}

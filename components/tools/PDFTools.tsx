@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { getPdfLib, getPdfJs, runOCRTask } from '../../lib/wasm-engines';
 import ToolLayout from '../ToolLayout';
 import OptionsPanel from '../OptionsPanel';
-import { pdfCompressorConfig, pdfMergerConfig, pdfSplitterConfig, pdfPageReorderConfig, pdfToImageConfig, imageToPdfConfig, pdfToWordConfig, pdfOcrConfig } from '../../config/pdfTools';
+import { pdfCompressorConfig, pdfMergerConfig, pdfSplitterConfig, pdfPageReorderConfig, pdfToImageConfig, imageToPdfConfig, pdfToWordConfig, pdfOcrConfig, pdfProtectConfig, pdfUnlockConfig, pdfMetadataConfig } from '../../config/pdfTools';
 
 interface ToolProps {
   slug: string;
@@ -31,7 +31,7 @@ const PDFTools: React.FC<ToolProps> = ({ slug, onSuccess, onError }) => {
   // Dynamic State for Options
   const [options, setOptions] = useState<Record<string, any>>(() => {
     const initial: Record<string, any> = {};
-    const configs = [pdfCompressorConfig, pdfMergerConfig, pdfSplitterConfig, pdfPageReorderConfig, pdfToImageConfig, imageToPdfConfig, pdfToWordConfig, pdfOcrConfig];
+    const configs = [pdfCompressorConfig, pdfMergerConfig, pdfSplitterConfig, pdfPageReorderConfig, pdfToImageConfig, imageToPdfConfig, pdfToWordConfig, pdfOcrConfig, pdfProtectConfig, pdfUnlockConfig, pdfMetadataConfig];
     const target = configs.find(c => c.slug === slug || (slug.includes('merge') && c.slug.includes('merge')) || (slug.includes('split') && c.slug.includes('split')));
     
     if (target) {
@@ -71,7 +71,68 @@ const PDFTools: React.FC<ToolProps> = ({ slug, onSuccess, onError }) => {
       setProgress(10);
       const { PDFDocument } = await getPdfLib();
 
-      if (slug === 'pdf-compressor' || slug === 'pdf-compressor-pro') {
+      if (slug === 'pdf-password-protect') {
+        const file = files[0];
+        const bytes = await file.arrayBuffer();
+        const doc = await PDFDocument.load(bytes, { ignoreEncryption: true });
+        
+        doc.encrypt({
+          userPassword: options.userPassword,
+          ownerPassword: options.ownerPassword || options.userPassword,
+          permissions: {
+            printing: options.allowPrint ? 'highResolution' : 'lowResolution',
+            copying: options.allowCopy,
+            modifying: false,
+            annotating: true,
+            forms: true,
+            contentAccessibility: true,
+            assembling: false,
+          },
+        });
+
+        const pdfBytes = await doc.save();
+        const blob = new Blob([pdfBytes], { type: 'application/pdf' });
+        setResultSize(blob.size);
+        setOutputUrl(URL.createObjectURL(blob));
+        onSuccess("Document encrypted successfully!");
+      }
+
+      else if (slug === 'pdf-unlock') {
+        const file = files[0];
+        const bytes = await file.arrayBuffer();
+        try {
+          const doc = await PDFDocument.load(bytes, { 
+            password: options.password,
+            ignoreEncryption: false 
+          });
+          const pdfBytes = await doc.save();
+          const blob = new Blob([pdfBytes], { type: 'application/pdf' });
+          setResultSize(blob.size);
+          setOutputUrl(URL.createObjectURL(blob));
+          onSuccess("PDF unlocked and decrypted!");
+        } catch (e) {
+          throw new Error("Invalid password provided for this PDF.");
+        }
+      }
+
+      else if (slug === 'pdf-metadata-editor') {
+        const file = files[0];
+        const bytes = await file.arrayBuffer();
+        const doc = await PDFDocument.load(bytes, { ignoreEncryption: true });
+        
+        doc.setTitle(options.title || "");
+        doc.setAuthor(options.author || "");
+        doc.setSubject(options.subject || "");
+        doc.setCreator(options.creator || "ToolVerse");
+        
+        const pdfBytes = await doc.save();
+        const blob = new Blob([pdfBytes], { type: 'application/pdf' });
+        setResultSize(blob.size);
+        setOutputUrl(URL.createObjectURL(blob));
+        onSuccess("Metadata updated!");
+      }
+
+      else if (slug === 'pdf-compressor' || slug === 'pdf-compressor-pro') {
         const file = files[0];
         const bytes = await file.arrayBuffer();
         const doc = await PDFDocument.load(bytes);
@@ -447,8 +508,11 @@ const PDFTools: React.FC<ToolProps> = ({ slug, onSuccess, onError }) => {
   const isImageToPdf = (slug === 'image-to-pdf');
   const isToWord = (slug === 'pdf-to-word-converter' || slug === 'pdf-to-word');
   const isOcr = (slug === 'pdf-ocr' || slug === 'pdf-to-text');
+  const isProtect = slug === 'pdf-password-protect';
+  const isUnlock = slug === 'pdf-unlock';
+  const isMetadata = slug === 'pdf-metadata-editor';
 
-  const currentConfig = isMerge ? pdfMergerConfig : isSplit ? pdfSplitterConfig : isReorder ? pdfPageReorderConfig : isToImage ? pdfToImageConfig : isImageToPdf ? imageToPdfConfig : isToWord ? pdfToWordConfig : isOcr ? pdfOcrConfig : pdfCompressorConfig;
+  const currentConfig = isMerge ? pdfMergerConfig : isSplit ? pdfSplitterConfig : isReorder ? pdfPageReorderConfig : isToImage ? pdfToImageConfig : isImageToPdf ? imageToPdfConfig : isToWord ? pdfToWordConfig : isOcr ? pdfOcrConfig : isProtect ? pdfProtectConfig : isUnlock ? pdfUnlockConfig : isMetadata ? pdfMetadataConfig : pdfCompressorConfig;
 
   const movePage = (index: number, direction: number) => {
     const newOrder = [...pageOrder];
@@ -517,7 +581,7 @@ const PDFTools: React.FC<ToolProps> = ({ slug, onSuccess, onError }) => {
     </div>
   );
 
-  const optionsSlot = (isMerge || isSplit || isCompress || isReorder || isToImage || isImageToPdf || isToWord || isOcr) ? (
+  const optionsSlot = (isMerge || isSplit || isCompress || isReorder || isToImage || isImageToPdf || isToWord || isOcr || isProtect || isUnlock || isMetadata) ? (
     <OptionsPanel 
       options={currentConfig.options as any} 
       values={options} 
@@ -531,7 +595,7 @@ const PDFTools: React.FC<ToolProps> = ({ slug, onSuccess, onError }) => {
       onClick={processPDF} 
       className="w-full py-6 bg-red-600 text-white rounded-[2rem] font-black text-xl shadow-2xl hover:bg-red-700 transition-all active:scale-95 disabled:opacity-50"
     >
-      {loading ? `Processing (${progress}%)...` : isMerge ? "Merge Selected PDFs" : isSplit ? "Split PDF Document" : isReorder ? "Reorder and Save PDF" : isToImage ? "Convert PDF to Images" : isImageToPdf ? "Create PDF from Images" : isToWord ? "Convert PDF to Word" : isOcr ? "Extract Text via OCR" : "Optimize PDF"}
+      {loading ? `Processing (${progress}%)...` : isMerge ? "Merge Selected PDFs" : isSplit ? "Split PDF Document" : isReorder ? "Reorder and Save PDF" : isToImage ? "Convert PDF to Images" : isImageToPdf ? "Create PDF from Images" : isToWord ? "Convert PDF to Word" : isOcr ? "Extract Text via OCR" : isProtect ? "Encrypt & Save PDF" : isUnlock ? "Decrypt & Save PDF" : isMetadata ? "Update Metadata" : "Optimize PDF"}
     </button>
   );
 

@@ -68,3 +68,45 @@ export const backgroundRemoverConfig = {
     { id: "zipOutput", type: "toggle", label: "Download as ZIP", default: true }
   ]
 };
+
+export const imageRotatorConfig = {
+  slug: "image-rotator",
+  title: "Image Rotator & Flip",
+  description: "Correct image orientation or create mirrored effects instantly. Perfect for fixing mobile camera orientation issues.",
+  icon: "🔃",
+  colorClass: "bg-emerald-600",
+  options: [
+    { id: "rotation", type: "select", label: "Rotation (Degrees)", values: ["0", "90", "180", "270"], default: "90" },
+    { id: "flipH", type: "toggle", label: "Flip Horizontal", default: false },
+    { id: "flipV", type: "toggle", label: "Flip Vertical", default: false },
+    { id: "format", type: "select", label: "Save As", values: ["png", "jpg", "webp"], default: "png" },
+  ]
+};
+
+export const imageWatermarkConfig = {
+  slug: "image-watermark",
+  title: "Bulk Watermark Tool",
+  description: "Protect your creative assets by adding custom text or logo watermarks. Control opacity, position, and size precisely.",
+  icon: "🖋️",
+  colorClass: "bg-emerald-700",
+  options: [
+    { id: "type", type: "select", label: "Watermark Type", values: ["Text", "Logo/Image"], default: "Text" },
+    { id: "text", type: "text", label: "Watermark Text", default: "© ToolVerse" },
+    { id: "opacity", type: "slider", label: "Opacity (%)", min: 5, max: 100, default: 50 },
+    { id: "position", type: "select", label: "Position", values: ["Center", "Top-Left", "Top-Right", "Bottom-Left", "Bottom-Right"], default: "Bottom-Right" },
+    { id: "fontSize", type: "slider", label: "Scale/Font Size", min: 10, max: 200, default: 40 },
+    { id: "color", type: "select", label: "Text Color", values: ["White", "Black", "Red", "Blue"], default: "White" },
+  ]
+};
+
+export const imageMetadataRemoverConfig = {
+  slug: "image-metadata-remover",
+  title: "Image Privacy Scrubber",
+  description: "Strip all EXIF data, GPS coordinates, and camera metadata from your images for secure social media sharing.",
+  icon: "🕵️",
+  colorClass: "bg-emerald-800",
+  options: [
+    { id: "format", type: "select", label: "Re-save As", values: ["jpeg", "png", "webp"], default: "jpeg" },
+    { id: "quality", type: "slider", label: "Output Quality", min: 50, max: 100, default: 95 },
+  ]
+};

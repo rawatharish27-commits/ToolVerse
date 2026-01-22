@@ -14,7 +14,8 @@ export type CategorySlug =
   | 'office' 
   | 'education'
   | 'file'
-  | 'data';
+  | 'data'
+  | 'social';
 
 export interface ToolCategory {
   id: CategorySlug;
@@ -22,6 +23,7 @@ export interface ToolCategory {
   description: string;
   icon: string;
   color: string;
+  images: string[];
 }
 
 export type ToolType = 'client' | 'ai' | 'server';

@@ -60,6 +60,45 @@ export const pdfPageReorderConfig = {
   ],
 };
 
+export const pdfProtectConfig = {
+  slug: "pdf-password-protect",
+  title: "PDF Password Protector",
+  description: "Secure your PDF with AES-256 bit encryption. Set user passwords for opening and owner passwords for editing permissions.",
+  icon: "🔒",
+  colorClass: "bg-red-900",
+  options: [
+    { id: "userPassword", type: "text", label: "Password to Open", default: "" },
+    { id: "ownerPassword", type: "text", label: "Owner Password (Perms)", default: "" },
+    { id: "allowPrint", type: "toggle", label: "Allow Printing", default: true },
+    { id: "allowCopy", type: "toggle", label: "Allow Copying Content", default: true },
+  ],
+};
+
+export const pdfUnlockConfig = {
+  slug: "pdf-unlock",
+  title: "PDF Password Remover",
+  description: "Remove passwords and restrictions from your PDF files. Requires current password to decrypt the file locally.",
+  icon: "🔓",
+  colorClass: "bg-red-500",
+  options: [
+    { id: "password", type: "text", label: "Current Password", default: "" },
+  ],
+};
+
+export const pdfMetadataConfig = {
+  slug: "pdf-metadata-editor",
+  title: "PDF Metadata Editor",
+  description: "View and edit internal PDF data properties like Title, Author, and Producer without changing document content.",
+  icon: "📝",
+  colorClass: "bg-red-800",
+  options: [
+    { id: "title", type: "text", label: "Document Title", default: "" },
+    { id: "author", type: "text", label: "Author", default: "" },
+    { id: "subject", type: "text", label: "Subject", default: "" },
+    { id: "creator", type: "text", label: "Creator App", default: "ToolVerse" },
+  ],
+};
+
 export const pdfToImageConfig = {
   slug: "pdf-to-image",
   title: "Pro PDF to Image",
