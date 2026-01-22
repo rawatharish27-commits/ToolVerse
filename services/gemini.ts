@@ -1,9 +1,9 @@
-
 import { GoogleGenAI } from "@google/genai";
 
 // Initialization must use a named parameter and direct process.env.API_KEY
 const getAIClient = () => {
-  return new GoogleGenAI({ apiKey: process.env.API_KEY as string });
+  // Fix: Use process.env.API_KEY directly without type casting to follow strict guidelines
+  return new GoogleGenAI({ apiKey: process.env.API_KEY });
 };
 
 export const generateArticle = async (topic: string, tone: string): Promise<string> => {

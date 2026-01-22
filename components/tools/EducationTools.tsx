@@ -54,6 +54,7 @@ const EducationTools: React.FC<ToolProps> = ({ slug, onSuccess, onError }) => {
   const [topic, setTopic] = useState("");
   const [subject, setSubject] = useState("");
   const [loading, setLoading] = useState(false);
+  const [retryCount, setRetryCount] = useState(0);
   const [orchestrationData, setOrchestrationData] = useState<string | null>(null);
 
   const activeConfig = isPlanner ? eduStudyPlannerConfig : 
@@ -77,6 +78,29 @@ const EducationTools: React.FC<ToolProps> = ({ slug, onSuccess, onError }) => {
     setOptions(prev => ({ ...prev, [id]: value }));
   };
 
+  const callAIWithRetry = async (prompt: string, modelName: string, attempts = 3): Promise<string> => {
+    // Fix: Use process.env.API_KEY directly as per guidelines
+    const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+    for (let i = 0; i < attempts; i++) {
+      try {
+        const response = await ai.models.generateContent({
+          model: modelName,
+          contents: prompt,
+          config: {
+            systemInstruction: EDU_ORCHESTRATOR_ROLE,
+            temperature: 0.75,
+          }
+        });
+        return response.text || "";
+      } catch (err: any) {
+        if (i === attempts - 1) throw err;
+        setRetryCount(i + 1);
+        await new Promise(resolve => setTimeout(resolve, 2000 * (i + 1)));
+      }
+    }
+    return "";
+  };
+
   const handleRunOrchestrator = async () => {
     if (!inputText.trim() && !topic.trim() && !subject.trim()) {
       onError("Primary inputs are required.");
@@ -85,35 +109,31 @@ const EducationTools: React.FC<ToolProps> = ({ slug, onSuccess, onError }) => {
 
     setLoading(true);
     setOrchestrationData(null);
+    setRetryCount(0);
 
     try {
-      const ai = new GoogleGenAI({ apiKey: process.env.API_KEY as string });
-      
-      let userTask = `
+      // Logic for choosing model: Study Planner, Solver, Research and Coding are complex
+      const isComplex = [isPlanner, isSolver, isResearch, isCoding].some(val => val);
+      const model = isComplex ? 'gemini-3-pro-preview' : 'gemini-3-flash-preview';
+
+      const userTask = `
         User Request: Educational Content Generation
         - Tool Slug: ${slug}
         - Topic: "${topic}"
         - Subject: "${subject}"
-        - Primary Content/Context: "${inputText}"
+        - Content: "${inputText}"
         - Settings: ${JSON.stringify(options)}
       `;
 
-      const response = await ai.models.generateContent({
-        model: 'gemini-3-pro-preview',
-        contents: userTask,
-        config: {
-          systemInstruction: EDU_ORCHESTRATOR_ROLE,
-          temperature: 0.75,
-        }
-      });
-
-      setOrchestrationData(response.text || "Failed to generate educational content.");
+      const result = await callAIWithRetry(userTask, model);
+      setOrchestrationData(result);
       onSuccess("Academic Success Orchestrated!");
     } catch (err: any) {
       console.error(err);
-      onError("AI Academic Engine is busy. Try again in a moment.");
+      onError("AI is stabilizing. Please try again in 10 seconds.");
     } finally {
       setLoading(false);
+      setRetryCount(0);
     }
   };
 
@@ -122,28 +142,22 @@ const EducationTools: React.FC<ToolProps> = ({ slug, onSuccess, onError }) => {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div className="space-y-2">
           <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest px-1">Subject / Field</label>
-          <input type="text" value={subject} onChange={e => setSubject(e.target.value)} placeholder="e.g. Organic Chemistry, Medieval History" className="w-full p-4 bg-slate-50 border border-slate-200 rounded-xl outline-none font-bold text-slate-700 shadow-inner" />
+          <input type="text" value={subject} onChange={e => setSubject(e.target.value)} placeholder="e.g. Medieval History" className="w-full p-4 bg-slate-50 border border-slate-200 rounded-xl outline-none font-bold text-slate-700 shadow-inner" />
         </div>
         <div className="space-y-2">
-          <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest px-1">Specific Topic / Exam</label>
-          <input type="text" value={topic} onChange={e => setTopic(e.target.value)} placeholder="e.g. Midterm 2, Python For Loops" className="w-full p-4 bg-slate-50 border border-slate-200 rounded-xl outline-none font-bold text-slate-700 shadow-inner" />
+          <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest px-1">Topic / Exam</label>
+          <input type="text" value={topic} onChange={e => setTopic(e.target.value)} placeholder="e.g. Midterm 2" className="w-full p-4 bg-slate-50 border border-slate-200 rounded-xl outline-none font-bold text-slate-700 shadow-inner" />
         </div>
       </div>
 
       <div className="space-y-2">
         <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest px-2">
-          {isPlanner ? 'List sub-topics or exam details' : 
-           isGrader ? 'Paste your essay here' : 
-           isSolver ? 'Paste your math problem here' : 
-           isQuizMaker || isSummarizer ? 'Paste lecture notes or text' : 
-           isCitation ? 'Source details (URL, Author, Title)' :
-           isTutor ? 'Type a sentence to practice or ask a grammar question' :
-           isCoding ? 'Paste code snippet or logic question' : 'Context / Additional Info'}
+          Help context / Data
         </label>
         <textarea
           value={inputText}
           onChange={e => setInputText(e.target.value)}
-          placeholder="Describe exactly what you need help with..."
+          placeholder="Paste notes, problems, or describe your needs..."
           className="w-full h-48 p-6 bg-slate-50 border border-slate-200 rounded-3xl focus:ring-8 focus:ring-amber-500/5 outline-none font-medium text-slate-700 shadow-inner resize-none transition-all"
         />
       </div>
@@ -169,7 +183,7 @@ const EducationTools: React.FC<ToolProps> = ({ slug, onSuccess, onError }) => {
         <div className="flex justify-between items-center px-1">
           <span className="text-[10px] font-black text-emerald-500 uppercase tracking-widest flex items-center">
             <span className="w-2 h-2 bg-emerald-500 rounded-full mr-2 animate-pulse"></span>
-            7. Optimized Learning Output
+            7. Master Output
           </span>
           <button 
             onClick={() => {
@@ -180,7 +194,7 @@ const EducationTools: React.FC<ToolProps> = ({ slug, onSuccess, onError }) => {
             }} 
             className="text-[10px] font-black text-slate-400 hover:text-amber-600 uppercase tracking-widest"
           >
-            Copy Output
+            Copy
           </button>
         </div>
         <div className="bg-slate-900 rounded-[3rem] p-10 shadow-2xl relative overflow-hidden group border border-slate-800">
@@ -193,16 +207,16 @@ const EducationTools: React.FC<ToolProps> = ({ slug, onSuccess, onError }) => {
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8 pt-6 border-t border-slate-100">
          <div className="space-y-4">
-            <span className="text-[10px] font-black text-amber-500 uppercase tracking-widest">8. Expert Academic Tips</span>
+            <span className="text-[10px] font-black text-amber-500 uppercase tracking-widest">8. Expert Tips</span>
             <div className="bg-amber-50/50 p-6 rounded-3xl border border-amber-100 text-xs font-bold text-amber-900 leading-relaxed">
-              {orchestrationData.split('8. Optimization Tips:')[1]?.split('9. Next Action Suggestion:')[0]?.trim() || "Focus on conceptual understanding first."}
+              {orchestrationData.split('8. Optimization Tips:')[1]?.split('9. Next Action Suggestion:')[0]?.trim() || "Review closely."}
             </div>
          </div>
          <div className="space-y-4">
-            <span className="text-[10px] font-black text-amber-600 uppercase tracking-widest">9. Recommended Next Action</span>
+            <span className="text-[10px] font-black text-amber-600 uppercase tracking-widest">9. Recommended Next</span>
             <div className="bg-amber-50/50 p-6 rounded-3xl border border-amber-100 text-xs font-black text-amber-900 flex items-center gap-4">
               <div className="w-8 h-8 bg-amber-600 text-white rounded-full flex items-center justify-center text-sm shadow-lg animate-bounce">➔</div>
-              {orchestrationData.split('9. Next Action Suggestion:')[1]?.trim() || "Review the output and try a practice quiz."}
+              {orchestrationData.split('9. Next Action Suggestion:')[1]?.trim() || "Start learning."}
             </div>
          </div>
       </div>
@@ -223,7 +237,7 @@ const EducationTools: React.FC<ToolProps> = ({ slug, onSuccess, onError }) => {
           disabled={loading}
           className={`w-full py-7 ${activeConfig.colorClass} text-white rounded-[2.5rem] font-black text-2xl shadow-2xl hover:brightness-110 transition-all transform active:scale-95 disabled:opacity-50`}
         >
-          {loading ? "Engaging AI Academic Engine..." : isPlanner ? "Architect Study Plan" : isSummarizer ? "Synthesize Content" : isGrader ? "Audit Essay" : isSolver ? "Solve Logic" : isQuizMaker ? "Generate Quiz" : isCitation ? "Architect Citation" : isResearch ? "Architect Research" : isTutor ? "Start Tutoring Session" : isExplainer ? "Explain Masterfully" : "Architect Coding Logic"}
+          {loading ? (retryCount > 0 ? `Retrying AI (${retryCount})...` : "Engaging AI Academic Engine...") : "Process Intelligence"}
         </button>
       }
       result={resultSlot}

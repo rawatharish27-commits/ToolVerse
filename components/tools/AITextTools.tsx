@@ -40,26 +40,53 @@ Follow this 9-step output structure strictly:
 
 const AITextTools: React.FC<ToolProps> = ({ slug, onSuccess, onError }) => {
   const [inputText, setInputText] = useState("");
-  const [secondaryText, setSecondaryText] = useState(""); // For Keywords/Features/etc
+  const [secondaryText, setSecondaryText] = useState("");
   const [loading, setLoading] = useState(false);
+  const [retryCount, setRetryCount] = useState(0);
   const [orchestrationData, setOrchestrationData] = useState<string | null>(null);
+
+  // Define activeConfig once in component scope
+  const configs = [
+    aiArticleGeneratorConfig, aiRewriterConfig, aiGrammarConfig, aiToneConverterConfig, 
+    aiSeoOptimizerConfig, aiEmailGeneratorConfig, aiResumeWriterConfig, 
+    aiStoryGeneratorConfig, aiYoutubeScriptConfig, aiProductDescConfig
+  ];
+  const activeConfig = configs.find(c => c.slug === slug) || aiArticleGeneratorConfig;
 
   const [options, setOptions] = useState<Record<string, any>>(() => {
     const initial: Record<string, any> = {};
-    const configs = [
-      aiArticleGeneratorConfig, aiRewriterConfig, aiGrammarConfig, aiToneConverterConfig, 
-      aiSeoOptimizerConfig, aiEmailGeneratorConfig, aiResumeWriterConfig, 
-      aiStoryGeneratorConfig, aiYoutubeScriptConfig, aiProductDescConfig
-    ];
-    const target = configs.find(c => c.slug === slug);
-    if (target) {
-      target.options.forEach(opt => initial[opt.id] = (opt as any).default);
+    // Use the defined activeConfig for initialization
+    if (activeConfig) {
+      activeConfig.options.forEach(opt => initial[opt.id] = (opt as any).default);
     }
     return initial;
   });
 
   const handleOptionChange = (id: string, value: any) => {
     setOptions(prev => ({ ...prev, [id]: value }));
+  };
+
+  const callAIWithRetry = async (prompt: string, modelName: string, attempts = 3): Promise<string> => {
+    // Fix: Use process.env.API_KEY directly as per guidelines
+    const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+    for (let i = 0; i < attempts; i++) {
+      try {
+        const response = await ai.models.generateContent({
+          model: modelName,
+          contents: prompt,
+          config: {
+            systemInstruction: ORCHESTRATOR_SYSTEM_ROLE,
+            temperature: 0.7,
+          }
+        });
+        return response.text || "";
+      } catch (err: any) {
+        if (i === attempts - 1) throw err;
+        setRetryCount(i + 1);
+        await new Promise(resolve => setTimeout(resolve, 2000 * (i + 1))); // Exponential backoff
+      }
+    }
+    return "";
   };
 
   const handleRunOrchestrator = async () => {
@@ -70,10 +97,13 @@ const AITextTools: React.FC<ToolProps> = ({ slug, onSuccess, onError }) => {
 
     setLoading(true);
     setOrchestrationData(null);
+    setRetryCount(0);
 
     try {
-      const ai = new GoogleGenAI({ apiKey: process.env.API_KEY as string });
-      
+      // Logic for choosing model: Simple tasks use Flash, Complex ones use Pro
+      const isComplex = ['ai-article-generator', 'ai-resume-writer', 'ai-youtube-script', 'ai-story-generator'].includes(slug);
+      const model = isComplex ? 'gemini-3-pro-preview' : 'gemini-3-flash-preview';
+
       const userTask = `
         User Task Type: ${slug.replace('ai-', '').replace('-', ' ')}
         Primary Input Content: "${inputText}"
@@ -81,39 +111,18 @@ const AITextTools: React.FC<ToolProps> = ({ slug, onSuccess, onError }) => {
         Config Options: ${JSON.stringify(options)}
       `;
 
-      const response = await ai.models.generateContent({
-        model: 'gemini-3-pro-preview',
-        contents: userTask,
-        config: {
-          systemInstruction: ORCHESTRATOR_SYSTEM_ROLE,
-          temperature: 0.7,
-        }
-      });
-
-      setOrchestrationData(response.text || "Failed to generate plan.");
+      const result = await callAIWithRetry(userTask, model);
+      setOrchestrationData(result);
       onSuccess("ToolVerse Orchestration Complete!");
     } catch (err: any) {
       console.error(err);
-      onError("AI Core is at capacity. Please retry in 30 seconds.");
+      const isQuota = err.message?.includes('429') || err.message?.includes('quota');
+      onError(isQuota ? "Traffic is high. Engine is cooling down, please wait 15s." : "AI engine encountered a snag. Please check your connection.");
     } finally {
       setLoading(false);
+      setRetryCount(0);
     }
   };
-
-  const configMap: Record<string, any> = {
-    'ai-article-generator': aiArticleGeneratorConfig,
-    'ai-article-rewriter': aiRewriterConfig,
-    'ai-grammar-fixer': aiGrammarConfig,
-    'ai-tone-converter': aiToneConverterConfig,
-    'ai-seo-optimizer': aiSeoOptimizerConfig,
-    'ai-email-generator': aiEmailGeneratorConfig,
-    'ai-resume-writer': aiResumeWriterConfig,
-    'ai-story-generator': aiStoryGeneratorConfig,
-    'ai-youtube-script': aiYoutubeScriptConfig,
-    'ai-product-description': aiProductDescConfig
-  };
-
-  const currentConfig = configMap[slug];
 
   const inputSlot = (
     <div className="space-y-6">
@@ -150,7 +159,6 @@ const AITextTools: React.FC<ToolProps> = ({ slug, onSuccess, onError }) => {
 
   const resultSlot = orchestrationData && (
     <div className="space-y-10 animate-in fade-in slide-in-from-top-4 duration-700">
-      {/* Orchestrator Process Report */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {orchestrationData.split('\n\n').slice(0, 6).map((step, idx) => {
           if (!step.includes(':')) return null;
@@ -164,7 +172,6 @@ const AITextTools: React.FC<ToolProps> = ({ slug, onSuccess, onError }) => {
         })}
       </div>
 
-      {/* The Master Result */}
       <div className="space-y-4">
         <div className="flex justify-between items-center px-1">
           <span className="text-[10px] font-black text-emerald-500 uppercase tracking-widest flex items-center">
@@ -173,7 +180,6 @@ const AITextTools: React.FC<ToolProps> = ({ slug, onSuccess, onError }) => {
           </span>
           <button 
             onClick={() => {
-              // Extract just section 7 if possible, or copy whole text
               const sections = orchestrationData.split('7. Expected Result:');
               const final = sections.length > 1 ? sections[1].split('8. Optimization Tips:')[0].trim() : orchestrationData;
               navigator.clipboard.writeText(final);
@@ -192,7 +198,6 @@ const AITextTools: React.FC<ToolProps> = ({ slug, onSuccess, onError }) => {
         </div>
       </div>
 
-      {/* Feedback & Next Steps */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8 pt-6 border-t border-slate-100">
          <div className="space-y-4">
             <span className="text-[10px] font-black text-amber-500 uppercase tracking-widest">8. Performance Optimization</span>
@@ -213,19 +218,19 @@ const AITextTools: React.FC<ToolProps> = ({ slug, onSuccess, onError }) => {
 
   return (
     <ToolLayout
-      title={currentConfig.title}
-      description={currentConfig.description}
-      icon={currentConfig.icon}
-      colorClass={currentConfig.colorClass}
+      title={activeConfig.title}
+      description={activeConfig.description}
+      icon={activeConfig.icon}
+      colorClass={activeConfig.colorClass}
       input={inputSlot}
-      options={<OptionsPanel options={currentConfig.options as any} values={options} onChange={handleOptionChange} />}
+      options={<OptionsPanel options={activeConfig.options as any} values={options} onChange={handleOptionChange} />}
       actions={
         <button 
           onClick={handleRunOrchestrator} 
           disabled={loading}
           className="w-full py-7 bg-indigo-600 text-white rounded-[2.5rem] font-black text-2xl shadow-2xl hover:bg-indigo-700 transition-all transform active:scale-95 disabled:opacity-50"
         >
-          {loading ? "Engaging ToolVerse Orchestrator..." : "Generate Mastery"}
+          {loading ? (retryCount > 0 ? `Retrying Engine (${retryCount})...` : "Engaging ToolVerse Orchestrator...") : "Generate Mastery"}
         </button>
       }
       result={resultSlot}
