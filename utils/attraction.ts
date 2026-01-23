@@ -1,4 +1,3 @@
-
 export interface AttractionState {
   visits: number;
   points: number;
@@ -26,7 +25,11 @@ export const updateAttractionState = (update: Partial<AttractionState>) => {
   const state = getAttractionState();
   const newState = { ...state, ...update };
   localStorage.setItem(STORAGE_KEY, JSON.stringify(newState));
+  
+  // Dispatch both events to ensure compatibility with different parts of the app
   window.dispatchEvent(new Event('ua_update'));
+  window.dispatchEvent(new Event('attraction_update'));
+  
   return newState;
 };
 
