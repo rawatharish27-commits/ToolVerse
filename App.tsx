@@ -7,6 +7,7 @@ import About from './pages/About';
 import PrivacyPolicy from './pages/PrivacyPolicy';
 import Terms from './pages/Terms';
 import Contact from './pages/Contact';
+import AddonLayer from './components/AddonLayer';
 import { CategorySlug } from './types';
 import { trackPageView } from './utils/analytics';
 
@@ -168,6 +169,7 @@ const App: React.FC = () => {
       onNavigate={navigate} 
       onSearch={handleGlobalSearch}
     >
+      <AddonLayer />
       {!hasKey && (
         <div className="bg-indigo-900 text-white py-4 px-6 flex flex-col md:flex-row items-center justify-center gap-4 text-center">
            <p className="text-xs font-black uppercase tracking-widest">

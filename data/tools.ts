@@ -43,6 +43,14 @@ export const TOOLS: Tool[] = [
   { slug: 'internet-speed-test', title: 'AI Internet Speed & Stability Analyzer', category: 'network', priority: 87, description: 'Evaluate connection quality, latency stability, and jitter performance with actionable performance insights.', keywords: ['speed test', 'bandwidth', 'latency', 'jitter', 'connection quality'], toolType: 'ai' },
   { slug: 'what-is-my-ip', title: 'IP Lookup Tool', category: 'network', priority: 90, description: 'Check your public IP and network details.', keywords: ['myip', 'lookup'], toolType: 'client' },
 
+  // --- SECURITY HUB ---
+  { slug: 'password-strength-checker', title: 'AI Password Strength & Risk Auditor', category: 'security', priority: 100, description: 'Deep analysis of password entropy, patterns, and resistance against professional brute-force and dictionary attacks.', keywords: ['password strength', 'security audit', 'entropy', 'cybersecurity', 'password checker'], toolType: 'ai' },
+  { slug: 'security-hash-generator', title: 'AI Hash Generator & Integrity Auditor', category: 'security', priority: 95, description: 'Generate cryptographic digests (SHA-256, SHA-512, etc.) and analyze data integrity with expert AI context.', keywords: ['hash generator', 'sha256', 'sha512', 'md5', 'cryptography', 'data integrity'], toolType: 'ai' },
+  { slug: 'security-encryptor', title: 'AI Text Encryptor (AES-256)', category: 'security', priority: 94, description: 'Professional AES-GCM 256-bit text encryption with PBKDF2 key derivation and security audits.', keywords: ['encrypt', 'aes256', 'cryptography', 'secure text', 'privacy'], toolType: 'ai' },
+  { slug: 'security-decryptor', title: 'AI Text Decryptor (AES-256)', category: 'security', priority: 93, description: 'Securely decrypt AES-GCM 256-bit strings and verify data integrity with automated tamper detection.', keywords: ['decrypt', 'decode', 'aes decrypt', 'secure messaging'], toolType: 'ai' },
+  { slug: 'sha512-hash-generator', title: 'SHA-512 Hash Generator', category: 'security', priority: 80, description: 'Generate secure SHA-512 hashes for data integrity verification.', keywords: ['sha512', 'hash', 'cryptography'], toolType: 'client' },
+  { slug: 'base64-file-encoder', title: 'Base64 File Encoder', category: 'security', priority: 75, description: 'Securely encode files into Base64 strings for data transmission.', keywords: ['base64', 'file encoder', 'encoding'], toolType: 'client' },
+
   // --- CLIENT SIDE HUB ---
   { slug: 'image-compressor', title: 'Smart Image Compressor', category: 'image', priority: 100, description: 'Compress PNG/JPG/WebP without quality loss.', keywords: ['compress', 'optimization'], toolType: 'client' },
   { slug: 'background-remover', title: 'Local Background Remover', category: 'image', priority: 99, description: 'Remove backgrounds instantly with neural networks.', keywords: ['bg remover', 'transparent'], toolType: 'client' },

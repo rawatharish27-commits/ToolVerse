@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { GoogleGenAI } from "@google/genai";
 import ToolLayout from '../ToolLayout';
 import OptionsPanel from '../OptionsPanel';
@@ -50,17 +50,18 @@ const FinanceTools: React.FC<ToolProps> = ({ slug, onSuccess, onError }) => {
   const isInflation = slug === 'inflation-calculator';
   const isOrchestrated = isCI || isMortgage || isTax || isInflation;
 
+  const configs = [
+    emiCalculatorConfig, sipCalculatorConfig, gstCalculatorConfig, 
+    loanCalculatorConfig, roiCalculatorConfig, bmiCalculatorConfig,
+    currencyConverterConfig, compoundInterestConfig, mortgageCalculatorConfig,
+    incomeTaxPlannerConfig, inflationCalculatorConfig
+  ];
+  const targetConfig = configs.find(c => c.slug === slug) || emiCalculatorConfig;
+
   const [options, setOptions] = useState<Record<string, any>>(() => {
     const initial: Record<string, any> = {};
-    const configs = [
-      emiCalculatorConfig, sipCalculatorConfig, gstCalculatorConfig, 
-      loanCalculatorConfig, roiCalculatorConfig, bmiCalculatorConfig,
-      currencyConverterConfig, compoundInterestConfig, mortgageCalculatorConfig,
-      incomeTaxPlannerConfig, inflationCalculatorConfig
-    ];
-    const target = configs.find(c => c.slug === slug);
-    if (target) {
-      target.options.forEach(opt => initial[opt.id] = (opt as any).default);
+    if (targetConfig) {
+      targetConfig.options.forEach(opt => initial[opt.id] = (opt as any).default);
     }
     return initial;
   });
@@ -68,6 +69,15 @@ const FinanceTools: React.FC<ToolProps> = ({ slug, onSuccess, onError }) => {
   const [mathResult, setMathResult] = useState<any>(null);
   const [orchestrationData, setOrchestrationData] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+
+  // Reset state on tool change
+  useEffect(() => {
+    const initial: Record<string, any> = {};
+    targetConfig.options.forEach(opt => initial[opt.id] = (opt as any).default);
+    setOptions(initial);
+    setMathResult(null);
+    setOrchestrationData(null);
+  }, [slug]);
 
   const handleOptionChange = (id: string, value: any) => {
     setOptions(prev => ({ ...prev, [id]: value }));
@@ -84,6 +94,10 @@ const FinanceTools: React.FC<ToolProps> = ({ slug, onSuccess, onError }) => {
         });
         return response.text || "";
       } catch (err: any) {
+        if (err.message?.includes("Requested entity was not found")) {
+           if (window.aistudio?.openSelectKey) window.aistudio.openSelectKey();
+           throw new Error("API Key Selection Required");
+        }
         if (i === attempts - 1) throw err;
         await new Promise(resolve => setTimeout(resolve, 2000 * (i + 1)));
       }
@@ -108,7 +122,6 @@ const FinanceTools: React.FC<ToolProps> = ({ slug, onSuccess, onError }) => {
         const n = nMap[options.ciFrequency];
         const pmtN = options.ciContFreq === "Monthly" ? 12 : 1;
         
-        // Final Amount = P(1+r/n)^(nt) + PMT * [((1+r/n)^(nt) - 1) / (r/n)]
         const compoundFactor = Math.pow(1 + r/n, n * t);
         const principalGrowth = P * compoundFactor;
         const contributionsGrowth = PMT * ((compoundFactor - 1) / (r/n)) * (1 + r/n);
@@ -142,7 +155,6 @@ const FinanceTools: React.FC<ToolProps> = ({ slug, onSuccess, onError }) => {
         const invest = Number(options.taxInvest);
         let tax = 0;
         if (options.taxRegion === "USA") {
-           // Simplified US Federal logic
            if (income < 11000) tax = income * 0.1;
            else if (income < 44000) tax = 1100 + (income - 11000) * 0.12;
            else tax = 5000 + (income - 44000) * 0.22;
@@ -207,32 +219,26 @@ const FinanceTools: React.FC<ToolProps> = ({ slug, onSuccess, onError }) => {
       }
       
       onSuccess("Financial Strategy Complete!");
-    } catch (err) {
-      onError("Calculation engine snag. Check values.");
+    } catch (err: any) {
+      if (err.message !== "API Key Selection Required") {
+         onError("Calculation engine snag. Check values.");
+      }
     } finally {
       setLoading(false);
     }
   };
 
-  const currentConfig = [
-    emiCalculatorConfig, sipCalculatorConfig, gstCalculatorConfig, 
-    loanCalculatorConfig, roiCalculatorConfig, bmiCalculatorConfig,
-    currencyConverterConfig, compoundInterestConfig, mortgageCalculatorConfig,
-    incomeTaxPlannerConfig, inflationCalculatorConfig
-  ].find(c => c.slug === slug) || emiCalculatorConfig;
-
   const inputSlot = (
     <div className="space-y-6 py-4 text-center">
       <div className="flex flex-col items-center justify-center p-8 bg-slate-50 rounded-[3rem] border border-slate-100">
-        <div className="text-7xl mb-4">{currentConfig.icon}</div>
-        <p className="text-slate-500 font-black text-sm uppercase tracking-widest">{currentConfig.title} Engine Active</p>
+        <div className="text-7xl mb-4">{targetConfig.icon}</div>
+        <p className="text-slate-500 font-black text-sm uppercase tracking-widest">{targetConfig.title} Engine Active</p>
       </div>
     </div>
   );
 
   const resultSlot = (mathResult || orchestrationData) && (
     <div className="space-y-10 animate-in fade-in slide-in-from-top-4">
-      {/* 1. Numerical Core Result */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         {mathResult?.labels.map((label: string, i: number) => (
           <div key={i} className="p-8 bg-slate-50 rounded-[2.5rem] border border-slate-200 text-center shadow-inner">
@@ -246,7 +252,6 @@ const FinanceTools: React.FC<ToolProps> = ({ slug, onSuccess, onError }) => {
         ))}
       </div>
 
-      {/* 2. AI Strategy Overlay (Orchestration) */}
       {orchestrationData && (
         <div className="space-y-10 border-t border-slate-100 pt-10">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -300,17 +305,17 @@ const FinanceTools: React.FC<ToolProps> = ({ slug, onSuccess, onError }) => {
 
   return (
     <ToolLayout
-      title={currentConfig.title}
-      description={currentConfig.description}
-      icon={currentConfig.icon}
-      colorClass={currentConfig.colorClass}
+      title={targetConfig.title}
+      description={targetConfig.description}
+      icon={targetConfig.icon}
+      colorClass={targetConfig.colorClass}
       input={inputSlot}
-      options={<OptionsPanel options={currentConfig.options as any} values={options} onChange={handleOptionChange} />}
+      options={<OptionsPanel options={targetConfig.options as any} values={options} onChange={handleOptionChange} />}
       actions={
         <button 
           onClick={calculate} 
           disabled={loading}
-          className={`w-full py-7 ${currentConfig.colorClass} text-white rounded-[2.5rem] font-black text-2xl shadow-2xl transition-all active:scale-95 disabled:opacity-50`}
+          className={`w-full py-7 ${targetConfig.colorClass} text-white rounded-[2.5rem] font-black text-2xl shadow-2xl transition-all active:scale-95 disabled:opacity-50`}
         >
           {loading ? "Engaging AI Financial Core..." : isOrchestrated ? "Architect My Wealth" : "Calculate Now"}
         </button>

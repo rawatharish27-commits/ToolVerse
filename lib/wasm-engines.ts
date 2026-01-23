@@ -126,8 +126,8 @@ export const runOCRTask = async (
   onProgress?: (p: number) => void
 ) => {
   const { createWorker } = await getTesseract();
-  const worker = await createWorker({
-    logger: m => {
+  const worker = await (createWorker as any)({
+    logger: (m: any) => {
       if (m.status === 'recognizing text' && onProgress) {
         onProgress(m.progress);
       }

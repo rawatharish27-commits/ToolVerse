@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { GoogleGenAI } from "@google/genai";
 import ToolLayout from '../ToolLayout';
 import OptionsPanel from '../OptionsPanel';
@@ -45,7 +45,6 @@ const AITextTools: React.FC<ToolProps> = ({ slug, onSuccess, onError }) => {
   const [retryCount, setRetryCount] = useState(0);
   const [orchestrationData, setOrchestrationData] = useState<string | null>(null);
 
-  // Define activeConfig once in component scope
   const configs = [
     aiArticleGeneratorConfig, aiRewriterConfig, aiGrammarConfig, aiToneConverterConfig, 
     aiSeoOptimizerConfig, aiEmailGeneratorConfig, aiResumeWriterConfig, 
@@ -55,19 +54,28 @@ const AITextTools: React.FC<ToolProps> = ({ slug, onSuccess, onError }) => {
 
   const [options, setOptions] = useState<Record<string, any>>(() => {
     const initial: Record<string, any> = {};
-    // Use the defined activeConfig for initialization
     if (activeConfig) {
       activeConfig.options.forEach(opt => initial[opt.id] = (opt as any).default);
     }
     return initial;
   });
 
+  // Reset state when tool changes
+  useEffect(() => {
+    const initial: Record<string, any> = {};
+    activeConfig.options.forEach(opt => initial[opt.id] = (opt as any).default);
+    setOptions(initial);
+    setInputText("");
+    setSecondaryText("");
+    setOrchestrationData(null);
+    setRetryCount(0);
+  }, [slug]);
+
   const handleOptionChange = (id: string, value: any) => {
     setOptions(prev => ({ ...prev, [id]: value }));
   };
 
   const callAIWithRetry = async (prompt: string, modelName: string, attempts = 3): Promise<string> => {
-    // Fix: Use process.env.API_KEY directly as per guidelines
     const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
     for (let i = 0; i < attempts; i++) {
       try {
@@ -81,9 +89,13 @@ const AITextTools: React.FC<ToolProps> = ({ slug, onSuccess, onError }) => {
         });
         return response.text || "";
       } catch (err: any) {
+        if (err.message?.includes("Requested entity was not found")) {
+           if (window.aistudio?.openSelectKey) window.aistudio.openSelectKey();
+           throw new Error("API Key Selection Required");
+        }
         if (i === attempts - 1) throw err;
         setRetryCount(i + 1);
-        await new Promise(resolve => setTimeout(resolve, 2000 * (i + 1))); // Exponential backoff
+        await new Promise(resolve => setTimeout(resolve, 2000 * (i + 1))); 
       }
     }
     return "";
@@ -100,7 +112,6 @@ const AITextTools: React.FC<ToolProps> = ({ slug, onSuccess, onError }) => {
     setRetryCount(0);
 
     try {
-      // Logic for choosing model: Simple tasks use Flash, Complex ones use Pro
       const isComplex = ['ai-article-generator', 'ai-resume-writer', 'ai-youtube-script', 'ai-story-generator'].includes(slug);
       const model = isComplex ? 'gemini-3-pro-preview' : 'gemini-3-flash-preview';
 
@@ -116,6 +127,7 @@ const AITextTools: React.FC<ToolProps> = ({ slug, onSuccess, onError }) => {
       onSuccess("ToolVerse Orchestration Complete!");
     } catch (err: any) {
       console.error(err);
+      if (err.message === "API Key Selection Required") return;
       const isQuota = err.message?.includes('429') || err.message?.includes('quota');
       onError(isQuota ? "Traffic is high. Engine is cooling down, please wait 15s." : "AI engine encountered a snag. Please check your connection.");
     } finally {

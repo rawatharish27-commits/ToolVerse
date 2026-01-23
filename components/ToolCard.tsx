@@ -21,6 +21,8 @@ const ToolCard: React.FC<ToolCardProps> = ({ tool, onClick, isMini, isFavorite, 
     return (
       <div 
         onClick={onClick}
+        data-addon-tool={tool.slug}
+        data-addon-cat={tool.category}
         className="group flex items-center p-5 bg-white rounded-3xl border border-slate-100 shadow-sm hover:shadow-xl hover:border-indigo-100 transition-all cursor-pointer relative"
       >
         <div className={`w-12 h-12 ${category?.color || 'bg-slate-500'} bg-opacity-10 rounded-2xl flex items-center justify-center text-2xl mr-5 group-hover:scale-110 transition-transform`}>
@@ -46,11 +48,13 @@ const ToolCard: React.FC<ToolCardProps> = ({ tool, onClick, isMini, isFavorite, 
   return (
     <div 
       onClick={onClick}
+      data-addon-tool={tool.slug}
+      data-addon-cat={tool.category}
       className="group bg-white rounded-[2.5rem] p-8 shadow-sm border border-slate-100 hover:shadow-[0_40px_80px_-20px_rgba(79,70,229,0.15)] hover:border-indigo-100 transition-all duration-500 cursor-pointer flex flex-col h-full relative overflow-hidden"
     >
       {isTrending && (
         <div className="absolute -right-14 top-6 bg-indigo-600 text-white text-[9px] font-black uppercase tracking-[0.2em] py-2 w-48 text-center rotate-45 shadow-xl z-10 pointer-events-none">
-          Trending
+          Popular
         </div>
       )}
 

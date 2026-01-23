@@ -1,4 +1,4 @@
-import React, { useMemo, useDeferredValue } from 'react';
+import React, { useMemo, useDeferredValue, useState, useEffect } from 'react';
 import { CATEGORIES } from '../data/categories';
 import { TOOLS } from '../data/tools';
 import ToolCard from '../components/ToolCard';
@@ -6,7 +6,15 @@ import AdPlaceholder from '../components/AdPlaceholder';
 import SEOHead from '../components/SEOHead';
 import SpinWheel from '../components/SpinWheel';
 import SiteStatus from '../components/SiteStatus';
+import TopSitesSection from '../components/TopSitesSection';
 import { getToolPriorityScore } from '../utils/toolPriority';
+import { 
+  getAttractionState, 
+  updateAttractionState, 
+  getTopCategories, 
+  getToolOfDay,
+  trackToolClick 
+} from '../utils/attraction';
 
 interface HomeProps {
   onNavigate: (page: string, params?: any) => void;
@@ -16,307 +24,218 @@ interface HomeProps {
   onToggleFavorite: (slug: string) => void;
 }
 
-const HOME_FAQS = [
-  {
-    q: "Is ToolVerse really free to use?",
-    a: "Yes, 100%. ToolVerse provides all 500+ professional utilities without any subscription fees, hidden charges, or usage limits. We are supported by non-intrusive advertisements."
-  },
-  {
-    q: "How does ToolVerse protect my privacy?",
-    a: "Unlike traditional online tools, we process your data locally in your browser using WebAssembly (WASM). Your files, images, and documents never touch our servers."
-  },
-  {
-    q: "Do I need to create an account or register?",
-    a: "No. You can start using any tool instantly. We don't require emails, passwords, or registration, keeping your experience completely anonymous."
-  },
-  {
-    q: "Why are ToolVerse tools faster than others?",
-    a: "Because there is no upload or download delay. By processing data directly on your hardware, we eliminate the latency of sending large files to a remote server."
-  },
-  {
-    q: "Can I use ToolVerse for professional commercial work?",
-    a: "Absolutely. Our tools are engineered for professional-grade performance and are used daily by developers, designers, and students worldwide."
-  },
-  {
-    q: "Do these tools work on mobile devices?",
-    a: "Yes. ToolVerse is a fully responsive PWA (Progressive Web App). All our utilities work perfectly on Chrome, Safari, and Firefox across iPhone, Android, and tablets."
-  }
-];
-
 const Home: React.FC<HomeProps> = ({ onNavigate, searchQuery = '', favorites, recent, onToggleFavorite }) => {
-  // Performance: Defer the search update to keep input typing fluid
   const deferredSearch = useDeferredValue(searchQuery);
+  const [mood, setMood] = useState(() => getAttractionState().mood);
+  const [points, setPoints] = useState(() => getAttractionState().points);
+
+  useEffect(() => {
+    const sync = () => {
+      const state = getAttractionState();
+      setMood(state.mood);
+      setPoints(state.points);
+    };
+    window.addEventListener('attraction_update', sync);
+    return () => window.removeEventListener('attraction_update', sync);
+  }, []);
+
+  const changeMood = (newMood: string) => {
+    setMood(newMood);
+    updateAttractionState({ mood: newMood });
+  };
+
+  const topCategories = useMemo(() => getTopCategories(), [points]);
+  const dailyTool = useMemo(() => getToolOfDay(TOOLS), []);
 
   const filteredTools = useMemo(() => {
     const query = deferredSearch.toLowerCase().trim();
-    if (!query) return [...TOOLS].sort((a, b) => getToolPriorityScore(b) - getToolPriorityScore(a));
+    let list = [...TOOLS];
+
+    // Mood-based Reordering
+    if (mood === 'learn') {
+      list = list.sort((a, b) => (a.category === 'education' || a.category === 'ai' ? -1 : 1));
+    } else if (mood === 'money') {
+      list = list.sort((a, b) => (a.category === 'calculators' || a.category === 'seo' ? -1 : 1));
+    }
+
+    if (!query) return list.sort((a, b) => getToolPriorityScore(b) - getToolPriorityScore(a));
 
     const queryTerms = query.split(/\s+/);
-
-    const list = TOOLS.filter(tool => {
+    return list.filter(tool => {
       const searchBlob = `${tool.title} ${tool.description} ${tool.category} ${tool.keywords.join(' ')}`.toLowerCase();
-      // Multi-term logic: every word in query must match something in the tool metadata
       return queryTerms.every(term => searchBlob.includes(term));
-    });
-    
-    return list.sort((a, b) => getToolPriorityScore(b) - getToolPriorityScore(a));
-  }, [deferredSearch]);
+    }).sort((a, b) => getToolPriorityScore(b) - getToolPriorityScore(a));
+  }, [deferredSearch, mood]);
 
-  const favoriteTools = TOOLS.filter(t => favorites.includes(t.slug));
-  const recentTools = TOOLS.filter(t => recent.includes(t.slug));
+  const recommendedTools = useMemo(() => {
+    if (topCategories.length === 0) return TOOLS.slice(0, 4);
+    return TOOLS.filter(t => topCategories.includes(t.category)).slice(0, 4);
+  }, [topCategories]);
+
+  const trendingTools = useMemo(() => {
+    const state = getAttractionState();
+    return Object.entries(state.clicks)
+      .sort((a, b) => b[1] - a[1])
+      .slice(0, 3)
+      .map(entry => TOOLS.find(t => t.title === entry[0]))
+      .filter(Boolean);
+  }, [points]);
+
+  const handleToolClick = (tool: any) => {
+    trackToolClick(tool.title, tool.category);
+    onNavigate('tool', { slug: tool.slug });
+  };
 
   return (
     <div className="animate-in fade-in duration-700">
       <SEOHead 
         title="ToolVerse - World's Largest Free Online Tools Platform"
-        description="Access 500+ free online tools for PDF, Images, Video, AI, SEO, and Development. Safe, fast, and 100% client-side processing."
+        description="Access 500+ free online tools. Personalize your workflow, track your progress, and level up your digital utility game."
         url="https://toolverse-4gr.pages.dev/"
       />
       
-      {/* Hero Section */}
       {!deferredSearch && (
-        <section className="relative overflow-hidden bg-slate-900 pt-16 sm:pt-20">
-          <div className="relative z-20">
-            <SiteStatus />
-          </div>
+        <section className="relative overflow-hidden bg-slate-900">
+          <SiteStatus />
 
-          <div className="absolute top-0 left-0 w-full h-full overflow-hidden opacity-30 pointer-events-none">
-            <div className="absolute -top-1/4 -left-1/4 w-3/4 h-3/4 bg-indigo-600 rounded-full blur-[160px] animate-pulse"></div>
-            <div className="absolute -bottom-1/4 -right-1/4 w-3/4 h-3/4 bg-purple-600 rounded-full blur-[160px] animate-pulse"></div>
+          <div className="absolute top-0 left-0 w-full h-full opacity-20 pointer-events-none">
+            <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-indigo-600 rounded-full blur-[120px] animate-pulse"></div>
+            <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-purple-600 rounded-full blur-[120px] animate-pulse"></div>
           </div>
           
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 text-center pt-16 pb-32 sm:pt-24 sm:pb-48">
-            <div className="inline-flex items-center px-4 py-2 rounded-full bg-white/5 border border-white/10 text-indigo-300 text-xs font-black uppercase tracking-[0.2em] mb-8 animate-bounce-slow">
-              <span className="relative flex h-2 w-2 mr-3">
-                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-indigo-400 opacity-75"></span>
-                <span className="relative inline-flex rounded-full h-2 w-2 bg-indigo-500"></span>
-              </span>
-              Live: 500+ Pro Tools Ready
+          <div className="max-w-7xl mx-auto px-4 relative z-10 text-center pt-24 pb-32">
+            <div className="inline-flex items-center px-4 py-2 rounded-full bg-white/5 border border-white/10 text-indigo-300 text-[10px] font-black uppercase tracking-[0.3em] mb-8">
+              Experience the Future of Utility
             </div>
-            <h1 className="text-5xl sm:text-8xl font-black text-white tracking-tight mb-8 leading-[1.1]">
-              One Hub.<br />
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 via-white to-purple-400">Unlimited Power.</span>
+            <h1 className="text-5xl sm:text-8xl font-black text-white tracking-tighter mb-8 leading-[0.9]">
+              Master Every<br />
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 via-white to-emerald-400">Digital Flow.</span>
             </h1>
-            <p className="max-w-2xl mx-auto text-xl text-slate-400 mb-12 font-medium leading-relaxed">
-              Stop switching tabs. ToolVerse brings every professional utility together in a privacy-first, ultra-fast browser ecosystem.
-            </p>
-            <div className="flex flex-col sm:flex-row justify-center items-center space-y-4 sm:space-y-0 sm:space-x-8">
-              <button 
-                onClick={() => {
-                  const el = document.getElementById('tools-grid');
-                  el?.scrollIntoView({ behavior: 'smooth' });
-                }}
-                className="w-full sm:w-auto px-12 py-6 bg-indigo-600 hover:bg-indigo-700 text-white rounded-[2rem] font-black text-lg shadow-2xl shadow-indigo-600/30 transition-all transform hover:-translate-y-2 active:scale-95"
-              >
-                Start Exploring
-              </button>
-              <div className="text-slate-600 font-black hidden sm:block">OR</div>
-              <button 
-                // Fix: Cast the element to HTMLInputElement to access the .focus() method in TypeScript
-                onClick={() => (document.querySelector('header input') as HTMLInputElement | null)?.focus()}
-                className="w-full sm:w-auto px-12 py-6 bg-white/5 border border-white/10 text-white rounded-[2rem] font-black text-lg hover:bg-white/10 transition-all backdrop-blur-xl"
-              >
-                Search Tools
-              </button>
-            </div>
-          </div>
-        </section>
-      )}
-
-      {/* Workspace Section */}
-      {!deferredSearch && (favorites.length > 0 || recent.length > 0) && (
-        <section className="max-w-7xl mx-auto px-4 -mt-16 sm:-mt-24 relative z-20 mb-20">
-          <div className="glass bg-white/90 rounded-[3.5rem] p-10 md:p-16 shadow-2xl border border-white/50 backdrop-blur-3xl shadow-indigo-200/50">
-            <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-12">
-               <div>
-                 <h2 className="text-3xl font-black text-slate-900 tracking-tight flex items-center">
-                    <span className="w-12 h-12 bg-indigo-600 text-white rounded-2xl flex items-center justify-center mr-4 text-xl shadow-lg">📁</span>
-                    Your Personal Studio
-                 </h2>
-                 <p className="text-slate-500 font-medium mt-1">Quick access to your most-used and starred utilities.</p>
-               </div>
-               <div className="flex gap-3">
-                  <div className="px-4 py-2 bg-indigo-50 text-indigo-600 rounded-full text-[10px] font-black uppercase tracking-[0.1em] border border-indigo-100">Synchronized Locally</div>
-               </div>
+            
+            {/* MOOD SWITCHER (Step 4) */}
+            <div className="flex flex-wrap justify-center gap-4 mb-16">
+               {[
+                 { id: 'default', label: 'All Modes', icon: '🌐' },
+                 { id: 'money', label: 'Earn & Grow', icon: '💰' },
+                 { id: 'learn', label: 'Learn & Research', icon: '🧠' },
+                 { id: 'speed', label: 'Quick Speed', icon: '⚡' }
+               ].map(m => (
+                 <button 
+                  key={m.id}
+                  onClick={() => changeMood(m.id)}
+                  className={`px-8 py-4 rounded-2xl text-[10px] font-black uppercase tracking-[0.2em] transition-all flex items-center gap-3 ${
+                    mood === m.id 
+                    ? 'bg-indigo-600 text-white shadow-2xl shadow-indigo-600/40 ring-4 ring-indigo-500/20' 
+                    : 'bg-white/5 text-slate-400 border border-white/10 hover:bg-white/10'
+                  }`}
+                 >
+                   <span className="text-xl">{m.icon}</span>
+                   {m.label}
+                 </button>
+               ))}
             </div>
 
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
-               {favorites.length > 0 && (
-                 <div className="space-y-6">
-                    <h3 className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] flex items-center">
-                       <span className="mr-2">★</span> Starred Tools
-                    </h3>
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                       {favoriteTools.map(t => (
-                         <ToolCard key={t.slug} tool={t} isMini onClick={() => onNavigate('tool', { slug: t.slug })} isFavorite={true} onToggleFavorite={onToggleFavorite} />
-                       ))}
+            {/* UNFINISHED BUSINESS REMINDER (Step 5) */}
+            {Object.keys(getAttractionState().clicks).length > 0 && (
+              <div className="max-w-xl mx-auto bg-indigo-500/10 border border-indigo-500/20 p-6 rounded-[2.5rem] mb-12 flex items-center justify-between group cursor-pointer hover:bg-indigo-500/20 transition-all" onClick={() => document.getElementById('personal-hub')?.scrollIntoView({behavior:'smooth'})}>
+                 <div className="flex items-center gap-4">
+                    <div className="w-10 h-10 bg-indigo-600 rounded-full flex items-center justify-center text-white text-sm font-black shadow-lg shadow-indigo-600/50">
+                      {Object.keys(getAttractionState().clicks).length}
+                    </div>
+                    <div className="text-left">
+                       <div className="text-indigo-400 text-[9px] font-black uppercase tracking-widest">Unfinished Business</div>
+                       <div className="text-white text-xs font-bold">Continue where you left off...</div>
                     </div>
                  </div>
-               )}
-               {recent.length > 0 && (
-                 <div className="space-y-6">
-                    <h3 className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] flex items-center">
-                       <span className="mr-2">⚡</span> Recent Activity
-                    </h3>
-                    <div className="space-y-3">
-                       {recentTools.map(t => (
-                         <div key={t.slug} onClick={() => onNavigate('tool', { slug: t.slug })} className="flex items-center p-4 bg-slate-50 hover:bg-white rounded-3xl cursor-pointer transition-all border border-transparent hover:border-indigo-100 hover:shadow-xl hover:shadow-indigo-100/30 group">
-                            <div className="w-12 h-12 bg-white rounded-2xl flex items-center justify-center mr-5 group-hover:scale-110 transition-transform shadow-sm text-2xl">
-                               {CATEGORIES.find(c => c.id === t.category)?.icon || '🛠️'}
-                            </div>
-                            <div className="flex-grow">
-                               <div className="text-sm font-black text-slate-900 group-hover:text-indigo-600 transition-colors">{t.title}</div>
-                               <div className="text-[10px] text-slate-400 font-bold uppercase tracking-tight">{t.category}</div>
-                            </div>
-                            <svg className="w-5 h-5 text-slate-300 group-hover:text-indigo-600 transition-all transform group-hover:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M9 5l7 7-7 7"/></svg>
-                         </div>
-                       ))}
-                    </div>
-                 </div>
-               )}
-            </div>
-          </div>
-        </section>
-      )}
-
-      {/* Prize Spin Section */}
-      {!deferredSearch && <SpinWheel />}
-
-      {/* Search Result / Grid Section */}
-      <section id="tools-grid" className={`max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 ${deferredSearch ? 'pt-16 md:pt-24' : 'py-24'}`}>
-        <div className="flex flex-col md:flex-row md:items-end justify-between mb-16 gap-6">
-          <div className="max-w-2xl">
-            {deferredSearch && (
-              <div className="inline-flex items-center px-3 py-1 bg-indigo-50 text-indigo-600 rounded-full text-[10px] font-black uppercase tracking-widest mb-4">
-                Global Index Search
+                 <span className="text-indigo-400 group-hover:translate-x-2 transition-transform">→</span>
               </div>
             )}
-            <h2 className="text-4xl font-black text-slate-900 mb-4 tracking-tight">
-              {deferredSearch ? `Found ${filteredTools.length} Utilities` : "Global Tool Library"}
-            </h2>
-            <p className="text-lg text-slate-500 font-medium leading-relaxed">
-              {deferredSearch ? `Displaying matching tools for "${deferredSearch}".` : "Browse our verified collection of 500+ professional tools across 17 specialized categories."}
-            </p>
           </div>
-          {deferredSearch && (
-            <button 
-              onClick={() => onNavigate('home')} 
-              className="px-6 py-3 bg-slate-100 text-slate-600 font-black rounded-xl text-xs uppercase tracking-widest hover:bg-slate-200 transition-all"
-            >
-              Clear Search
-            </button>
-          )}
-        </div>
+        </section>
+      )}
 
-        {filteredTools.length > 0 ? (
+      <div className="max-w-7xl mx-auto px-4 -mt-20 relative z-20 space-y-24 mb-32">
+        
+        {/* PERSONAL HUB SECTION (Step 1 & 2) */}
+        {!deferredSearch && (
+          <section id="personal-hub" className="glass bg-white/95 rounded-[3.5rem] p-8 md:p-16 shadow-2xl border border-white/50 backdrop-blur-3xl shadow-indigo-200/50">
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-16">
+               <div className="lg:col-span-8 space-y-12">
+                  <div>
+                    <h3 className="text-[10px] font-black text-indigo-500 uppercase tracking-[0.4em] mb-4">Personal Mastery Hub</h3>
+                    <h2 className="text-3xl md:text-5xl font-black text-slate-900 tracking-tighter italic">Suggested for You.</h2>
+                  </div>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                    {recommendedTools.map(t => (
+                      <ToolCard key={t.slug} tool={t} isMini onClick={() => handleToolClick(t)} isFavorite={favorites.includes(t.slug)} onToggleFavorite={onToggleFavorite} />
+                    ))}
+                  </div>
+               </div>
+
+               <div className="lg:col-span-4 space-y-12 bg-slate-50/50 p-10 rounded-[3rem] border border-slate-100 shadow-inner">
+                  <div>
+                    <h3 className="text-[10px] font-black text-orange-500 uppercase tracking-[0.4em] mb-4">Trending FOMO</h3>
+                    <h2 className="text-2xl font-black text-slate-900">Popular Now</h2>
+                  </div>
+                  <div className="space-y-4">
+                    {trendingTools.length > 0 ? trendingTools.map((t: any) => (
+                      <div key={t.slug} onClick={() => handleToolClick(t)} className="flex items-center p-5 bg-white rounded-3xl cursor-pointer border border-transparent hover:border-orange-200 hover:shadow-xl transition-all group">
+                         <div className="w-10 h-10 bg-orange-50 rounded-xl flex items-center justify-center mr-4 text-xl group-hover:scale-110 transition-transform">🔥</div>
+                         <div className="flex-grow">
+                            <div className="text-xs font-black text-slate-800">{t.title}</div>
+                            <div className="text-[8px] font-bold text-slate-300 uppercase tracking-widest">{t.category}</div>
+                         </div>
+                      </div>
+                    )) : (
+                      <p className="text-[10px] font-black text-slate-300 uppercase tracking-widest text-center py-10">Exploration needed to trigger trends</p>
+                    )}
+                  </div>
+               </div>
+            </div>
+          </section>
+        )}
+
+        {/* TOOL OF THE DAY (Step 6) */}
+        {!deferredSearch && (
+          <section className="bg-emerald-600 rounded-[4rem] p-12 md:p-24 text-white relative overflow-hidden group cursor-pointer" onClick={() => handleToolClick(dailyTool)}>
+             <div className="absolute -top-20 -right-20 w-80 h-80 bg-white/10 rounded-full blur-[100px] group-hover:bg-white/20 transition-all"></div>
+             <div className="relative z-10 flex flex-col md:flex-row items-center justify-between gap-12">
+                <div className="max-w-xl text-center md:text-left space-y-8">
+                   <div className="inline-block px-6 py-2 bg-black/20 rounded-full text-[10px] font-black uppercase tracking-[0.5em]">Hero Tool of the Day</div>
+                   <h2 className="text-4xl md:text-7xl font-black tracking-tighter leading-tight">Master: {dailyTool.title}</h2>
+                   <p className="text-emerald-50 text-xl font-medium opacity-80">{dailyTool.description}</p>
+                   <button className="px-12 py-6 bg-white text-emerald-600 rounded-[2rem] font-black text-lg shadow-2xl hover:scale-105 active:scale-95 transition-all">Launch Masterclass Tool</button>
+                </div>
+                <div className="text-[10rem] md:text-[15rem] leading-none opacity-20 group-hover:scale-110 group-hover:rotate-6 transition-all duration-700">💎</div>
+             </div>
+          </section>
+        )}
+
+        <SpinWheel />
+
+        <section id="tools-grid" className="py-12">
+          <div className="flex flex-col md:flex-row items-end justify-between mb-16 gap-6">
+            <div className="max-w-2xl">
+              <h2 className="text-4xl md:text-6xl font-black text-slate-900 tracking-tighter uppercase italic">The Vault Index</h2>
+              <p className="text-lg text-slate-500 font-medium leading-relaxed mt-4">500+ Verified Professional Utilities. No Uploads. 100% Native.</p>
+            </div>
+          </div>
+
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
             {filteredTools.map(tool => (
               <ToolCard 
                 key={tool.slug} 
                 tool={tool} 
-                onClick={() => onNavigate('tool', { slug: tool.slug })} 
+                onClick={() => handleToolClick(tool)} 
                 isFavorite={favorites.includes(tool.slug)}
                 onToggleFavorite={onToggleFavorite}
               />
             ))}
           </div>
-        ) : (
-          <div className="text-center py-40 bg-white rounded-[3rem] border-4 border-dashed border-slate-100 flex flex-col items-center animate-in zoom-in-95">
-            <div className="text-8xl mb-8 opacity-20">🔎</div>
-            <h3 className="text-3xl font-black text-slate-900 mb-4">No utilities found</h3>
-            <p className="text-slate-400 max-w-sm mx-auto font-medium">We couldn't find a tool matching that query. Try broader terms like "PDF", "Video", or "Text".</p>
-          </div>
-        )}
-      </section>
+        </section>
 
-      {!deferredSearch && (
-        <>
-          <section id="categories" className="bg-slate-900 py-32 overflow-hidden relative">
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-              <div className="text-center mb-24">
-                <h2 className="text-4xl sm:text-5xl font-black text-white mb-6 tracking-tight">Explore 17 Specialized Hubs</h2>
-                <p className="text-slate-400 max-w-2xl mx-auto text-lg">Every category is a dedicated workspace with its own high-performance engine.</p>
-              </div>
-
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
-                {CATEGORIES.map(cat => (
-                  <div 
-                    key={cat.id}
-                    onClick={() => onNavigate('category', { id: cat.id })}
-                    className="group relative p-10 rounded-[3rem] bg-white/5 border border-white/10 hover:bg-white/10 hover:border-white/20 transition-all cursor-pointer overflow-hidden aspect-[4/5] flex flex-col"
-                  >
-                    <div className="absolute inset-0 z-0">
-                       <img 
-                        src={cat.images[0]} 
-                        className="w-full h-full object-cover opacity-10 group-hover:opacity-40 group-hover:scale-110 transition-all duration-700" 
-                        alt={cat.name}
-                       />
-                       <div className="absolute inset-0 bg-gradient-to-t from-slate-900 via-slate-900/40 to-transparent"></div>
-                    </div>
-                    
-                    <div className="relative z-10 flex flex-col h-full">
-                      <div className={`w-16 h-16 ${cat.color} text-white rounded-2xl flex items-center justify-center text-3xl mb-8 shadow-2xl shadow-black/50 group-hover:scale-110 group-hover:rotate-3 transition-all duration-500`}>
-                        {cat.icon}
-                      </div>
-                      <h3 className="text-3xl font-black text-white mb-4 tracking-tight leading-none uppercase">{cat.name}</h3>
-                      <p className="text-slate-400 text-sm leading-relaxed mb-6 font-medium line-clamp-2">{cat.description}</p>
-                      <div className="mt-auto pt-6">
-                        <div className="text-[10px] font-black text-indigo-400 uppercase tracking-[0.2em] flex items-center group-hover:translate-x-2 transition-transform">
-                          Enter Workspace Hub <span className="ml-3">→</span>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </section>
-
-          {/* FAQ Section */}
-          <section className="py-32 bg-white">
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-              <div className="text-center mb-20">
-                <h2 className="text-xs font-black text-indigo-600 uppercase tracking-[0.4em] mb-4">Common Questions</h2>
-                <h3 className="text-4xl md:text-5xl font-black text-slate-900 tracking-tight">Everything you need to know</h3>
-              </div>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                {HOME_FAQS.map((faq, i) => (
-                  <div key={i} className="p-10 bg-slate-50 rounded-[2.5rem] border border-slate-100 hover:border-indigo-200 transition-all group">
-                    <h4 className="text-lg font-black text-slate-900 mb-4 leading-tight group-hover:text-indigo-600 transition-colors">{faq.q}</h4>
-                    <p className="text-sm text-slate-500 font-medium leading-relaxed">{faq.a}</p>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </section>
-
-          <section className="py-32 max-w-7xl mx-auto px-4">
-            <div className="bg-gradient-to-br from-indigo-600 to-purple-700 rounded-[4rem] p-12 md:p-24 text-white flex flex-col lg:flex-row items-center justify-between gap-16 shadow-[0_50px_100px_-20px_rgba(79,70,229,0.3)]">
-               <div className="max-w-xl text-center lg:text-left">
-                  <h2 className="text-5xl font-black mb-8 leading-tight tracking-tight">Level up your <br />digital workflow.</h2>
-                  <p className="text-indigo-100 text-lg mb-12 font-medium leading-relaxed opacity-90">Join professionals from around the globe who rely on ToolVerse for their daily technical and creative tasks. Always free. Always secure.</p>
-                  <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
-                    <button className="px-12 py-5 bg-white text-indigo-600 font-black rounded-[2rem] shadow-2xl transition-all hover:scale-105 active:scale-95 text-lg">Launch Free Portal</button>
-                    <button className="px-12 py-5 bg-indigo-500/30 border border-white/20 text-white font-black rounded-[2rem] backdrop-blur-md transition-all hover:bg-indigo-500/50 text-lg">Documentation</button>
-                  </div>
-               </div>
-               <div className="grid grid-cols-2 gap-6 w-full lg:w-auto">
-                  {[
-                    { val: "1000+", lab: "Total Tools" },
-                    { val: "100%", lab: "Browser Native" },
-                    { val: "0.0s", lab: "Upload Latency" },
-                    { val: "Private", lab: "Data Policy" }
-                  ].map((stat, i) => (
-                    <div key={i} className="bg-white/10 p-10 rounded-[2.5rem] backdrop-blur-xl border border-white/10 text-center flex flex-col justify-center shadow-lg transform hover:scale-105 transition-all">
-                      <div className="text-4xl font-black mb-2 leading-none">{stat.val}</div>
-                      <div className="text-[10px] uppercase font-black text-indigo-200 tracking-[0.2em]">{stat.lab}</div>
-                    </div>
-                  ))}
-               </div>
-            </div>
-          </section>
-        </>
-      )}
+        <TopSitesSection />
+      </div>
     </div>
   );
 };
