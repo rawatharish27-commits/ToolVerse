@@ -17,47 +17,18 @@ const CATEGORY_ICONS: Record<string, string> = {
   "Learning & Freelancing": "🎓"
 };
 
-const AFFILIATE_MAP: Record<string, string> = {
-  amazon: "tag=toolverse-21",
-  flipkart: "affid=toolverse",
-  booking: "aid=123456",
-  fiverr: "afp=toolverse",
-  udemy: "coupon=TOOLVERSE"
-};
-
 const TopSitesSection: React.FC = () => {
   const [activeCategory, setActiveCategory] = useState<string>("All Hubs");
   const [userCountry, setUserCountry] = useState<'in' | 'global'>('global');
   const [recommendations, setRecommendations] = useState<TopSite[]>([]);
-  const [abVariant, setAbVariant] = useState<'grid' | 'slider'>('grid');
-  const [heroLogoIdx, setHeroLogoIdx] = useState(0);
-  const [userCount, setUserCount] = useState(0);
   const containerRef = useRef<HTMLDivElement>(null);
-  const [lang, setLang] = useState('en');
 
-  // 1. Language & Country Switching
   useEffect(() => {
     const tz = Intl.DateTimeFormat().resolvedOptions().timeZone;
     const country = (tz.includes("India") || tz.includes("Calcutta")) ? 'in' : 'global';
     setUserCountry(country);
-    
-    const browserLang = navigator.language.startsWith('hi') ? 'hi' : 'en';
-    setLang(browserLang);
-    document.documentElement.lang = browserLang;
-
-    // Trust Counter Animation
-    const target = 128; // Million users
-    let cur = 0;
-    const interval = setInterval(() => {
-      cur += Math.ceil((target - cur) / 10);
-      setUserCount(cur);
-      if (cur >= target) clearInterval(interval);
-    }, 80);
-
-    return () => clearInterval(interval);
   }, []);
 
-  // 2. AI Recs
   useEffect(() => {
     const loadAIRecommendations = async () => {
       const raw = localStorage.getItem('tv_site_clicks') || '{}';
@@ -71,8 +42,7 @@ const TopSitesSection: React.FC = () => {
       const recs = TOP_SITES.filter(s => aiSuggestedNames.includes(s.name)).slice(0, 6);
       
       if (recs.length < 3) {
-         const localRecs = TOP_SITES.filter(s => topClicks.includes(s.name)).slice(0, 6);
-         setRecommendations(localRecs);
+         setRecommendations(TOP_SITES.filter(s => s.popular).slice(0, 6));
       } else {
          setRecommendations(recs);
       }
@@ -80,54 +50,14 @@ const TopSitesSection: React.FC = () => {
     loadAIRecommendations();
   }, [userCountry]);
 
-  // 3. Hero Brand Cycler
-  const heroGiants = useMemo(() => TOP_SITES.slice(0, 8), []);
-  useEffect(() => {
-    const timer = setInterval(() => {
-      setHeroLogoIdx(prev => (prev + 1) % heroGiants.length);
-    }, 4000);
-    return () => clearInterval(timer);
-  }, [heroGiants]);
-
-  // 4. Affiliate Auto-Tracking & Click Handler
   const handleSiteClick = (site: TopSite) => {
     trackEvent('trusted_site_click', site.name);
-    
     const raw = localStorage.getItem('tv_site_clicks') || '{}';
     const clicks = JSON.parse(raw);
     clicks[site.name] = (clicks[site.name] || 0) + 1;
     localStorage.setItem('tv_site_clicks', JSON.stringify(clicks));
-
-    // Append Affiliate Tag if host matches
-    let finalUrl = site.url;
-    try {
-      const urlObj = new URL(finalUrl);
-      Object.entries(AFFILIATE_MAP).forEach(([key, param]) => {
-        if (urlObj.hostname.includes(key)) {
-          const [pKey, pVal] = param.split('=');
-          urlObj.searchParams.set(pKey, pVal);
-          finalUrl = urlObj.toString();
-        }
-      });
-    } catch (e) {}
-
-    window.open(finalUrl, '_blank');
+    window.open(site.url, '_blank');
   };
-
-  // 5. Scroll Reveal
-  useEffect(() => {
-    const observer = new IntersectionObserver((entries) => {
-      entries.forEach(entry => {
-        if (entry.isIntersecting) {
-          entry.target.classList.add('reveal-active');
-          observer.unobserve(entry.target);
-        }
-      });
-    }, { threshold: 0.1 });
-    const elements = containerRef.current?.querySelectorAll('.reveal-on-scroll');
-    elements?.forEach(el => observer.observe(el));
-    return () => observer.disconnect();
-  }, [activeCategory, recommendations, abVariant]);
 
   const filteredSites = useMemo(() => {
     let list = TOP_SITES.filter(s => !s.country || s.country === userCountry);
@@ -135,183 +65,133 @@ const TopSitesSection: React.FC = () => {
     return list.filter(s => s.category === activeCategory);
   }, [activeCategory, userCountry]);
 
-  const marqueeGiants = useMemo(() => TOP_SITES.slice(0, 20), []);
-
   return (
-    <section ref={containerRef} className="py-24 bg-slate-50 relative overflow-hidden border-t border-slate-200">
-      <div className="absolute top-0 right-0 w-1/3 h-1/3 bg-indigo-500/5 rounded-full blur-[120px] pointer-events-none"></div>
+    <section ref={containerRef} className="py-24 bg-[#f8fafc] relative overflow-hidden border-t border-slate-200">
+      {/* Premium Background Elements */}
+      <div className="absolute top-0 left-0 w-full h-full pointer-events-none overflow-hidden">
+        <div className="absolute -top-[10%] -left-[10%] w-[40%] h-[40%] bg-indigo-500/10 rounded-full blur-[120px] animate-pulse"></div>
+        <div className="absolute top-[20%] -right-[5%] w-[30%] h-[30%] bg-emerald-500/5 rounded-full blur-[100px]"></div>
+        <div className="absolute bottom-0 left-[20%] w-full h-[1px] bg-gradient-to-r from-transparent via-slate-200 to-transparent"></div>
+      </div>
       
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-        
-        {/* TRUST COUNTER */}
-        <div className="flex flex-col items-center mb-16 reveal-on-scroll">
-           <div className="text-3xl md:text-4xl font-black text-slate-900 tracking-tight text-center">
-              {lang === 'hi' ? 'दुनिया भर में ' : 'Used by '}
-              <span className="text-indigo-600 tabular-nums">{userCount}</span>
-              {lang === 'hi' ? ' मिलियन से अधिक उपयोगकर्ताओं द्वारा उपयोग' : 'M+ million users worldwide'}
-           </div>
-           <div className="mt-4 h-1 w-20 bg-indigo-100 rounded-full overflow-hidden">
-              <div className="h-full bg-indigo-600 animate-shimmer" style={{ width: '40%' }}></div>
-           </div>
-        </div>
-
-        {/* HERO TRUST STRIP */}
-        <div className="flex justify-center mb-16 reveal-on-scroll">
-           <div className="bg-white px-8 py-4 rounded-full shadow-xl border border-slate-100 flex items-center gap-6">
-              <span className="text-[9px] font-black text-slate-300 uppercase tracking-[0.2em]">Featured Global Hub</span>
-              <div className="h-6 w-px bg-slate-100"></div>
-              <div className="flex items-center gap-3 w-40 overflow-hidden">
-                <img 
-                  src={`https://logo.clearbit.com/${heroGiants[heroLogoIdx].domain}`} 
-                  className="w-6 h-6 animate-fade-in-down" 
-                  alt="Brand"
-                  decoding="async"
-                />
-                <span className="text-xs font-black text-slate-900 uppercase tracking-widest">{heroGiants[heroLogoIdx].name}</span>
-              </div>
-           </div>
-        </div>
-
-        <div className="text-center mb-16 reveal-on-scroll">
-          <div className="inline-flex items-center px-4 py-2 rounded-full bg-white border border-slate-200 text-slate-500 text-[10px] font-black uppercase tracking-[0.3em] mb-6 shadow-sm">
-            {userCountry === 'in' ? (lang === 'hi' ? 'क्षेत्रीय हब: भारत' : 'Regional Hub: India') : 'Global Hub Directory'}
+        <div className="text-center mb-20">
+          <div className="inline-flex items-center px-5 py-2 rounded-full bg-white shadow-sm border border-indigo-100 text-indigo-600 text-xs font-black uppercase tracking-[0.2em] mb-6">
+            ✨ Global Verified Directory
           </div>
-          <h2 className="text-4xl md:text-6xl font-black text-slate-900 mb-6 tracking-tight italic uppercase">Internet Giants Index</h2>
-          <p className="text-slate-500 max-w-2xl mx-auto text-lg font-medium leading-relaxed">
-            One-click access to the world's most influential web destinations. AI predicts your likely needs based on behavior.
+          <h2 className="text-4xl md:text-6xl font-extrabold text-slate-900 mb-6 tracking-tight">
+            The Internet <span className="text-indigo-600">Power Index.</span>
+          </h2>
+          <p className="text-lg md:text-xl text-slate-500 max-w-2xl mx-auto font-medium leading-relaxed">
+            One-click access to 100+ high-traffic global platforms. <br className="hidden md:block" />
+            Curated by AI based on your browsing patterns.
           </p>
         </div>
 
-        {/* AI RECO BAR */}
+        {/* AI PREDICTIVE ROW */}
         {recommendations.length > 0 && activeCategory === "All Hubs" && (
-          <div className="mb-20 reveal-on-scroll">
-             <div className="flex items-center gap-4 mb-8 px-2">
-                <span className="text-xl">🧠</span>
-                <h3 className="text-sm font-black text-slate-900 uppercase tracking-widest">AI Suggested for You</h3>
-                <div className="flex-grow h-px bg-gradient-to-r from-indigo-200 to-transparent"></div>
-             </div>
-             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-4">
-                {recommendations.map(site => (
-                  <button key={`reco-${site.name}`} onClick={() => handleSiteClick(site)} className="bg-white p-4 rounded-3xl shadow-sm border border-indigo-50 flex flex-col items-center gap-3 hover:shadow-2xl hover:-translate-y-1 transition-all group">
-                    <img src={`https://logo.clearbit.com/${site.domain}`} className="w-8 h-8 grayscale group-hover:grayscale-0 transition-all duration-500" alt={site.name} decoding="async" />
-                    <span className="text-[10px] font-black text-slate-400 group-hover:text-indigo-600 uppercase tracking-widest">{site.name}</span>
-                  </button>
-                ))}
-             </div>
-          </div>
-        )}
-
-        {/* MARQUEE */}
-        <div className="mb-20 relative reveal-on-scroll">
-          <div className="absolute left-0 top-0 h-full w-20 bg-gradient-to-r from-slate-50 to-transparent z-10"></div>
-          <div className="absolute right-0 top-0 h-full w-20 bg-gradient-to-l from-slate-50 to-transparent z-10"></div>
-          <div className="overflow-hidden py-8">
-            <div className="flex animate-scroll-marquee whitespace-nowrap gap-12 items-center">
-              {[...marqueeGiants, ...marqueeGiants].map((site, i) => (
-                <div key={i} onClick={() => handleSiteClick(site)} className="flex items-center gap-4 opacity-40 hover:opacity-100 transition-opacity cursor-pointer group">
-                  <div className="w-8 h-8 rounded-lg overflow-hidden bg-white shadow-sm flex items-center justify-center p-1 border border-slate-100 grayscale group-hover:grayscale-0 transition-all">
-                    <img src={`https://logo.clearbit.com/${site.domain}`} alt={site.name} className="w-full h-full object-contain" loading="lazy" decoding="async" />
+          <div className="mb-20">
+            <div className="flex items-center gap-4 mb-10">
+              <div className="w-10 h-10 bg-indigo-600 rounded-xl flex items-center justify-center text-xl shadow-lg shadow-indigo-200">🧠</div>
+              <h3 className="text-lg font-black text-slate-800 uppercase tracking-widest">AI Top Picks for You</h3>
+              <div className="flex-grow h-[2px] bg-gradient-to-r from-indigo-100 to-transparent"></div>
+            </div>
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-6">
+              {recommendations.map(site => (
+                <button 
+                  key={`reco-${site.name}`} 
+                  onClick={() => handleSiteClick(site)} 
+                  className="bg-white p-6 rounded-[2.5rem] shadow-sm border border-indigo-50 flex flex-col items-center gap-4 hover:shadow-2xl hover:-translate-y-2 transition-all duration-500 group"
+                >
+                  <div className="w-14 h-14 rounded-2xl bg-slate-50 p-2 flex items-center justify-center overflow-hidden group-hover:scale-110 transition-transform duration-500">
+                    <img src={`https://logo.clearbit.com/${site.domain}`} className="w-full h-full object-contain" alt={site.name} />
                   </div>
-                  <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest group-hover:text-indigo-600">{site.name}</span>
-                </div>
+                  <span className="text-sm font-bold text-slate-700 group-hover:text-indigo-600">{site.name}</span>
+                </button>
               ))}
             </div>
           </div>
-        </div>
+        )}
 
-        {/* FILTER BAR */}
-        <div className="flex flex-wrap justify-center gap-3 mb-16 px-4 reveal-on-scroll">
+        {/* CATEGORY NAV */}
+        <div className="flex flex-wrap justify-center gap-4 mb-16">
           {useMemo(() => ["All Hubs", ...Array.from(new Set(TOP_SITES.map(s => s.category)))], []).map(cat => (
             <button
               key={cat}
-              onClick={() => { setActiveCategory(cat); trackEvent('directory_filter_changed', cat); }}
-              className={`px-6 py-3 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all ${
+              onClick={() => setActiveCategory(cat)}
+              className={`px-8 py-4 rounded-full text-sm font-black uppercase tracking-widest transition-all duration-300 ${
                 activeCategory === cat 
-                ? 'bg-indigo-600 text-white shadow-xl shadow-indigo-200 -translate-y-1' 
-                : 'bg-white text-slate-500 border border-slate-200 hover:border-indigo-300 hover:text-indigo-600'
+                ? 'bg-slate-900 text-white shadow-xl -translate-y-1' 
+                : 'bg-white text-slate-500 border border-slate-200 hover:border-indigo-400 hover:text-indigo-600 shadow-sm'
               }`}
             >
-              {cat === "All Hubs" ? "🌐" : CATEGORY_ICONS[cat]} {cat}
+              <span className="mr-2">{cat === "All Hubs" ? "🌐" : CATEGORY_ICONS[cat]}</span>
+              {cat}
             </button>
           ))}
         </div>
 
-        {/* MAIN LOGO GRID WITH AI HEATMAP PREDICTOR */}
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 md:gap-6 relative">
+        {/* MAIN BRAND GRID */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
           {filteredSites.map(site => (
             <button 
               key={site.name} 
               onClick={() => handleSiteClick(site)}
-              className="reveal-on-scroll group bg-white p-5 rounded-[2rem] border border-slate-100 shadow-sm hover:shadow-2xl hover:border-indigo-100 transition-all flex items-center gap-4 relative"
+              className="group relative bg-white p-6 rounded-[2.5rem] border border-slate-100 shadow-sm hover:shadow-[0_20px_50px_-12px_rgba(79,70,229,0.15)] hover:border-indigo-100 transition-all duration-500 flex items-center gap-6 overflow-hidden"
             >
-              {/* Heatmap implementation for Popular sites */}
-              {site.popular && activeCategory === "All Hubs" && (
-                <div className="heat-spot absolute inset-0 -m-4"></div>
-              )}
+              {/* Animated Glow on Hover */}
+              <div className="absolute inset-0 bg-gradient-to-br from-indigo-50/0 to-indigo-50/0 group-hover:from-indigo-50/50 group-hover:to-transparent transition-all duration-500"></div>
               
-              <div className="absolute -bottom-8 left-1/2 -translate-x-1/2 bg-slate-900 text-white text-[8px] font-black py-1 px-3 rounded-full opacity-0 group-hover:opacity-100 transition-all translate-y-2 group-hover:translate-y-0 z-50 pointer-events-none whitespace-nowrap uppercase tracking-widest border border-white/10 shadow-2xl">
-                 Rank {site.rank} • {site.visits} Visits
-              </div>
-              
-              <div className="absolute top-0 left-0 w-1 h-full bg-indigo-500 opacity-0 group-hover:opacity-100 transition-opacity"></div>
-              <div className="w-12 h-12 flex-shrink-0 bg-slate-50 rounded-2xl flex items-center justify-center overflow-hidden border border-slate-50 group-hover:scale-110 group-hover:shadow-lg transition-all duration-500 grayscale group-hover:grayscale-0">
+              <div className="relative w-16 h-16 flex-shrink-0 bg-slate-50 rounded-2xl flex items-center justify-center overflow-hidden border border-slate-100 group-hover:shadow-inner transition-all duration-500">
                 <img 
                   src={`https://logo.clearbit.com/${site.domain}`} 
                   alt={site.name} 
-                  className="w-full h-full object-contain p-2"
-                  loading="lazy"
-                  decoding="async"
+                  className="w-10 h-10 object-contain group-hover:scale-110 transition-transform duration-500"
                   onError={(e) => {
-                    (e.target as HTMLImageElement).src = `https://ui-avatars.com/api/?name=${site.name}&background=6366f1&color=fff&bold=true`;
+                    (e.target as HTMLImageElement).src = `https://ui-avatars.com/api/?name=${site.name}&background=6366f1&color=fff&bold=true&size=128`;
                   }}
                 />
               </div>
-              <div className="flex flex-col min-w-0 text-left">
-                <span className="text-[11px] font-black text-slate-800 truncate group-hover:text-indigo-600 transition-colors uppercase tracking-tight">{site.name}</span>
-                <span className="text-[8px] font-bold text-slate-300 truncate uppercase tracking-tighter group-hover:text-slate-400">{site.domain}</span>
+
+              <div className="relative flex flex-col text-left min-w-0">
+                <span className="text-base font-bold text-slate-900 group-hover:text-indigo-600 transition-colors truncate">
+                  {site.name}
+                </span>
+                <span className="text-xs font-medium text-slate-400 uppercase tracking-widest truncate">
+                  {site.domain}
+                </span>
               </div>
-              <div className="ml-auto opacity-0 group-hover:opacity-100 transition-all translate-x-2 group-hover:translate-x-0">
-                 <svg className="w-4 h-4 text-indigo-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
+
+              {/* Hover Badge Info */}
+              <div className="absolute right-4 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-all duration-500 translate-x-4 group-hover:translate-x-0 hidden sm:flex flex-col items-end">
+                <span className="text-[10px] font-black bg-indigo-600 text-white px-2 py-1 rounded-lg shadow-lg mb-1 whitespace-nowrap uppercase">
+                  Rank {site.rank}
+                </span>
+                <span className="text-[9px] font-bold text-slate-400 uppercase">{site.visits} visits</span>
               </div>
+              
+              {/* Visual Indicator */}
+              <div className="absolute top-0 left-0 w-1 h-0 bg-indigo-600 group-hover:h-full transition-all duration-500"></div>
             </button>
           ))}
         </div>
 
-        <div className="mt-20 pt-12 border-t border-slate-200 text-center reveal-on-scroll">
-           <p className="text-[9px] font-black text-slate-300 uppercase tracking-[0.5em]">Verified Global Hub Index • Affiliate Mode Active</p>
+        {/* Global Footer Hub Indicator */}
+        <div className="mt-24 pt-12 border-t border-slate-200 text-center">
+          <p className="text-xs font-black text-slate-400 uppercase tracking-[0.4em] mb-4">
+            Authorized Link Gateway • Real-time Traffic Tracking Active
+          </p>
+          <div className="flex justify-center gap-8 grayscale opacity-30 hover:opacity-100 hover:grayscale-0 transition-all duration-700 cursor-default">
+            {marqueeGiants.slice(0, 5).map(s => (
+              <img key={`foot-${s.name}`} src={`https://logo.clearbit.com/${s.domain}`} className="h-6 w-auto" alt="Partner" />
+            ))}
+          </div>
         </div>
       </div>
-
-      <style>{`
-        .reveal-on-scroll {
-          opacity: 0;
-          transform: translateY(30px);
-          transition: all 0.8s cubic-bezier(0.2, 0.8, 0.2, 1);
-        }
-        .reveal-active {
-          opacity: 1 !important;
-          transform: translateY(0) !important;
-        }
-        @keyframes scroll-marquee {
-          0% { transform: translateX(0); }
-          100% { transform: translateX(-50%); }
-        }
-        .animate-scroll-marquee {
-          animation: scroll-marquee 50s linear infinite;
-        }
-        .animate-scroll-marquee:hover {
-          animation-play-state: paused;
-        }
-        @keyframes fade-in-down {
-          from { opacity: 0; transform: translateY(-10px); }
-          to { opacity: 1; transform: translateY(0); }
-        }
-        .animate-fade-in-down {
-          animation: fade-in-down 0.4s ease-out;
-        }
-      `}</style>
     </section>
   );
 };
+
+const marqueeGiants = TOP_SITES.slice(0, 20);
 
 export default TopSitesSection;
