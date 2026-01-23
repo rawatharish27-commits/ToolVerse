@@ -1,3 +1,4 @@
+
 import { Tool } from '../types';
 
 export const TOOLS: Tool[] = [
@@ -27,17 +28,22 @@ export const TOOLS: Tool[] = [
 
   // --- EDUCATION HUB ---
   { slug: 'edu-study-planner', title: 'AI Study Planner', category: 'education', priority: 100, description: 'Generate custom study schedules, milestones, and habit-trackers based on your exams and subjects.', keywords: ['study plan', 'exam preparation', 'learning schedule', 'student productivity'], toolType: 'ai' },
-  { slug: 'edu-summary-generator', title: 'AI Note Summarizer', category: 'education', priority: 98, description: 'Transform long lectures or textbooks into concise summaries, flashcards, and key takeaways.', keywords: ['summarize', 'notes', 'flashcards', 'key points'], toolType: 'ai' },
+  { slug: 'edu-summary-generator', title: 'Notes Summarizer', category: 'education', priority: 98, description: 'Transform long lectures or textbooks into concise summaries, flashcards, and key takeaways.', keywords: ['summarize', 'notes', 'flashcards', 'key points', 'note taking'], toolType: 'ai' },
   { slug: 'edu-essay-grader', title: 'AI Essay Auditor', category: 'education', priority: 96, description: 'Get professional feedback on your essays including grammar, logic flow, and a simulated grade.', keywords: ['essay grader', 'writing feedback', 'academic proofreader', 'paper audit'], toolType: 'ai' },
   { slug: 'edu-math-solver', title: 'AI Math Logic Solver', category: 'education', priority: 95, description: 'Get step-by-step logic and explanations for complex math problems from algebra to calculus.', keywords: ['math solver', 'math steps', 'algebra help', 'calculus solver'], toolType: 'ai' },
-  { slug: 'edu-quiz-creator', title: 'AI Smart Quiz Maker', category: 'education', priority: 94, description: 'Generate MCQs, True/False, and Short-answer quizzes from any topic or text snippet.', keywords: ['quiz generator', 'mcq maker', 'test creator', 'study questions'], toolType: 'ai' },
+  { slug: 'edu-equation-solver', title: 'AI Equation Solver', category: 'education', priority: 94, description: 'Step-by-step solving and verification for linear, quadratic, and systems of equations.', keywords: ['equation solver', 'algebra solver', 'quadratic formula', 'math homework help'], toolType: 'ai' },
+  { slug: 'edu-formula-generator', title: 'AI Formula Generator', category: 'education', priority: 93, description: 'Generate comprehensive, exam-ready formula lists with units, examples, and derivations.', keywords: ['physics formulas', 'math formulas', 'chemistry help', 'formula sheet generator'], toolType: 'ai' },
+  { slug: 'edu-unit-practice', title: 'Unit Practice Tool', category: 'education', priority: 92, description: 'Generate topic-wise practice questions with solutions and difficulty control for self-assessment.', keywords: ['practice questions', 'exam prep', 'study exercises', 'topic test'], toolType: 'ai' },
+  { slug: 'edu-quiz-generator', title: 'AI Quiz Generator', category: 'education', priority: 94, description: 'Generate MCQs, True/False, and Short-answer quizzes from any topic or text snippet.', keywords: ['quiz generator', 'mcq maker', 'test creator', 'study questions', 'exam generator'], toolType: 'ai' },
+  { slug: 'edu-flashcard-generator', title: 'AI Flashcard Generator', category: 'education', priority: 93, description: 'Create active recall flashcard sets from your notes or textbook excerpts for faster revision.', keywords: ['flashcards', 'active recall', 'study notes', 'revision tool', 'anki style'], toolType: 'ai' },
+  { slug: 'edu-assignment-formatter', title: 'AI Assignment Formatter', category: 'education', priority: 92, description: 'Format raw content into professional, submission-ready academic assignments with proper structure and tone.', keywords: ['assignment formatter', 'academic writing', 'formatting tool', 'college paper', 'homework helper'], toolType: 'ai' },
   { slug: 'edu-citation-architect', title: 'AI Citation Architect', category: 'education', priority: 93, description: 'Generate perfect APA, MLA, or Chicago style citations for any source with context-aware accuracy.', keywords: ['citations', 'apa style', 'mla style', 'bibliography maker'], toolType: 'ai' },
   { slug: 'edu-research-assistant', title: 'AI Research Architect', category: 'education', priority: 92, description: 'Brainstorm research topics, source lists, and structured outlines for thesis or project work.', keywords: ['research help', 'thesis outline', 'source finder', 'academic planning'], toolType: 'ai' },
   { slug: 'edu-language-tutor', title: 'AI Language Architect', category: 'education', priority: 91, description: 'Practice conversations, learn vocabulary, and fix grammar in 20+ languages with AI tutoring.', keywords: ['language learning', 'spanish tutor', 'french tutor', 'grammar coach'], toolType: 'ai' },
   { slug: 'edu-concept-explainer', title: 'AI Concept Master (ELI5)', category: 'education', priority: 90, description: 'Explaining complex academic concepts in simple, easy-to-understand terms for any age level.', keywords: ['explain like im 5', 'concept breakdown', 'learning help', 'simple explanation'], toolType: 'ai' },
   { slug: 'edu-coding-tutor', title: 'AI Coding Logic Tutor', category: 'education', priority: 89, description: 'Learn programming logic, fix bugs, and understand code snippets with student-friendly explanations.', keywords: ['coding tutor', 'programming logic', 'python help', 'javascript tutor'], toolType: 'ai' },
 
-  // --- AI IMAGE HUB (Creative Direction) ---
+  // --- AI IMAGE HUB ---
   { slug: 'ai-image-generator', title: 'AI Image Studio (Prompt Pro)', category: 'ai', priority: 99, description: 'Architect high-fidelity prompts for Midjourney, DALL-E, and SD with cinematic controls.', keywords: ['image prompt', 'midjourney', 'stable diffusion', 'ai art director'], toolType: 'ai' },
   { slug: 'ai-background-remover', title: 'AI Background Architect', category: 'ai', priority: 98, description: 'Generate precision instructions and masks for AI-powered background removal.', keywords: ['background remover prompt', 'masking', 'photoshop ai', 'transparent bg'], toolType: 'ai' },
   { slug: 'ai-image-enhancer', title: 'AI Image Enhancer (Technician)', category: 'ai', priority: 97, description: 'Generate professional AI instructions to fix blur, lighting, and textures.', keywords: ['enhance image ai', 'fix blur prompt', 'upscale instructions', 'image restoration'], toolType: 'ai' },
@@ -61,7 +67,7 @@ export const TOOLS: Tool[] = [
   { slug: 'seo-score-analyzer', title: 'AI SEO Score Calculator', category: 'seo', priority: 100, description: 'Calculate a comprehensive SEO quality score for your content with AI-driven weighted analysis and priority fix lists.', keywords: ['seo score', 'seo audit', 'page quality', 'seo health checker'], toolType: 'ai' },
   { slug: 'json-ld-schema-pro', title: 'JSON-LD Schema Maker', category: 'seo', priority: 95, description: 'Create rich snippet schemas for better search rankings.', keywords: ['schema', 'json-ld', 'snippets'], toolType: 'client' },
 
-  // --- IMAGE LAB (Client-Side) ---
+  // --- CLIENT SIDE TOOLS ---
   { slug: 'image-compressor', title: 'Smart Image Compressor', category: 'image', priority: 100, description: 'Compress PNG/JPG/WebP without quality loss.', keywords: ['compress', 'optimization', 'tinypng'], toolType: 'client' },
   { slug: 'background-remover', title: 'Local Background Remover', category: 'image', priority: 99, description: 'Remove backgrounds instantly with neural networks.', keywords: ['bg remover', 'transparent'], toolType: 'client' },
   { slug: 'image-resizer', title: 'Bulk Image Resizer', category: 'image', priority: 92, description: 'Resize hundreds of images to custom dimensions.', keywords: ['resize', 'scaling', 'dimensions'], toolType: 'client' },
@@ -71,8 +77,6 @@ export const TOOLS: Tool[] = [
   { slug: 'image-watermark', title: 'Professional Watermark Tool', category: 'image', priority: 88, description: 'Protect your photos by adding custom text or logo watermarks in bulk.', keywords: ['watermark', 'branding', 'copyright photo'], toolType: 'client' },
   { slug: 'image-metadata-remover', title: 'Image Privacy Scrubber', category: 'image', priority: 84, description: 'Remove sensitive EXIF, GPS, and camera metadata from your images.', keywords: ['metadata remover', 'strip exif', 'privacy image'], toolType: 'client' },
   { slug: 'image-to-text-ocr', title: 'OCR Image to Text', category: 'image', priority: 95, description: 'Extract editable text from scans and photos.', keywords: ['ocr', 'extract text', 'scanner'], toolType: 'client' },
-
-  // --- VIDEO LAB ---
   { slug: 'video-compressor', title: 'Professional Video Compressor', category: 'video', priority: 100, description: 'Reduce video file size without quality loss using browser-native FFmpeg.', keywords: ['video compress', 'reduce video size', 'mp4 compressor'], toolType: 'client' },
   { slug: 'video-converter', title: 'Video Converter Pro', category: 'video', priority: 95, description: 'Convert between MP4, WebM, AVI, and other major formats.', keywords: ['video convert', 'format changer', 'webm to mp4'], toolType: 'client' },
   { slug: 'video-trimmer', title: 'Video Trimmer Studio', category: 'video', priority: 92, description: 'Cut and trim video segments with professional precision.', keywords: ['video trim', 'cut video', 'video cropper'], toolType: 'client' },
@@ -81,23 +85,17 @@ export const TOOLS: Tool[] = [
   { slug: 'video-thumbnail-extractor', title: 'Video Frame Grabber', category: 'video', priority: 93, description: 'Extract high-resolution still images from any timestamp in your video.', keywords: ['video thumbnail', 'capture frame', 'screenshot video'], toolType: 'client' },
   { slug: 'video-audio-extractor', title: 'Audio Stripper', category: 'video', priority: 94, description: 'Extract and save the audio track from any video file in MP3 or WAV format.', keywords: ['extract audio', 'video to mp3', 'strip audio'], toolType: 'client' },
   { slug: 'video-speed-controller', title: 'Video Speed Master', category: 'video', priority: 89, description: 'Speed up or slow down videos with audio pitch correction.', keywords: ['video speed', 'fast motion', 'slow mo maker'], toolType: 'client' },
-
-  // --- AUDIO LAB ---
   { slug: 'audio-converter', title: 'Pro Audio Converter', category: 'audio', priority: 98, description: 'Fast, browser-side audio format conversion. Supports MP3, WAV, AAC, and OGG.', keywords: ['audio converter', 'mp3 to wav', 'wav to mp3', 'audio format'], toolType: 'client' },
   { slug: 'audio-compressor', title: 'Smart Audio Compressor', category: 'audio', priority: 95, description: 'Reduce audio file size without losing quality using browser-native compression.', keywords: ['audio compress', 'reduce audio size', 'mp3 compressor'], toolType: 'client' },
   { slug: 'audio-cutter', title: 'Precision Audio Cutter', category: 'audio', priority: 92, description: 'Trim and cut audio files with professional precision directly in your browser.', keywords: ['audio cut', 'trim mp3', 'audio trimmer', 'mp3 cutter'], toolType: 'client' },
   { slug: 'audio-speed-pitch-control', title: 'Audio Pitch & Speed Master', category: 'audio', priority: 93, description: 'Change audio tempo and pitch independently for professional music and voice editing.', keywords: ['audio speed', 'pitch shifter', 'tempo control'], toolType: 'client' },
   { slug: 'audio-noise-remover', title: 'AI Audio Denoiser', category: 'audio', priority: 96, description: 'Remove background noise, hiss, and hum from your recordings instantly.', keywords: ['noise reduction', 'audio cleaner', 'remove background noise', 'denoise'], toolType: 'client' },
   { slug: 'audio-merger', title: 'Pro Audio Merger', category: 'audio', priority: 94, description: 'Merge multiple audio files into a single high-quality track seamlessly.', keywords: ['audio merge', 'combine mp3', 'join audio', 'mp3 merger'], toolType: 'client' },
-
-  // --- FILE LAB ---
   { slug: 'file-converter', title: 'Professional File Converter', category: 'file', priority: 97, description: 'Convert between JSON, CSV, and Text formats instantly. High-speed browser-side processing.', keywords: ['file converter', 'json to csv', 'csv to json', 'json to txt'], toolType: 'client' },
   { slug: 'file-compressor', title: 'Pro File Compressor', category: 'file', priority: 96, description: 'Compress files into ZIP archives or extract files from ZIPs safely in your browser.', keywords: ['zip', 'compress file', 'unzip', 'file archiver'], toolType: 'client' },
   { slug: 'file-splitter', title: 'Precision File Splitter', category: 'file', priority: 93, description: 'Split large files into smaller manageable parts by size or count. 100% private and binary-safe.', keywords: ['file split', 'chunk file', 'large file splitter', 'split pdf'], toolType: 'client' },
   { slug: 'file-merger', title: 'Seamless File Merger', category: 'file', priority: 92, description: 'Recombine split file parts back into their original format. Binary-safe browser-side processing.', keywords: ['merge files', 'join files', 'combine parts', 'file joiner'], toolType: 'client' },
   { slug: 'file-hash-generator', title: 'File Hash Generator', category: 'file', priority: 91, description: 'Calculate MD5, SHA-1, and SHA-256 hashes for any file. Verify file integrity instantly in your browser.', keywords: ['checksum', 'md5', 'sha256', 'integrity', 'verify file'], toolType: 'client' },
-
-  // --- DATA TOOLS ---
   { slug: 'csv-viewer', title: 'CSV Viewer', category: 'data', priority: 96, description: 'View CSV files in table format directly in your browser with auto-delimiter detection.', keywords: ['csv viewer', 'csv table', 'data view', 'excel viewer'], toolType: 'client' },
   { slug: 'csv-to-json', title: 'CSV to JSON Converter', category: 'data', priority: 95, description: 'Transform CSV data into structured JSON format with custom mapping.', keywords: ['csv to json', 'data converter', 'csv export', 'json tool'], toolType: 'client' },
   { slug: 'json-to-csv', title: 'JSON to CSV Converter', category: 'data', priority: 94, description: 'Transform structured JSON arrays into flat CSV format for spreadsheets.', keywords: ['json to csv', 'json converter', 'data export', 'spreadsheet tool'], toolType: 'client' },
@@ -105,18 +103,15 @@ export const TOOLS: Tool[] = [
   { slug: 'data-cleaner', title: 'Data Cleaner', category: 'data', priority: 92, description: 'Normalize and clean up messy CSV or text data by removing duplicates and trimming whitespace.', keywords: ['data cleaner', 'csv clean', 'deduplicate', 'text normalization'], toolType: 'client' },
   { slug: 'duplicate-remover', title: 'Duplicate Remover', category: 'data', priority: 91, description: 'Remove duplicate rows or entries from your lists and datasets instantly.', keywords: ['duplicate remover', 'dedupe', 'remove duplicates', 'list cleaner'], toolType: 'client' },
   { slug: 'chart-generator', title: 'Chart Generator', category: 'data', priority: 90, description: 'Turn your CSV data into beautiful bar or line charts instantly.', keywords: ['chart maker', 'graph generator', 'data visualization', 'csv to chart'], toolType: 'client' },
-
-  // --- OFFICE TOOLS ---
   { slug: 'word-counter', title: 'Word Counter', category: 'office', priority: 98, description: 'Professional text analyzer for word count, character count, and reading time estimates.', keywords: ['word counter', 'character count', 'text statistics', 'writing tool'], toolType: 'client' },
   { slug: 'character-counter', title: 'Character Counter', category: 'office', priority: 97, description: 'Real-time character counting with social media limit validation and text cleaning.', keywords: ['char count', 'limit checker', 'twitter limit', 'instagram bio'], toolType: 'client' },
   { slug: 'text-cleaner', title: 'Text Cleaner', category: 'office', priority: 96, description: 'Sanitize messy text by removing extra spaces, empty lines, and HTML tags.', keywords: ['clean text', 'remove spaces', 'text sanitizer', 'formatter'], toolType: 'client' },
+  // Fix: Added missing quotes around 'text formatter' keyword
   { slug: 'case-converter', title: 'Case Converter', category: 'office', priority: 95, description: 'Transform text to UPPERCASE, lowercase, Title Case, and Sentence case instantly.', keywords: ['uppercase', 'lowercase', 'title case', 'text formatter'], toolType: 'client' },
   { slug: 'find-and-replace', title: 'Find & Replace', category: 'office', priority: 94, description: 'Search and replace text patterns or phrases instantly. Supports Regex and case sensitivity.', keywords: ['find replace', 'search and replace', 'regex', 'text tool'], toolType: 'client' },
   { slug: 'duplicate-line-remover', title: 'Duplicate Line Remover', category: 'office', priority: 93, description: 'Instantly remove duplicate lines from lists, code, or documentation.', keywords: ['dedupe', 'unique lines', 'remove duplicates', 'list cleaner'], toolType: 'client' },
   { slug: 'text-to-speech-reader', title: 'AI Voice Reader (TTS)', category: 'office', priority: 90, description: 'Convert text into natural sounding speech with customizable voice parameters.', keywords: ['tts', 'voice reader', 'speech synthesis', 'read aloud'], toolType: 'client' },
   { slug: 'text-compare', title: 'Text Compare', category: 'office', priority: 92, description: 'Compare two texts to find differences instantly. Professional side-by-side diff checker.', keywords: ['diff checker', 'compare text', 'text difference', 'plagiarism checker'], toolType: 'client' },
-
-  // --- PDF SUITE ---
   { slug: 'pdf-merge', title: 'PDF Merger Tool', category: 'pdf', priority: 100, description: 'Combine multiple PDF files into a single document.', keywords: ['merge', 'combine', 'pdf joiner'], toolType: 'client' },
   { slug: 'pdf-to-word-converter', title: 'PDF to Word Converter', category: 'pdf', priority: 98, description: 'Convert PDF files to editable DOCX format.', keywords: ['pdf to word', 'converter', 'doc'], toolType: 'client' },
   { slug: 'pdf-split', title: 'PDF Splitter', category: 'pdf', priority: 90, description: 'Extract pages from PDF files effortlessly.', keywords: ['split', 'extract', 'pages'], toolType: 'client' },
@@ -127,21 +122,15 @@ export const TOOLS: Tool[] = [
   { slug: 'image-to-pdf', title: 'Image to PDF Converter', category: 'pdf', priority: 95, description: 'Combine multiple images into a single high-quality PDF document.', keywords: ['jpg to pdf', 'png to pdf', 'images to pdf'], toolType: 'client' },
   { slug: 'pdf-metadata-editor', title: 'PDF Metadata Editor', category: 'pdf', priority: 91, description: 'Edit internal PDF properties like Title, Author, Subject, and Keywords securely.', keywords: ['pdf metadata', 'edit pdf info', 'pdf properties'], toolType: 'client' },
   { slug: 'pdf-ocr', title: 'Pro PDF OCR', category: 'pdf', priority: 99, description: 'Convert scanned PDFs into searchable and editable text files.', keywords: ['pdf ocr', 'scanned pdf to text', 'extract text from pdf'], toolType: 'client' },
-
-  // --- CALCULATORS HUB ---
   { slug: 'emi-calculator', title: 'EMI Calculator', category: 'calculators', priority: 100, description: 'Calculate monthly loan EMIs with total interest breakdown.', keywords: ['emi', 'loan', 'bank', 'calculator'], toolType: 'client' },
   { slug: 'sip-calculator', title: 'SIP Calculator', category: 'calculators', priority: 98, description: 'Estimate your future wealth with our mutual fund SIP return calculator.', keywords: ['sip', 'mutual fund', 'investment', 'returns'], toolType: 'client' },
   { slug: 'gst-calculator', title: 'GST Calculator (India)', category: 'calculators', priority: 97, description: 'Calculate GST amounts for any product or service according to Indian tax slabs.', keywords: ['gst', 'tax', 'inclusive', 'exclusive', 'india'], toolType: 'client' },
   { slug: 'bmi-calculator', title: 'BMI Calculator', category: 'calculators', priority: 94, description: 'Track your health and fitness with a precise BMI assessment.', keywords: ['bmi', 'body mass index', 'health', 'fitness', 'weight'], toolType: 'client' },
   { slug: 'currency-converter', title: 'Currency Converter', category: 'calculators', priority: 93, description: 'Convert between major world currencies with standard exchange rates instantly.', keywords: ['currency', 'forex', 'converter', 'money'], toolType: 'client' },
-
-  // --- UNIT CONVERTERS ---
   { slug: 'length-converter', title: 'Length Converter', category: 'unit-converters', priority: 98, description: 'Convert between meters, kilometers, miles, inches, and other length units instantly.', keywords: ['length', 'distance', 'converter', 'metric to imperial'], toolType: 'client' },
   { slug: 'weight-converter', title: 'Weight Converter', category: 'unit-converters', priority: 97, description: 'Convert between kilograms, grams, pounds, ounces, and other weight units accurately.', keywords: ['weight', 'mass', 'converter', 'kg to lb'], toolType: 'client' },
   { slug: 'temperature-converter', title: 'Temperature Converter', category: 'unit-converters', priority: 96, description: 'Convert temperatures between Celsius, Fahrenheit, and Kelvin scales instantly.', keywords: ['temperature', 'celsius', 'fahrenheit', 'kelvin'], toolType: 'client' },
   { slug: 'data-size-converter', title: 'Data Size Converter', category: 'unit-converters', priority: 92, description: 'Convert between digital units (B, KB, MB, GB, TB) with binary precision.', keywords: ['data size', 'bytes', 'megabytes', 'gigabytes', 'converter'], toolType: 'client' },
-
-  // --- UTILITY HUB ---
   { slug: 'qr-code-generator', title: 'QR Code Pro Studio', category: 'utility', priority: 97, description: 'Generate high-res QR codes for URLs and text.', keywords: ['qr', 'generator', 'barcode'], toolType: 'client' },
   { slug: 'what-is-my-ip', title: 'IP Lookup Tool', category: 'network', priority: 100, description: 'Check your public IP and network details.', keywords: ['myip', 'lookup', 'network'], toolType: 'client' },
 ];

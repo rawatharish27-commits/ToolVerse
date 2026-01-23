@@ -5,23 +5,33 @@ export const eduStudyPlannerConfig = {
   icon: "📅",
   colorClass: "bg-amber-600",
   options: [
-    { id: "duration", type: "select", label: "Plan Duration", values: ["7 Days", "30 Days", "90 Days", "Custom"], default: "30 Days" },
-    { id: "intensity", type: "select", label: "Daily Intensity", values: ["Light (1-2 hrs)", "Medium (3-5 hrs)", "Heavy (6+ hrs)"], default: "Medium (3-5 hrs)" },
-    { id: "focusMode", type: "select", label: "Learning Style", values: ["Visual", "Textual", "Active Recall", "Spaced Repetition"], default: "Active Recall" },
-    { id: "goal", type: "select", label: "Primary Goal", values: ["Exam Prep", "Skill Mastery", "Deep Research", "Maintenance"], default: "Exam Prep" }
+    { id: "spExamDate", type: "text", label: "Exam Date (YYYY-MM-DD)", default: "2024-06-01" },
+    { id: "spHours", type: "number", label: "Daily Study Hours", default: 4 },
+    { id: "spLevel", type: "select", label: "Education Level", values: ["School", "High School", "College"], default: "High School" },
+    { id: "spWeakStrong", type: "select", label: "Focus Preference", values: ["Balanced", "More focus on weak areas"], default: "Balanced" },
+    { id: "spRevision", type: "select", label: "Revision Style", values: ["Weekly revision", "Daily revision"], default: "Daily revision" },
+    { id: "spBreaks", type: "select", label: "Break Style", values: ["Pomodoro (25-5)", "Long sessions"], default: "Pomodoro (25-5)" },
+    { id: "spPlanType", type: "select", label: "Plan Type", values: ["Daily plan", "Weekly plan"], default: "Weekly plan" },
+    { id: "spLanguage", type: "select", label: "Language", values: ["English", "Hinglish"], default: "English" }
   ],
 };
 
 export const eduSummaryGeneratorConfig = {
   slug: "edu-summary-generator",
-  title: "AI Note Summarizer",
-  description: "Synthesize large academic texts into condensed summaries, flashcards, and key takeaways.",
+  title: "AI Notes Summarizer",
+  description: "Synthesize long notes or textbook excerpts into condensed, exam-ready summaries and key takeaways.",
   icon: "📝",
   colorClass: "bg-amber-500",
   options: [
-    { id: "length", type: "select", label: "Summary Length", values: ["Executive (Bullet points)", "Standard", "Comprehensive"], default: "Standard" },
-    { id: "format", type: "select", label: "Output Nodes", values: ["Summary Only", "Flashcard Set", "Q&A Format", "Mixed"], default: "Mixed" },
-    { id: "readability", type: "select", label: "Target Level", values: ["Student", "Expert", "ELI5"], default: "Student" }
+    { id: "nsSubject", type: "select", label: "Subject", values: ["General", "Maths", "Physics", "Chemistry", "Biology"], default: "General" },
+    { id: "nsLevel", type: "select", label: "Education Level", values: ["School", "High School", "College"], default: "High School" },
+    { id: "nsLength", type: "select", label: "Summary Length", values: ["Very short", "Short", "Balanced"], default: "Short" },
+    { id: "nsStyle", type: "select", label: "Output Style", values: ["Bulleted points", "Headings + bullets", "Exam-ready notes"], default: "Headings + bullets" },
+    { id: "nsFocus", type: "select", label: "Primary Focus", values: ["Key concepts", "Definitions & formulas", "Important facts"], default: "Key concepts" },
+    { id: "nsExamples", type: "select", label: "Examples Handling", values: ["Remove examples", "Keep 1 key example"], default: "Keep 1 key example" },
+    { id: "nsKeywords", type: "select", label: "Keyword Highlighting", values: ["Highlight keywords", "No highlights"], default: "Highlight keywords" },
+    { id: "nsLanguage", type: "select", label: "Output Language", values: ["English", "Hinglish"], default: "English" },
+    { id: "nsFormat", type: "select", label: "List Format", values: ["Plain text", "Numbered list"], default: "Plain text" }
   ],
 };
 
@@ -50,16 +60,111 @@ export const eduMathSolverConfig = {
   ],
 };
 
-export const eduQuizCreatorConfig = {
-  slug: "edu-quiz-creator",
-  title: "AI Smart Quiz Maker",
-  description: "Generate structured examination material (MCQs, True/False, Fill-ins) from any input text.",
+export const eduEquationSolverConfig = {
+  slug: "edu-equation-solver",
+  title: "AI Equation Solver",
+  description: "Step-by-step solving and verification for linear, quadratic, and systems of equations.",
+  icon: "🧮",
+  colorClass: "bg-indigo-600",
+  options: [
+    { id: "eqType", type: "select", label: "Equation Type", values: ["Linear (1 variable)", "Quadratic", "System of equations"], default: "Linear (1 variable)" },
+    { id: "method", type: "select", label: "Preferred Method", values: ["Auto", "Substitution", "Elimination", "Factorization", "Quadratic Formula"], default: "Auto" },
+    { id: "level", type: "select", label: "Education Level", values: ["School", "High School", "College"], default: "High School" },
+    { id: "steps", type: "select", label: "Step Detail", values: ["Show all steps", "Key steps only"], default: "Show all steps" },
+    { id: "explain", type: "select", label: "Explanation Depth", values: ["Simple explanation", "Detailed (Academic)"], default: "Detailed (Academic)" },
+    { id: "check", type: "select", label: "Verification", values: ["Verify solution", "No verification"], default: "Verify solution" },
+    { id: "lang", type: "select", label: "Language", values: ["English", "Hinglish"], default: "English" },
+    { id: "format", type: "select", label: "Output Format", values: ["Numbered steps", "Bulleted steps"], default: "Numbered steps" }
+  ],
+};
+
+export const eduFormulaGeneratorConfig = {
+  slug: "edu-formula-generator",
+  title: "AI Formula Generator",
+  description: "Generate comprehensive, topic-based formula lists with clear explanations and variable units.",
+  icon: "🧪",
+  colorClass: "bg-amber-600",
+  options: [
+    { id: "fgSubject", type: "select", label: "Subject", values: ["Mathematics", "Physics", "Chemistry"], default: "Mathematics" },
+    { id: "fgChapterLevel", type: "select", label: "Education Level", values: ["School", "High School", "College"], default: "High School" },
+    { id: "fgDepth", type: "select", label: "Depth", values: ["Essential formulas", "Complete list"], default: "Essential formulas" },
+    { id: "fgExplain", type: "select", label: "Explanation Detail", values: ["Short explanation", "Detailed explanation"], default: "Short explanation" },
+    { id: "fgDerivation", type: "select", label: "Derivation", values: ["No derivation", "Include derivation (brief)"], default: "No derivation" },
+    { id: "fgExamples", type: "select", label: "Usage Examples", values: ["No examples", "Include examples"], default: "Include examples" },
+    { id: "fgUnits", type: "select", label: "Units", values: ["Show units", "No units"], default: "Show units" },
+    { id: "fgLanguage", type: "select", label: "Language", values: ["English", "Hinglish"], default: "English" },
+    { id: "fgFormat", type: "select", label: "Output Format", values: ["Bulleted", "Table"], default: "Table" }
+  ],
+};
+
+export const eduUnitPracticeConfig = {
+  slug: "edu-unit-practice",
+  title: "Unit Practice Tool",
+  description: "Generate topic-wise practice questions with solutions and difficulty control for effective self-test sessions.",
+  icon: "🎯",
+  colorClass: "bg-orange-600",
+  options: [
+    { id: "upLevel", type: "select", label: "Education Level", values: ["School", "High School", "College"], default: "High School" },
+    { id: "upDifficulty", type: "select", label: "Difficulty", values: ["Easy", "Medium", "Hard", "Mixed"], default: "Mixed" },
+    { id: "upQuestionType", type: "select", label: "Question Types", values: ["MCQs", "Numericals", "Short Answer", "Mixed"], default: "Mixed" },
+    { id: "upCount", type: "select", label: "Question Count", values: ["5", "10", "15"], default: "10" },
+    { id: "upTime", type: "select", label: "Time Mode", values: ["No time limit", "Timed (exam mode)"], default: "No time limit" },
+    { id: "upExplain", type: "select", label: "Explanation Preference", values: ["Solutions with steps", "Final answers only"], default: "Solutions with steps" },
+    { id: "upHints", type: "select", label: "Hints", values: ["Include hints", "No hints"], default: "Include hints" },
+    { id: "upLanguage", type: "select", label: "Language", values: ["English", "Hinglish"], default: "English" }
+  ],
+};
+
+export const eduQuizGeneratorConfig = {
+  slug: "edu-quiz-generator",
+  title: "AI Quiz Generator",
+  description: "Professional learning assessment engine. Generate MCQs, True/False, or Mixed quizzes with instant keys.",
   icon: "❓",
   colorClass: "bg-amber-500",
   options: [
-    { id: "questionCount", type: "select", label: "Question Count", values: ["5", "10", "20", "50"], default: "10" },
-    { id: "difficulty", type: "select", label: "Difficulty", values: ["Easy", "Medium", "Hard", "Competitive"], default: "Medium" },
-    { id: "type", type: "select", label: "Question Mix", values: ["MCQs Only", "True/False Only", "Mixed", "Open Ended"], default: "Mixed" }
+    { id: "qzLevel", type: "select", label: "Education Level", values: ["School", "High School", "College"], default: "High School" },
+    { id: "qzDifficulty", type: "select", label: "Difficulty", values: ["Easy", "Medium", "Hard", "Mixed"], default: "Medium" },
+    { id: "qzType", type: "select", label: "Question Type", values: ["MCQs", "True/False", "Mixed"], default: "Mixed" },
+    { id: "qzCount", type: "select", label: "Number of Questions", values: ["5", "10", "15", "20"], default: "10" },
+    { id: "qzTime", type: "select", label: "Time Mode", values: ["No time limit", "Timed (exam mode)"], default: "No time limit" },
+    { id: "qzExplain", type: "select", label: "Explanation Detail", values: ["Include explanations", "Answers only"], default: "Include explanations" },
+    { id: "qzShuffle", type: "select", label: "Shuffle Order", values: ["Shuffle questions", "No shuffle"], default: "Shuffle questions" },
+    { id: "qzLanguage", type: "select", label: "Language", values: ["English", "Hinglish"], default: "English" }
+  ],
+};
+
+export const eduFlashcardGeneratorConfig = {
+  slug: "edu-flashcard-generator",
+  title: "AI Flashcard Generator",
+  description: "Active recall engine for memory optimization. Convert complex notes into compact study cards with mnemonics.",
+  icon: "🗂️",
+  colorClass: "bg-amber-500",
+  options: [
+    { id: "fcSubject", type: "select", label: "Subject", values: ["Maths", "Physics", "Chemistry", "Biology", "General"], default: "General" },
+    { id: "fcLevel", type: "select", label: "Education Level", values: ["School", "High School", "College"], default: "High School" },
+    { id: "fcCardType", type: "select", label: "Card Type", values: ["Term → Definition", "Question → Answer", "Concept → Example", "Mixed"], default: "Mixed" },
+    { id: "fcCount", type: "select", label: "Card Count", values: ["10", "20", "30"], default: "20" },
+    { id: "fcDepth", type: "select", label: "Detail Level", values: ["Concise", "Balanced", "Detailed"], default: "Concise" },
+    { id: "fcExamples", type: "select", label: "Include Examples", values: ["No examples", "Include examples"], default: "Include examples" },
+    { id: "fcMnemonics", type: "select", label: "Mnemonics Aid", values: ["No mnemonics", "Include mnemonics"], default: "Include mnemonics" },
+    { id: "fcShuffle", type: "select", label: "Shuffle Order", values: ["Shuffle", "Keep order"], default: "Shuffle" },
+    { id: "fcLanguage", type: "select", label: "Language", values: ["English", "Hinglish"], default: "English" }
+  ],
+};
+
+export const eduAssignmentFormatterConfig = {
+  slug: "edu-assignment-formatter",
+  title: "AI Assignment Formatter",
+  description: "Transform raw notes into professional, submission-ready academic assignments with perfect hierarchy and formal tone.",
+  icon: "📝",
+  colorClass: "bg-amber-600",
+  options: [
+    { id: "afLevel", type: "select", label: "Education Level", values: ["School", "College", "University"], default: "College" },
+    { id: "afFormat", type: "select", label: "Preferred Structure", values: ["Introduction → Body → Conclusion", "Question–Answer", "Research-style"], default: "Introduction → Body → Conclusion" },
+    { id: "afCitation", type: "select", label: "Citation Placeholder", values: ["None", "APA", "MLA", "Chicago"], default: "None" },
+    { id: "afTone", type: "select", label: "Tone", values: ["Formal", "Neutral academic"], default: "Formal" },
+    { id: "afSpacing", type: "select", label: "Line Spacing", values: ["Single", "1.5", "Double"], default: "1.5" },
+    { id: "afLanguage", type: "select", label: "Language", values: ["English", "Hinglish"], default: "English" }
   ],
 };
 
@@ -70,8 +175,10 @@ export const eduCitationConfig = {
   icon: "🖋️",
   colorClass: "bg-amber-800",
   options: [
-    { id: "style", type: "select", label: "Citation Style", values: ["APA 7th", "MLA 9th", "Chicago", "Harvard", "IEEE"], default: "APA 7th" },
-    { id: "sourceType", type: "select", label: "Source Type", values: ["Website", "Book", "Journal", "Video", "Report"], default: "Website" }
+    { id: "ctStyle", type: "select", label: "Citation Style", values: ["APA", "MLA", "Chicago", "Harvard", "IEEE"], default: "APA" },
+    { id: "ctSourceType", type: "select", label: "Source Type", values: ["Book", "Website", "Journal Article", "Research Paper", "Video"], default: "Book" },
+    { id: "ctInText", type: "select", label: "In-Text Citation", values: ["Include in-text citation", "Reference only"], default: "Include in-text citation" },
+    { id: "ctLanguage", type: "select", label: "Output Language", values: ["English"], default: "English" }
   ],
 };
 
