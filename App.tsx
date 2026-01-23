@@ -18,6 +18,8 @@ interface NavigationState {
 const App: React.FC = () => {
   const [nav, setNav] = useState<NavigationState>({ page: 'home' });
   const [searchQuery, setSearchQuery] = useState('');
+  const [hasKey, setHasKey] = useState<boolean>(true); // Assume key exists initially
+  
   const [favorites, setFavorites] = useState<string[]>(() => {
     const saved = localStorage.getItem('tv_favorites');
     return saved ? JSON.parse(saved) : [];
@@ -26,6 +28,17 @@ const App: React.FC = () => {
     const saved = localStorage.getItem('tv_recent');
     return saved ? JSON.parse(saved) : [];
   });
+
+  // Check for API key selection on mount for AI features
+  useEffect(() => {
+    const checkKey = async () => {
+      if (window.aistudio?.hasSelectedApiKey) {
+        const selected = await window.aistudio.hasSelectedApiKey();
+        setHasKey(selected);
+      }
+    };
+    checkKey();
+  }, []);
 
   useEffect(() => {
     localStorage.setItem('tv_favorites', JSON.stringify(favorites));
@@ -80,6 +93,13 @@ const App: React.FC = () => {
 
     window.history.pushState({}, '', newPath);
     handlePathChange();
+  };
+
+  const handleSelectKey = async () => {
+    if (window.aistudio?.openSelectKey) {
+      await window.aistudio.openSelectKey();
+      setHasKey(true); // Assume successful selection to proceed
+    }
   };
 
   const toggleFavorite = (slug: string) => {
@@ -148,6 +168,20 @@ const App: React.FC = () => {
       onNavigate={navigate} 
       onSearch={handleGlobalSearch}
     >
+      {!hasKey && (
+        <div className="bg-indigo-900 text-white py-4 px-6 flex flex-col md:flex-row items-center justify-center gap-4 text-center">
+           <p className="text-xs font-black uppercase tracking-widest">
+             <span className="mr-2">⚡</span> AI Engine Status: Key Required for Professional Services
+           </p>
+           <button 
+            onClick={handleSelectKey}
+            className="px-6 py-2 bg-white text-indigo-900 rounded-full font-black text-[10px] uppercase tracking-widest hover:bg-indigo-50 transition-all shadow-xl"
+           >
+             Select API Key
+           </button>
+           <a href="https://ai.google.dev/gemini-api/docs/billing" target="_blank" className="text-[10px] font-bold text-indigo-300 underline">View Billing Docs</a>
+        </div>
+      )}
       <Suspense fallback={
         <div className="flex items-center justify-center min-h-[70vh] bg-slate-50/50 backdrop-blur-sm">
           <div className="flex flex-col items-center space-y-8 p-12 bg-white rounded-[3rem] shadow-2xl border border-slate-100 animate-in zoom-in-95 duration-300">
