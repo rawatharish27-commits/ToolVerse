@@ -5,7 +5,7 @@
 export const SITE_CONFIG = {
   name: 'ToolVerse',
   shortName: 'ToolVerse',
-  currentDomain: 'toolverse-4gr.pages.dev', // e.g., 'toolverse.tools'
+  currentDomain: 'toolverse-4gr.pages.dev', // Change to 'toolverse.tools' when ready
   protocol: 'https',
   get baseUrl() {
     return `${this.protocol}://${this.currentDomain}`;

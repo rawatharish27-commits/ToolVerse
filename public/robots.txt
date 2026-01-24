@@ -1,5 +1,4 @@
 User-agent: *
 Allow: /
 
-# Standard Sitemap link for crawlers
 Sitemap: https://toolverse-4gr.pages.dev/sitemap.xml

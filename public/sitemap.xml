@@ -1,39 +1,44 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-
-  <!-- CORE PAGES -->
   <url>
     <loc>https://toolverse-4gr.pages.dev/</loc>
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
   </url>
-
-  <url><loc>https://toolverse-4gr.pages.dev/about</loc><changefreq>monthly</changefreq><priority>0.4</priority></url>
-  <url><loc>https://toolverse-4gr.pages.dev/privacy</loc><changefreq>monthly</changefreq><priority>0.4</priority></url>
-  <url><loc>https://toolverse-4gr.pages.dev/terms</loc><changefreq>monthly</changefreq><priority>0.4</priority></url>
-  <url><loc>https://toolverse-4gr.pages.dev/contact</loc><changefreq>monthly</changefreq><priority>0.4</priority></url>
-
-  <!-- CATEGORY PAGES -->
-  <url><loc>https://toolverse-4gr.pages.dev/category/ai</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
-  <url><loc>https://toolverse-4gr.pages.dev/category/seo</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
-  <url><loc>https://toolverse-4gr.pages.dev/category/calculators</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
-  <url><loc>https://toolverse-4gr.pages.dev/category/security</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
-  <url><loc>https://toolverse-4gr.pages.dev/category/dev</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
-
-  <!-- TOOL PAGES (Correct Plural Path) -->
-  <url><loc>https://toolverse-4gr.pages.dev/tools/ai-article-generator</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
-  <url><loc>https://toolverse-4gr.pages.dev/tools/ai-article-rewriter</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
-
-  <url><loc>https://toolverse-4gr.pages.dev/tools/image-compressor</loc><changefreq>monthly</changefreq><priority>0.6</priority></url>
-  <url><loc>https://toolverse-4gr.pages.dev/tools/image-resizer</loc><changefreq>monthly</changefreq><priority>0.6</priority></url>
-
-  <url><loc>https://toolverse-4gr.pages.dev/tools/pdf-merge</loc><changefreq>monthly</changefreq><priority>0.6</priority></url>
-  <url><loc>https://toolverse-4gr.pages.dev/tools/pdf-split</loc><changefreq>monthly</changefreq><priority>0.6</priority></url>
-
-  <url><loc>https://toolverse-4gr.pages.dev/tools/emi-calculator</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
-  <url><loc>https://toolverse-4gr.pages.dev/tools/gst-calculator</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
-
-  <url><loc>https://toolverse-4gr.pages.dev/tools/meta-tag-generator</loc><changefreq>monthly</changefreq><priority>0.6</priority></url>
-  <url><loc>https://toolverse-4gr.pages.dev/tools/json-formatter</loc><changefreq>monthly</changefreq><priority>0.6</priority></url>
-
+  <url>
+    <loc>https://toolverse-4gr.pages.dev/about</loc>
+    <changefreq>monthly</changefreq>
+  </url>
+  <url>
+    <loc>https://toolverse-4gr.pages.dev/privacy</loc>
+    <changefreq>monthly</changefreq>
+  </url>
+  <url>
+    <loc>https://toolverse-4gr.pages.dev/terms</loc>
+    <changefreq>monthly</changefreq>
+  </url>
+  <url>
+    <loc>https://toolverse-4gr.pages.dev/contact</loc>
+    <changefreq>monthly</changefreq>
+  </url>
+  <url>
+    <loc>https://toolverse-4gr.pages.dev/category/ai</loc>
+    <changefreq>weekly</changefreq>
+  </url>
+  <url>
+    <loc>https://toolverse-4gr.pages.dev/category/seo</loc>
+    <changefreq>weekly</changefreq>
+  </url>
+  <url>
+    <loc>https://toolverse-4gr.pages.dev/category/image</loc>
+    <changefreq>weekly</changefreq>
+  </url>
+  <url>
+    <loc>https://toolverse-4gr.pages.dev/tools/ai-article-generator</loc>
+    <changefreq>monthly</changefreq>
+  </url>
+  <url>
+    <loc>https://toolverse-4gr.pages.dev/tools/image-compressor</loc>
+    <changefreq>monthly</changefreq>
+  </url>
 </urlset>
