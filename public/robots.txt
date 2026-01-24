@@ -1,27 +1,5 @@
 User-agent: *
 Allow: /
 
-# Vite assets and static production files
-Allow: /assets/
-Allow: /static/
-
-# Core tool and category route patterns
-Allow: /tool/
-Allow: /category/
-
-# Block backend processing and dev folders
-Disallow: /api/
-Disallow: /dev/
-Disallow: /test/
-Disallow: /internal/
-
-# Priority access for AdSense bot (Improves Ad Targeting & Approval)
-User-agent: Mediapartners-Google
-Allow: /
-
-# Priority access for Google Ads landing page quality checks
-User-agent: AdsBot-Google
-Allow: /
-
-# Sitemap location
+# Standard Sitemap link for crawlers
 Sitemap: https://toolverse-4gr.pages.dev/sitemap.xml

@@ -70,7 +70,7 @@ const App: React.FC = () => {
         const id = path.split('/')[2] as CategorySlug;
         setNav({ page: 'category', params: { id } });
         setSearchQuery(''); 
-      } else if (path.startsWith('/tool/')) {
+      } else if (path.startsWith('/tools/')) {
         const slug = path.split('/')[2];
         setNav({ page: 'tool', params: { slug } });
         setSearchQuery(''); 
@@ -89,7 +89,7 @@ const App: React.FC = () => {
   const navigate = (page: string, params?: any) => {
     let newPath = '/';
     if (page === 'category') newPath = `/category/${params.id}`;
-    else if (page === 'tool') newPath = `/tool/${params.slug}`;
+    else if (page === 'tool') newPath = `/tools/${params.slug}`;
     else if (['about', 'privacy', 'terms', 'contact'].includes(page)) newPath = `/${page}`;
 
     window.history.pushState({}, '', newPath);

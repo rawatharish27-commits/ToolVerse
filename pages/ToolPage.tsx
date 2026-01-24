@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { TOOLS } from '../data/tools';
 import { CATEGORIES } from '../data/categories';
@@ -61,7 +60,7 @@ const ToolPage: React.FC<ToolPageProps> = ({ slug, onNavigate, onToolUsed, favor
       <SEOHead 
         title={metaTitle}
         description={metaDesc}
-        url={`https://toolverse-4gr.pages.dev/tool/${tool.slug}`}
+        url={`https://toolverse-4gr.pages.dev/tools/${tool.slug}`}
         type="article"
       />
 
