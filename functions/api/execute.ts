@@ -9,66 +9,58 @@ import { verifyAdProof } from "../core/adUnlock";
 import { logToolUsage } from "../core/analytics";
 
 /**
- * ToolVerse Production Gateway (V3 Hardened)
- * 
- * This file serves as the single bridge between the Cloudflare request context
- * and the Google GenAI SDK's dependency on global 'process'.
+ * ToolVerse Production Gateway (V3.5 Hybrid Orchestrator)
  */
 export const onRequestPost = async (context: { request: Request; env: any }) => {
   const { request, env } = context;
   
-  // STEP 1: Shim global process for SDK compatibility.
-  // The Gemini SDK requires process.env.API_KEY. We inject it here safely.
   (globalThis as any).process = {
-    env: { 
-      API_KEY: env.API_KEY || "",
-      AI_PROMPT_VERSION: env.AI_PROMPT_VERSION || "v1"
-    }
+    env: { API_KEY: env.API_KEY || "" }
   };
 
   const ip = request.headers.get("CF-Connecting-IP") || "anonymous";
 
   try {
-    enforcePayloadLimit(request, 60); // 60KB limit for rich AI contexts
-
-    if (!isAllowed(ip)) {
-      return error("Rate limit exceeded. Please wait 60 seconds.", 429);
-    }
-
     const payload = await request.json();
     const { toolId, category, input, adProof } = payload;
 
     if (!toolId) return error("toolId is mandatory.");
 
-    logToolUsage(toolId);
-
-    // Identity and Monetization Logic
+    // Identity and Pro Status Check
     const authHeader = request.headers.get("Authorization");
     let isPro = false;
     if (authHeader?.startsWith("Bearer ")) {
-      const proData = await verifyProToken(authHeader.split(" ")[1], env.PRO_SECRET || "default_secret");
+      const token = authHeader.split(" ")[1];
+      const proData = await verifyProToken(token, env.PRO_SECRET || "default_secret");
       if (proData) isPro = true;
     }
 
-    const hasAdBoost = adProof ? verifyAdProof(adProof) : false;
-    const limit = isPro ? 1000 : (hasAdBoost ? 50 : 20);
+    // Rate Limiting (Stricter for AI if not Pro)
+    const isAITool = toolId.startsWith('ai-') || category === 'ai';
+    const limit = isPro ? 500 : (adProof ? 20 : 5);
     
     checkUsage(ip, toolId, limit);
+    logToolUsage(toolId);
 
-    // Execute logic - passing 'env' for tools that use getEnv helper
+    // Execute with Pro status injected into input payload
+    const enrichedInput = { ...input, isProStatus: isPro, toolId };
+
     const data = await withTimeout(
-      routeRequest(toolId, category || 'general', input, env),
-      12000 // Extended to 12s for long article generation
+      routeRequest(toolId, category || 'general', enrichedInput, env),
+      15000 
     );
     
     return success({ 
       ...data, 
-      proStatus: isPro, 
-      node: "edge-production-v3"
+      proStatus: isPro,
+      engine: isPro ? "Neural-V3" : "Instant-V1"
     });
   } catch (err: any) {
-    console.error(`[EXECUTION_CRASH]: ${err.message}`);
-    return error(err.message || "Internal Toolverse Engine Error", 500);
+    if (err.message?.includes("Usage limit")) {
+      return error("Session limit reached. Upgrade to Pro for unlimited neural access.", 429);
+    }
+    console.error(`[GW_ERR]: ${err.message}`);
+    return error(err.message || "Internal Engine Error", 500);
   }
 };
 
