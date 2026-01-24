@@ -9,50 +9,44 @@ import { verifyAdProof } from "../core/adUnlock";
 import { logToolUsage } from "../core/analytics";
 
 /**
- * PRODUCTION EDGE GATEWAY
- * Handles all tool execution requests with zero database overhead.
+ * ToolVerse Production Edge Engine
  */
 export const onRequestPost = async (context: { request: Request; env: any }) => {
   const { request, env } = context;
   const ip = request.headers.get("CF-Connecting-IP") || "anonymous";
 
   try {
-    // 1. Safety Layer: Guard against volumetric abuse
-    enforcePayloadLimit(request, 25); // 25KB Max
+    // 1. Volumetric Protection
+    enforcePayloadLimit(request, 25); 
 
-    // 2. Global Rate Limit (In-memory isolate guard)
+    // 2. Global Rate Limiter
     if (!isAllowed(ip)) {
-      return error("Global rate limit hit. Try again in 60s.", 429);
+      return error("Global rate limit exceeded. Retry in 60s.", 429);
     }
 
     const payload = await request.json();
     const { toolId, category, input, adProof } = payload;
 
-    if (!toolId) return error("Missing toolId parameter.");
+    if (!toolId) return error("Missing toolId.");
 
-    // 3. Telemetry: Log usage without PII
+    // 3. Telemetry
     logToolUsage(toolId);
 
-    // 4. Identity Layer: HMAC Pro Verification
+    // 4. Identity & Monetization Check
     const authHeader = request.headers.get("Authorization");
     let isPro = false;
     if (authHeader?.startsWith("Bearer ")) {
-      const proData = await verifyProToken(
-        authHeader.split(" ")[1], 
-        env.PRO_SECRET || "prod_fallback_secret"
-      );
+      const proData = await verifyProToken(authHeader.split(" ")[1], env.PRO_SECRET || "default_secret");
       if (proData) isPro = true;
     }
 
-    // 5. Reward Layer: Ad-based usage boost
     const hasAdBoost = adProof ? verifyAdProof(adProof) : false;
 
-    // 6. Monetization Guard: Tiered Usage Caps
-    // Free: 10/hr, Ad-Boosted: 40/hr, Pro: 1000/hr
+    // 5. Tiered Usage Guard
     const cap = isPro ? 1000 : (hasAdBoost ? 40 : 10);
     checkUsage(ip, toolId, cap);
 
-    // 7. Logic Execution: Hardened with 4s Timeout
+    // 6. Execute Logic with 4s Timeout
     const data = await withTimeout(
       routeRequest(toolId, category || 'general', input, env)
     );
@@ -61,11 +55,10 @@ export const onRequestPost = async (context: { request: Request; env: any }) => 
       ...data, 
       proStatus: isPro, 
       boosted: hasAdBoost,
-      executionNode: "cloudflare-edge"
+      node: "edge-v3"
     });
   } catch (err: any) {
-    console.error(`[ENGINE CRITICAL]: ${err.message}`);
-    return error(err.message || "An internal error occurred during tool execution.", 500);
+    return error(err.message || "Engine Error", 500);
   }
 };
 
