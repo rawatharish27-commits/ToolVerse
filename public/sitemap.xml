@@ -1,105 +1,84 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-  <!-- Core Pages -->
+  <!-- 1. CORE PLATFORM PAGES -->
   <url>
     <loc>https://toolverse-4gr.pages.dev/</loc>
-    <lastmod>2026-01-20</lastmod>
+    <lastmod>2026-02-15</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
   </url>
   <url>
     <loc>https://toolverse-4gr.pages.dev/about</loc>
-    <lastmod>2026-01-20</lastmod>
+    <lastmod>2026-02-15</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://toolverse-4gr.pages.dev/privacy</loc>
-    <lastmod>2026-01-20</lastmod>
+    <lastmod>2026-02-15</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://toolverse-4gr.pages.dev/terms</loc>
-    <lastmod>2026-01-20</lastmod>
+    <lastmod>2026-02-15</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://toolverse-4gr.pages.dev/contact</loc>
-    <lastmod>2026-01-20</lastmod>
+    <lastmod>2026-02-15</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
 
-  <!-- Categories -->
-  <url><loc>https://toolverse-4gr.pages.dev/category/ai</loc><priority>0.8</priority></url>
-  <url><loc>https://toolverse-4gr.pages.dev/category/image</loc><priority>0.8</priority></url>
-  <url><loc>https://toolverse-4gr.pages.dev/category/pdf</loc><priority>0.8</priority></url>
-  <url><loc>https://toolverse-4gr.pages.dev/category/video</loc><priority>0.8</priority></url>
-  <url><loc>https://toolverse-4gr.pages.dev/category/dev</loc><priority>0.8</priority></url>
-  <url><loc>https://toolverse-4gr.pages.dev/category/seo</loc><priority>0.8</priority></url>
-  <url><loc>https://toolverse-4gr.pages.dev/category/calculators</loc><priority>0.8</priority></url>
-  <url><loc>https://toolverse-4gr.pages.dev/category/utility</loc><priority>0.8</priority></url>
-  <url><loc>https://toolverse-4gr.pages.dev/category/security</loc><priority>0.8</priority></url>
-  <url><loc>https://toolverse-4gr.pages.dev/category/network</loc><priority>0.8</priority></url>
-  <url><loc>https://toolverse-4gr.pages.dev/category/office</loc><priority>0.8</priority></url>
-  <url><loc>https://toolverse-4gr.pages.dev/category/education</loc><priority>0.8</priority></url>
+  <!-- 2. CATEGORY CLUSTERS (SEO SEMANTIC SIGNALS) -->
+  <url><loc>https://toolverse-4gr.pages.dev/category/ai</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://toolverse-4gr.pages.dev/category/social</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://toolverse-4gr.pages.dev/category/image</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://toolverse-4gr.pages.dev/category/pdf</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://toolverse-4gr.pages.dev/category/video</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://toolverse-4gr.pages.dev/category/audio</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://toolverse-4gr.pages.dev/category/file</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://toolverse-4gr.pages.dev/category/data</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://toolverse-4gr.pages.dev/category/dev</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://toolverse-4gr.pages.dev/category/seo</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://toolverse-4gr.pages.dev/category/calculators</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://toolverse-4gr.pages.dev/category/unit-converters</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://toolverse-4gr.pages.dev/category/utility</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://toolverse-4gr.pages.dev/category/security</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://toolverse-4gr.pages.dev/category/network</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://toolverse-4gr.pages.dev/category/office</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://toolverse-4gr.pages.dev/category/education</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
 
-  <!-- High Traffic Tools -->
-  <url>
-    <loc>https://toolverse-4gr.pages.dev/tool/ai-article-writer-pro</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.7</priority>
-  </url>
-  <url>
-    <loc>https://toolverse-4gr.pages.dev/tool/ai-code-debugger</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.7</priority>
-  </url>
-  <url>
-    <loc>https://toolverse-4gr.pages.dev/tool/ai-image-generator</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.7</priority>
-  </url>
-  <url>
-    <loc>https://toolverse-4gr.pages.dev/tool/image-compressor</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.7</priority>
-  </url>
-  <url>
-    <loc>https://toolverse-4gr.pages.dev/tool/background-remover</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.7</priority>
-  </url>
-  <url>
-    <loc>https://toolverse-4gr.pages.dev/tool/pdf-merge</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.7</priority>
-  </url>
-  <url>
-    <loc>https://toolverse-4gr.pages.dev/tool/pdf-to-word-converter</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.7</priority>
-  </url>
-  <url>
-    <loc>https://toolverse-4gr.pages.dev/tool/xml-sitemap-generator</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.7</priority>
-  </url>
-  <url>
-    <loc>https://toolverse-4gr.pages.dev/tool/json-formatter</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.7</priority>
-  </url>
-  <url>
-    <loc>https://toolverse-4gr.pages.dev/tool/what-is-my-ip</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.7</priority>
-  </url>
-  <url>
-    <loc>https://toolverse-4gr.pages.dev/tool/qr-code-generator</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.7</priority>
-  </url>
+  <!-- 3. HIGH-TRAFFIC / HIGH-RPM TOOLS -->
+  <!-- AI Content Tools -->
+  <url><loc>https://toolverse-4gr.pages.dev/tool/ai-article-generator</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://toolverse-4gr.pages.dev/tool/ai-article-rewriter</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://toolverse-4gr.pages.dev/tool/ai-grammar-fixer</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  
+  <!-- Image Tools -->
+  <url><loc>https://toolverse-4gr.pages.dev/tool/image-compressor</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://toolverse-4gr.pages.dev/tool/background-remover</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://toolverse-4gr.pages.dev/tool/image-resizer</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  
+  <!-- PDF Tools -->
+  <url><loc>https://toolverse-4gr.pages.dev/tool/pdf-merge</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://toolverse-4gr.pages.dev/tool/pdf-split</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://toolverse-4gr.pages.dev/tool/pdf-to-word</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  
+  <!-- Finance Tools (High RPM) -->
+  <url><loc>https://toolverse-4gr.pages.dev/tool/emi-calculator</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://toolverse-4gr.pages.dev/tool/compound-interest-calc</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://toolverse-4gr.pages.dev/tool/mortgage-calculator</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://toolverse-4gr.pages.dev/tool/gst-calculator</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  
+  <!-- SEO & Dev Tools -->
+  <url><loc>https://toolverse-4gr.pages.dev/tool/meta-tag-generator</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://toolverse-4gr.pages.dev/tool/json-formatter</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://toolverse-4gr.pages.dev/tool/qr-code-generator</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  
+  <!-- Social Media Tools -->
+  <url><loc>https://toolverse-4gr.pages.dev/tool/social-caption-generator</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://toolverse-4gr.pages.dev/tool/social-hashtag-generator</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
 </urlset>
