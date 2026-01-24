@@ -1,7 +1,13 @@
 
+import { GoogleGenAI } from "@google/genai";
+
+/**
+ * Legacy AI Dispatcher - Syncing with updated SDK standards
+ */
 export async function aiExecutor(toolId: string, input: any, env: any) {
-  const apiKey = env.API_KEY;
-  if (!apiKey) throw new Error("API_KEY not configured in backend.");
+  if (!process.env.API_KEY) {
+    throw new Error("Missing GEMINI_API_KEY in environment. Configuration required in Cloudflare dashboard.");
+  }
 
   const templates: Record<string, string> = {
     'ai-article-generator': "You are an SEO Article Architect. Create a high-value, deep-dive article based on this topic. Format: Markdown.",
@@ -10,25 +16,22 @@ export async function aiExecutor(toolId: string, input: any, env: any) {
     'meta-tag-generator': "You are a Technical SEO Lead. Generate only HTML meta tags. No explanations."
   };
 
-  const systemPrompt = templates[toolId] || "You are a professional tool utility. Provide direct, high-quality results.";
+  const systemInstruction = templates[toolId] || "You are a professional tool utility. Provide direct, high-quality results.";
   const userText = typeof input === 'string' ? input : JSON.stringify(input);
 
-  const res = await fetch(
-    `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`,
-    {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        system_instruction: { parts: [{ text: systemPrompt }] },
-        contents: [{ parts: [{ text: userText }] }]
-      })
+  const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+
+  const response = await ai.models.generateContent({
+    model: 'gemini-3-flash-preview',
+    contents: [{ parts: [{ text: userText }] }],
+    config: {
+      systemInstruction,
+      temperature: 0.7
     }
-  );
+  });
 
-  const json: any = await res.json();
-  const output = json.candidates?.[0]?.content?.parts?.[0]?.text;
-
-  if (!output) throw new Error("AI Engine failed to generate valid content.");
+  const output = response.text;
+  if (!output) throw new Error("AI Engine synchronization failed.");
 
   return { output, type: 'markdown' };
 }

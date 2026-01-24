@@ -8,31 +8,26 @@ import { verifyProToken } from "../core/pro";
 import { verifyAdProof } from "../core/adUnlock";
 import { logToolUsage } from "../core/analytics";
 
-/**
- * ToolVerse Production Edge Engine
- */
 export const onRequestPost = async (context: { request: Request; env: any }) => {
   const { request, env } = context;
   const ip = request.headers.get("CF-Connecting-IP") || "anonymous";
 
   try {
-    // 1. Volumetric Protection
-    enforcePayloadLimit(request, 25); 
+    // Basic protection
+    enforcePayloadLimit(request, 50); // Increased to 50KB for larger AI inputs
 
-    // 2. Global Rate Limiter
     if (!isAllowed(ip)) {
-      return error("Global rate limit exceeded. Retry in 60s.", 429);
+      return error("Rate limit exceeded. Please wait 60 seconds.", 429);
     }
 
     const payload = await request.json();
     const { toolId, category, input, adProof } = payload;
 
-    if (!toolId) return error("Missing toolId.");
+    if (!toolId) return error("toolId is mandatory for execution.");
 
-    // 3. Telemetry
     logToolUsage(toolId);
 
-    // 4. Identity & Monetization Check
+    // Monetization Logic
     const authHeader = request.headers.get("Authorization");
     let isPro = false;
     if (authHeader?.startsWith("Bearer ")) {
@@ -41,24 +36,31 @@ export const onRequestPost = async (context: { request: Request; env: any }) => 
     }
 
     const hasAdBoost = adProof ? verifyAdProof(adProof) : false;
+    const limit = isPro ? 1000 : (hasAdBoost ? 50 : 20);
+    
+    checkUsage(ip, toolId, limit);
 
-    // 5. Tiered Usage Guard
-    const cap = isPro ? 1000 : (hasAdBoost ? 40 : 10);
-    checkUsage(ip, toolId, cap);
-
-    // 6. Execute Logic with 4s Timeout
+    // Core Execution - Passing both tool input and the full environment context
     const data = await withTimeout(
-      routeRequest(toolId, category || 'general', input, env)
+      routeRequest(toolId, category || 'general', input, env),
+      8000 // Extended timeout to 8s for complex AI generations
     );
     
     return success({ 
       ...data, 
       proStatus: isPro, 
       boosted: hasAdBoost,
-      node: "edge-v3"
+      node: "edge-v3-hardened"
     });
   } catch (err: any) {
-    return error(err.message || "Engine Error", 500);
+    console.error(`[EXECUTION_ERROR]: ${err.message}`);
+    
+    // Friendly error for missing keys
+    if (err.message.includes("process.env.API_KEY")) {
+      return error("Backend Configuration Error: AI API Key is not set in Cloudflare Settings. Please check dashboard environment variables.", 500);
+    }
+
+    return error(err.message || "Internal Toolverse Engine Error", 500);
   }
 };
 
