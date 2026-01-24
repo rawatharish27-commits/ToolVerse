@@ -1,8 +1,8 @@
-const fs = require('fs');
-const path = require('path');
+import fs from 'fs';
+import path from 'path';
 
 /**
- * ToolVerse Sitemap Engine v2.0
+ * ToolVerse Sitemap Engine v2.1 (ESM Edition)
  * Standardized for Cloudflare Pages Root serving.
  */
 
@@ -50,15 +50,22 @@ function generateSitemap() {
     xml += `  <url>\n    <loc>${BASE_URL}/category/${cat}</loc>\n    <changefreq>weekly</changefreq>\n  </url>\n`;
   });
 
-  // 3. Tool Pages (Fixed to plural /tools/ to match App.tsx)
+  // 3. Tool Pages
   PRIMARY_TOOLS.forEach(slug => {
     xml += `  <url>\n    <loc>${BASE_URL}/tools/${slug}</loc>\n    <changefreq>monthly</changefreq>\n  </url>\n`;
   });
 
   xml += `</urlset>`;
 
-  // Force write to public folder - Vite copies this to root on build
+  // Use process.cwd() to find the root directory during build
   const destPath = path.resolve(process.cwd(), 'public/sitemap.xml');
+  
+  // Ensure directory exists (useful for local builds)
+  const dir = path.dirname(destPath);
+  if (!fs.existsSync(dir)) {
+    fs.mkdirSync(dir, { recursive: true });
+  }
+
   fs.writeFileSync(destPath, xml);
   console.log(`✅ SEO SUCCESS: Sitemap generated at ${destPath}`);
 }
