@@ -1,7 +1,7 @@
 {
-  "name": "ToolVerse - The Ultimate Mega Tool Platform",
+  "name": "ToolVerse - Secure Utility Ecosystem",
   "short_name": "ToolVerse",
-  "description": "A production-ready, SEO-optimized platform featuring 500+ high-traffic online tools including AI generation, image processing, developer utilities, and SEO boosters.",
+  "description": "Production-grade online tools powered by a hardened Cloudflare Edge backend. Privacy-first, zero-storage architecture.",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#ffffff",

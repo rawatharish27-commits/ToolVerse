@@ -1,26 +1,7 @@
-import React, { useState, lazy, Suspense, useEffect } from 'react';
-import { GoogleGenAI } from "@google/genai";
-import { TOOLS } from '../data/tools';
 
-// Lazy Load Group Components
-const VideoAudioTools = lazy(() => import('./tools/VideoAudioTools'));
-const AudioTools = lazy(() => import('./tools/AudioTools'));
-const FinanceTools = lazy(() => import('./tools/FinanceTools'));
-const UnitConverterTools = lazy(() => import('./tools/UnitConverterTools'));
-const PDFTools = lazy(() => import('./tools/PDFTools'));
-const ImageTools = lazy(() => import('./tools/ImageTools'));
-const SEOTools = lazy(() => import('./tools/SEOTools'));
-const OfficeTools = lazy(() => import('./tools/OfficeTools'));
-const GeneralTools = lazy(() => import('./tools/GeneralTools'));
-const SecurityTools = lazy(() => import('./tools/SecurityTools'));
-const NetworkTools = lazy(() => import('./tools/NetworkTools'));
-const FileTools = lazy(() => import('./tools/FileTools'));
-const DevTools = lazy(() => import('./tools/DevTools'));
-const DataTools = lazy(() => import('./tools/DataTools'));
-const AITextTools = lazy(() => import('./tools/AITextTools'));
-const AIImageTools = lazy(() => import('./tools/AIImageTools'));
-const SocialTools = lazy(() => import('./tools/SocialTools'));
-const EducationTools = lazy(() => import('./tools/EducationTools'));
+import React, { useState, useEffect } from 'react';
+import { executeOnEdge } from '../services/toolApi';
+import { TOOLS } from '../data/tools';
 
 interface ToolRendererProps {
   slug: string;
@@ -31,44 +12,94 @@ interface ToolRendererProps {
 const ToolRenderer: React.FC<ToolRendererProps> = ({ slug, onSuccess, onError }) => {
   const [inputText, setInputText] = useState('');
   const [loading, setLoading] = useState(false);
+  const [result, setResult] = useState<any>(null);
+
+  const toolData = TOOLS.find(t => t.slug === slug);
 
   useEffect(() => {
     setInputText('');
+    setResult(null);
   }, [slug]);
 
-  const toolData = TOOLS.find(t => t.slug === slug);
-  const category = toolData?.category;
+  const handleExecute = async () => {
+    if (!inputText.trim()) {
+      onError("Please provide some input text.");
+      return;
+    }
 
-  // ROUTING ENGINE BY CATEGORY & SLUG
-  if (slug.startsWith('ai-image')) return <Suspense fallback={<Loader label="Art Director" />}><AIImageTools slug={slug} onSuccess={onSuccess} onError={onError} /></Suspense>;
-  if (slug.startsWith('edu-')) return <Suspense fallback={<Loader label="Academic Dean" />}><EducationTools slug={slug} onSuccess={onSuccess} onError={onError} /></Suspense>;
-  if (category === 'ai') return <Suspense fallback={<Loader label="Orchestrator" />}><AITextTools slug={slug} onSuccess={onSuccess} onError={onError} /></Suspense>;
-  if (category === 'social') return <Suspense fallback={<Loader label="Social Strategist" />}><SocialTools slug={slug} onSuccess={onSuccess} onError={onError} /></Suspense>;
-  if (category === 'education') return <Suspense fallback={<Loader label="Learning Coach" />}><EducationTools slug={slug} onSuccess={onSuccess} onError={onError} /></Suspense>;
-  if (category === 'security') return <Suspense fallback={<Loader label="Security Vault" />}><SecurityTools slug={slug} onSuccess={onSuccess} onError={onError} /></Suspense>;
-  if (category === 'network') return <Suspense fallback={<Loader label="Network Diagnostic" />}><NetworkTools slug={slug} onSuccess={onSuccess} onError={onError} /></Suspense>;
-  if (category === 'seo') return <Suspense fallback={<Loader label="SEO Engine" />}><SEOTools slug={slug} onSuccess={onSuccess} onError={onError} /></Suspense>;
-  if (category === 'video') return <Suspense fallback={<Loader label="Media Lab" />}><VideoAudioTools slug={slug} onSuccess={onSuccess} onError={onError} /></Suspense>;
-  if (category === 'audio') return <Suspense fallback={<Loader label="Audio Studio" />}><AudioTools slug={slug} onSuccess={onSuccess} onError={onError} /></Suspense>;
-  if (category === 'image') return <Suspense fallback={<Loader label="Image Processor" />}><ImageTools slug={slug} onSuccess={onSuccess} onError={onError} /></Suspense>;
-  if (category === 'pdf') return <Suspense fallback={<Loader label="PDF Hub" />}><PDFTools slug={slug} onSuccess={onSuccess} onError={onError} /></Suspense>;
-  if (category === 'calculators') return <Suspense fallback={<Loader label="Calc Engine" />}><FinanceTools slug={slug} onSuccess={onSuccess} onError={onError} /></Suspense>;
-  if (category === 'unit-converters') return <Suspense fallback={<Loader label="Conversion Lab" />}><UnitConverterTools slug={slug} onSuccess={onSuccess} onError={onError} /></Suspense>;
-  if (category === 'office') return <Suspense fallback={<Loader label="Office Suite" />}><OfficeTools slug={slug} onSuccess={onSuccess} onError={onError} /></Suspense>;
-  if (category === 'file') return <Suspense fallback={<Loader label="File Lab" />}><FileTools slug={slug} onSuccess={onSuccess} onError={onError} /></Suspense>;
-  if (category === 'data') return <Suspense fallback={<Loader label="Data Hub" />}><DataTools slug={slug} onSuccess={onSuccess} onError={onError} /></Suspense>;
-  if (category === 'dev') return <Suspense fallback={<Loader label="Dev Studio" />}><DevTools slug={slug} onSuccess={onSuccess} onError={onError} /></Suspense>;
-  if (category === 'utility') return <Suspense fallback={<Loader label="Utility Engine" />}><GeneralTools slug={slug} onSuccess={onSuccess} onError={onError} /></Suspense>;
+    setLoading(true);
+    setResult(null);
 
-  // Fallback for generic utilities
-  return <Suspense fallback={<Loader label="Utility Engine" />}><GeneralTools slug={slug} onSuccess={onSuccess} onError={onError} /></Suspense>;
+    const res = await executeOnEdge(slug, toolData?.category || 'general', { text: inputText });
+
+    if (res.success) {
+      setResult(res.data);
+      onSuccess("Edge processing complete!");
+    } else {
+      onError(res.error || "Processing failed.");
+    }
+    setLoading(false);
+  };
+
+  const renderResult = () => {
+    if (!result) return null;
+
+    const output = result.output || result.formatted || result.password || JSON.stringify(result, null, 2);
+
+    return (
+      <div className="space-y-6 animate-in slide-in-from-top-4 duration-500">
+        <div className="bg-slate-900 rounded-[2.5rem] p-8 md:p-12 shadow-2xl relative overflow-hidden border border-slate-800">
+          <div className="absolute top-0 left-0 w-1 h-full bg-indigo-500 opacity-50"></div>
+          <div className="flex justify-between items-center mb-6">
+            <span className="text-[10px] font-black text-slate-500 uppercase tracking-widest">Edge Result Buffer</span>
+            {result.proStatus && <span className="text-[9px] bg-indigo-500 text-white px-2 py-0.5 rounded-full font-bold">PRO ACCOUNT ACTIVE</span>}
+          </div>
+          <pre className="text-emerald-400 font-mono text-sm whitespace-pre-wrap leading-relaxed">
+            {output}
+          </pre>
+        </div>
+        <div className="flex justify-center gap-4">
+          <button 
+            onClick={() => { navigator.clipboard.writeText(output); onSuccess("Copied!"); }}
+            className="px-10 py-4 bg-slate-900 text-white rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-slate-800 transition-all"
+          >
+            Copy Result
+          </button>
+          {result.engine && <span className="text-[8px] font-bold text-slate-400 self-center uppercase">Engine: {result.engine}</span>}
+        </div>
+      </div>
+    );
+  };
+
+  return (
+    <div className="space-y-10">
+      <div className="space-y-6">
+        <div className="bg-white rounded-[2.5rem] p-8 md:p-12 shadow-[0_30px_60px_-15px_rgba(0,0,0,0.05)] border border-slate-100 relative">
+          <textarea
+            value={inputText}
+            onChange={(e) => setInputText(e.target.value)}
+            placeholder="Paste your content here for Edge processing..."
+            className="w-full h-48 md:h-64 p-0 bg-transparent text-slate-700 font-sans text-lg border-none outline-none resize-none placeholder:text-slate-200"
+          />
+        </div>
+
+        <button 
+          onClick={handleExecute}
+          disabled={loading}
+          className="w-full py-7 bg-indigo-600 text-white rounded-[2rem] font-black text-2xl shadow-2xl hover:bg-indigo-700 transition-all active:scale-95 disabled:opacity-50"
+        >
+          {loading ? (
+            <div className="flex items-center justify-center gap-4">
+               <div className="w-6 h-6 border-4 border-white border-t-transparent rounded-full animate-spin"></div>
+               <span>Edge Processing...</span>
+            </div>
+          ) : "Run Tool Logic"}
+        </button>
+      </div>
+
+      {renderResult()}
+    </div>
+  );
 };
-
-const Loader = ({ label }: { label: string }) => (
-  <div className="h-64 md:h-80 flex flex-col items-center justify-center space-y-4 md:space-y-6">
-    <div className="w-10 h-10 md:w-12 md:h-12 border-[4px] border-slate-100 border-t-indigo-600 rounded-full animate-spin"></div>
-    <div className="animate-pulse text-indigo-500 font-black uppercase tracking-widest text-[9px] md:text-[10px]">Booting {label}...</div>
-  </div>
-);
 
 export default ToolRenderer;
