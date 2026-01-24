@@ -1,20 +1,20 @@
-import React, { useMemo, useDeferredValue, useState, useEffect } from 'react';
+
+import React, { useMemo, useDeferredValue, useState, Suspense, lazy } from 'react';
 import { CATEGORIES } from '../data/categories';
 import { TOOLS } from '../data/tools';
 import ToolCard from '../components/ToolCard';
-import AdPlaceholder from '../components/AdPlaceholder';
 import SEOHead from '../components/SEOHead';
-import SpinWheel from '../components/SpinWheel';
 import SiteStatus from '../components/SiteStatus';
 import TopSitesSection from '../components/TopSitesSection';
 import { getToolPriorityScore } from '../utils/toolPriority';
 import { 
   getAttractionState, 
-  updateAttractionState, 
   getTopCategories, 
   getToolOfDay,
   trackToolClick 
 } from '../utils/attraction';
+
+const RewardHub = lazy(() => import('../components/RewardHub'));
 
 interface HomeProps {
   onNavigate: (page: string, params?: any) => void;
@@ -24,146 +24,106 @@ interface HomeProps {
   onToggleFavorite: (slug: string) => void;
 }
 
-const Home: React.FC<HomeProps> = ({ onNavigate, searchQuery = '', favorites, recent, onToggleFavorite }) => {
+const Home: React.FC<HomeProps> = ({ onNavigate, searchQuery = '', favorites, onToggleFavorite }) => {
   const deferredSearch = useDeferredValue(searchQuery);
-  const [mood, setMood] = useState(() => getAttractionState().mood);
-  const [points, setPoints] = useState(() => getAttractionState().points);
+  const [activeCategory, setActiveCategory] = useState<string | null>(null);
 
-  useEffect(() => {
-    const sync = () => {
-      const state = getAttractionState();
-      setMood(state.mood);
-      setPoints(state.points);
-    };
-    window.addEventListener('attraction_update', sync);
-    return () => window.removeEventListener('attraction_update', sync);
-  }, []);
-
-  const changeMood = (newMood: string) => {
-    setMood(newMood);
-    updateAttractionState({ mood: newMood });
-  };
-
-  const topCategories = useMemo(() => getTopCategories(), [points]);
+  const topCategories = useMemo(() => getTopCategories(), []);
   const dailyTool = useMemo(() => getToolOfDay(TOOLS), []);
 
   const filteredTools = useMemo(() => {
     const query = deferredSearch.toLowerCase().trim();
     let list = [...TOOLS];
+    list.sort((a, b) => getToolPriorityScore(b) - getToolPriorityScore(a));
 
-    // Mood-based Reordering
-    if (mood === 'learn') {
-      list = list.sort((a, b) => (a.category === 'education' || a.category === 'ai' ? -1 : 1));
-    } else if (mood === 'money') {
-      list = list.sort((a, b) => (a.category === 'calculators' || a.category === 'seo' ? -1 : 1));
+    if (activeCategory) {
+      list = list.filter(t => t.category === activeCategory);
     }
 
-    if (!query) return list.sort((a, b) => getToolPriorityScore(b) - getToolPriorityScore(a));
+    if (!query) return list;
 
     const queryTerms = query.split(/\s+/);
     return list.filter(tool => {
       const searchBlob = `${tool.title} ${tool.description} ${tool.category} ${tool.keywords.join(' ')}`.toLowerCase();
       return queryTerms.every(term => searchBlob.includes(term));
-    }).sort((a, b) => getToolPriorityScore(b) - getToolPriorityScore(a));
-  }, [deferredSearch, mood]);
+    });
+  }, [deferredSearch, activeCategory]);
 
   const recommendedTools = useMemo(() => {
     if (topCategories.length === 0) return TOOLS.slice(0, 4);
     return TOOLS.filter(t => topCategories.includes(t.category)).slice(0, 4);
   }, [topCategories]);
 
-  const trendingTools = useMemo(() => {
-    const state = getAttractionState();
-    return Object.entries(state.clicks)
-      .sort((a, b) => b[1] - a[1])
-      .slice(0, 3)
-      .map(entry => TOOLS.find(t => t.title === entry[0]))
-      .filter(Boolean);
-  }, [points]);
-
   const handleToolClick = (tool: any) => {
-    trackToolClick(tool.title, tool.category);
+    trackToolClick(tool.slug, tool.category);
     onNavigate('tool', { slug: tool.slug });
   };
 
   return (
-    <div className="animate-in fade-in duration-700">
+    <div className="animate-in fade-in duration-700 bg-slate-50 min-h-screen">
       <SEOHead 
-        title="ToolVerse - World's Largest Free Online Tools Platform"
-        description="Access 500+ free online tools. Personalize your workflow, track your progress, and level up your digital utility game."
+        title="ToolVerse - World's Largest Free Online Tools Hub"
+        description="Access over 500 professional online tools. 100% free, no registration, local processing."
         url="https://toolverse-4gr.pages.dev/"
       />
       
       {!deferredSearch && (
-        <section className="relative overflow-hidden bg-slate-900">
-          <SiteStatus />
-
-          <div className="absolute top-0 left-0 w-full h-full opacity-20 pointer-events-none">
-            <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-indigo-600 rounded-full blur-[120px] animate-pulse"></div>
-            <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-purple-600 rounded-full blur-[120px] animate-pulse"></div>
-          </div>
-          
-          <div className="max-w-7xl mx-auto px-4 relative z-10 text-center pt-24 pb-32">
-            <div className="inline-flex items-center px-4 py-2 rounded-full bg-white/5 border border-white/10 text-indigo-300 text-[10px] font-black uppercase tracking-[0.3em] mb-8">
-              Experience the Future of Utility
+        <section className="relative overflow-hidden pt-32 pb-48 hero-gradient">
+          <div className="max-w-7xl mx-auto px-4 relative z-10 text-center">
+            <div className="inline-flex items-center px-5 py-2 rounded-full bg-indigo-100 text-indigo-600 text-[10px] font-black uppercase tracking-[0.4em] mb-12 shadow-sm border border-indigo-200">
+              🚀 THE ULTIMATE MEGA UTILITY HUB
             </div>
-            <h1 className="text-5xl sm:text-8xl font-black text-white tracking-tighter mb-8 leading-[0.9]">
-              Master Every<br />
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 via-white to-emerald-400">Digital Flow.</span>
+            <h1 className="text-6xl md:text-9xl font-black tracking-tighter mb-12 leading-[0.85] text-slate-900">
+              Your Daily <br />
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-600 via-purple-600 to-indigo-600 animate-gradient">Power Pack.</span>
             </h1>
             
-            {/* MOOD SWITCHER (Step 4) */}
-            <div className="flex flex-wrap justify-center gap-4 mb-16">
-               {[
-                 { id: 'default', label: 'All Modes', icon: '🌐' },
-                 { id: 'money', label: 'Earn & Grow', icon: '💰' },
-                 { id: 'learn', label: 'Learn & Research', icon: '🧠' },
-                 { id: 'speed', label: 'Quick Speed', icon: '⚡' }
-               ].map(m => (
+            {/* Optimized Search Bar Component-like UI */}
+            <div className="max-w-3xl mx-auto mb-16 relative">
+               <div className="absolute inset-y-0 left-8 flex items-center pointer-events-none">
+                  <svg className="w-6 h-6 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
+               </div>
+               <div className="w-full h-24 bg-white rounded-[2.5rem] shadow-[0_40px_100px_-20px_rgba(79,70,229,0.2)] border border-indigo-100 flex items-center pl-20 pr-8">
+                  <span className="text-slate-300 text-xl font-medium">Try "Merge PDF" or "AI Article..."</span>
+                  <div className="ml-auto flex gap-2">
+                    <span className="px-3 py-1 bg-slate-50 border border-slate-100 rounded-lg text-[10px] font-black text-slate-400">Ctrl + K</span>
+                  </div>
+               </div>
+            </div>
+
+            <div className="flex flex-wrap justify-center gap-3">
+               {CATEGORIES.slice(0, 10).map(cat => (
                  <button 
-                  key={m.id}
-                  onClick={() => changeMood(m.id)}
-                  className={`px-8 py-4 rounded-2xl text-[10px] font-black uppercase tracking-[0.2em] transition-all flex items-center gap-3 ${
-                    mood === m.id 
-                    ? 'bg-indigo-600 text-white shadow-2xl shadow-indigo-600/40 ring-4 ring-indigo-500/20' 
-                    : 'bg-white/5 text-slate-400 border border-white/10 hover:bg-white/10'
+                  key={cat.id}
+                  onClick={() => setActiveCategory(activeCategory === cat.id ? null : cat.id)}
+                  className={`px-6 py-3 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all flex items-center gap-3 border shadow-sm ${
+                    activeCategory === cat.id 
+                    ? 'bg-indigo-600 border-indigo-500 text-white shadow-xl scale-105' 
+                    : 'bg-white border-slate-200 text-slate-500 hover:border-indigo-300'
                   }`}
                  >
-                   <span className="text-xl">{m.icon}</span>
-                   {m.label}
+                   <span className="text-lg">{cat.icon}</span>
+                   {cat.name}
                  </button>
                ))}
             </div>
-
-            {/* UNFINISHED BUSINESS REMINDER (Step 5) */}
-            {Object.keys(getAttractionState().clicks).length > 0 && (
-              <div className="max-w-xl mx-auto bg-indigo-500/10 border border-indigo-500/20 p-6 rounded-[2.5rem] mb-12 flex items-center justify-between group cursor-pointer hover:bg-indigo-500/20 transition-all" onClick={() => document.getElementById('personal-hub')?.scrollIntoView({behavior:'smooth'})}>
-                 <div className="flex items-center gap-4">
-                    <div className="w-10 h-10 bg-indigo-600 rounded-full flex items-center justify-center text-white text-sm font-black shadow-lg shadow-indigo-600/50">
-                      {Object.keys(getAttractionState().clicks).length}
-                    </div>
-                    <div className="text-left">
-                       <div className="text-indigo-400 text-[9px] font-black uppercase tracking-widest">Unfinished Business</div>
-                       <div className="text-white text-xs font-bold">Continue where you left off...</div>
-                    </div>
-                 </div>
-                 <span className="text-indigo-400 group-hover:translate-x-2 transition-transform">→</span>
-              </div>
-            )}
           </div>
         </section>
       )}
 
-      <div className="max-w-7xl mx-auto px-4 -mt-20 relative z-20 space-y-24 mb-32">
+      <div className="max-w-7xl mx-auto px-4 -mt-24 relative z-20 space-y-24 mb-40">
         
-        {/* PERSONAL HUB SECTION (Step 1 & 2) */}
-        {!deferredSearch && (
-          <section id="personal-hub" className="glass bg-white/95 rounded-[3.5rem] p-8 md:p-16 shadow-2xl border border-white/50 backdrop-blur-3xl shadow-indigo-200/50">
-            <div className="grid grid-cols-1 lg:grid-cols-12 gap-16">
+        {/* PERSONALIZED DASHBOARD */}
+        {!deferredSearch && !activeCategory && (
+          <section className="glass-card rounded-[4rem] p-12 md:p-20 shadow-2xl border border-white/50 backdrop-blur-3xl shadow-indigo-100/50">
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-16 md:gap-24">
                <div className="lg:col-span-8 space-y-12">
-                  <div>
-                    <h3 className="text-[10px] font-black text-indigo-500 uppercase tracking-[0.4em] mb-4">Personal Mastery Hub</h3>
-                    <h2 className="text-3xl md:text-5xl font-black text-slate-900 tracking-tighter italic">Suggested for You.</h2>
+                  <div className="flex justify-between items-end">
+                    <div>
+                      <h3 className="text-[11px] font-black text-indigo-600 uppercase tracking-[0.5em] mb-3">Priority Workspace</h3>
+                      <h2 className="text-4xl md:text-5xl font-black text-slate-900 tracking-tighter leading-none italic">Recommended For You</h2>
+                    </div>
+                    <button className="text-[10px] font-black text-indigo-600 uppercase tracking-widest hover:underline">Customize Hub →</button>
                   </div>
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                     {recommendedTools.map(t => (
@@ -172,70 +132,70 @@ const Home: React.FC<HomeProps> = ({ onNavigate, searchQuery = '', favorites, re
                   </div>
                </div>
 
-               <div className="lg:col-span-4 space-y-12 bg-slate-50/50 p-10 rounded-[3rem] border border-slate-100 shadow-inner">
+               <div className="lg:col-span-4 space-y-10 bg-indigo-50/30 p-12 rounded-[3.5rem] border border-indigo-100/50 shadow-inner">
                   <div>
-                    <h3 className="text-[10px] font-black text-orange-500 uppercase tracking-[0.4em] mb-4">Trending FOMO</h3>
-                    <h2 className="text-2xl font-black text-slate-900">Popular Now</h2>
+                    <h3 className="text-[11px] font-black text-emerald-600 uppercase tracking-[0.5em] mb-3">AI Intelligence Pick</h3>
+                    <h2 className="text-2xl font-black text-slate-900">Today's Master Tool</h2>
                   </div>
-                  <div className="space-y-4">
-                    {trendingTools.length > 0 ? trendingTools.map((t: any) => (
-                      <div key={t.slug} onClick={() => handleToolClick(t)} className="flex items-center p-5 bg-white rounded-3xl cursor-pointer border border-transparent hover:border-orange-200 hover:shadow-xl transition-all group">
-                         <div className="w-10 h-10 bg-orange-50 rounded-xl flex items-center justify-center mr-4 text-xl group-hover:scale-110 transition-transform">🔥</div>
-                         <div className="flex-grow">
-                            <div className="text-xs font-black text-slate-800">{t.title}</div>
-                            <div className="text-[8px] font-bold text-slate-300 uppercase tracking-widest">{t.category}</div>
+                  <div className="space-y-6">
+                      <div onClick={() => handleToolClick(dailyTool)} className="bg-white p-8 rounded-[2.5rem] cursor-pointer border border-transparent hover:border-emerald-200 hover:shadow-2xl transition-all group">
+                         <div className="w-16 h-16 bg-emerald-50 rounded-2xl flex items-center justify-center mb-6 text-4xl group-hover:scale-110 transition-transform">💎</div>
+                         <div className="space-y-2">
+                            <div className="text-lg font-black text-slate-900 group-hover:text-emerald-600 transition-colors">{dailyTool.title}</div>
+                            <p className="text-sm text-slate-500 line-clamp-3 leading-relaxed">{dailyTool.description}</p>
                          </div>
                       </div>
-                    )) : (
-                      <p className="text-[10px] font-black text-slate-300 uppercase tracking-widest text-center py-10">Exploration needed to trigger trends</p>
-                    )}
+                      <button onClick={() => onNavigate('category', { id: dailyTool.category })} className="w-full py-4 text-[10px] font-black uppercase tracking-widest text-slate-400 hover:text-indigo-600 transition-colors">
+                        Discover Hub: {dailyTool.category} →
+                      </button>
                   </div>
                </div>
             </div>
           </section>
         )}
 
-        {/* TOOL OF THE DAY (Step 6) */}
-        {!deferredSearch && (
-          <section className="bg-emerald-600 rounded-[4rem] p-12 md:p-24 text-white relative overflow-hidden group cursor-pointer" onClick={() => handleToolClick(dailyTool)}>
-             <div className="absolute -top-20 -right-20 w-80 h-80 bg-white/10 rounded-full blur-[100px] group-hover:bg-white/20 transition-all"></div>
-             <div className="relative z-10 flex flex-col md:flex-row items-center justify-between gap-12">
-                <div className="max-w-xl text-center md:text-left space-y-8">
-                   <div className="inline-block px-6 py-2 bg-black/20 rounded-full text-[10px] font-black uppercase tracking-[0.5em]">Hero Tool of the Day</div>
-                   <h2 className="text-4xl md:text-7xl font-black tracking-tighter leading-tight">Master: {dailyTool.title}</h2>
-                   <p className="text-emerald-50 text-xl font-medium opacity-80">{dailyTool.description}</p>
-                   <button className="px-12 py-6 bg-white text-emerald-600 rounded-[2rem] font-black text-lg shadow-2xl hover:scale-105 active:scale-95 transition-all">Launch Masterclass Tool</button>
-                </div>
-                <div className="text-[10rem] md:text-[15rem] leading-none opacity-20 group-hover:scale-110 group-hover:rotate-6 transition-all duration-700">💎</div>
-             </div>
-          </section>
-        )}
+        <TopSitesSection />
 
-        <SpinWheel />
+        {/* LIGHT LOAD REWARD HUB */}
+        <Suspense fallback={
+          <div className="h-48 bg-slate-900/5 rounded-[4rem] flex items-center justify-center border-4 border-dashed border-slate-200">
+             <span className="text-[10px] font-black text-slate-300 uppercase tracking-[0.4em] animate-pulse">Initializing Reward Core...</span>
+          </div>
+        }>
+          <RewardHub />
+        </Suspense>
 
-        <section id="tools-grid" className="py-12">
-          <div className="flex flex-col md:flex-row items-end justify-between mb-16 gap-6">
-            <div className="max-w-2xl">
-              <h2 className="text-4xl md:text-6xl font-black text-slate-900 tracking-tighter uppercase italic">The Vault Index</h2>
-              <p className="text-lg text-slate-500 font-medium leading-relaxed mt-4">500+ Verified Professional Utilities. No Uploads. 100% Native.</p>
+        <section id="vault-index" className="py-12">
+          <div className="flex flex-col md:flex-row items-end justify-between mb-20 gap-8">
+            <div className="max-w-3xl">
+              <div className="text-xs font-black text-indigo-500 uppercase tracking-[0.5em] mb-4">Total Global Ecosystem</div>
+              <h2 className="text-5xl md:text-8xl font-black text-slate-900 tracking-tighter uppercase leading-[0.85]">The Vault Index</h2>
+              <p className="text-xl text-slate-500 font-medium leading-relaxed mt-6 max-w-2xl">
+                Quick-access to {filteredTools.length} production-grade professional tools. Privacy first. Local processing.
+              </p>
             </div>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
-            {filteredTools.map(tool => (
-              <ToolCard 
-                key={tool.slug} 
-                tool={tool} 
-                onClick={() => handleToolClick(tool)} 
-                isFavorite={favorites.includes(tool.slug)}
-                onToggleFavorite={onToggleFavorite}
-              />
-            ))}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            {filteredTools.length > 0 ? (
+              filteredTools.map(tool => (
+                <ToolCard 
+                  key={tool.slug} 
+                  tool={tool} 
+                  onClick={() => handleToolClick(tool)} 
+                  isFavorite={favorites.includes(tool.slug)}
+                  onToggleFavorite={onToggleFavorite}
+                />
+              ))
+            ) : (
+               [...Array(8)].map((_, i) => (
+                 <div key={i} className="h-64 rounded-[3.5rem] skeleton opacity-50"></div>
+               ))
+            )}
           </div>
         </section>
-
-        <TopSitesSection />
       </div>
+      <SiteStatus />
     </div>
   );
 };

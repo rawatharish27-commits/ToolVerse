@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
   <head>
@@ -6,35 +7,42 @@
     <meta http-equiv="Content-Security-Policy" content="default-src 'self'; img-src 'self' data: https://logo.clearbit.com https://ui-avatars.com https://images.unsplash.com; script-src 'self' 'unsafe-inline' https://cdn.tailwindcss.com https://pagead2.googlesyndication.com https://www.googletagmanager.com https://esm.sh https://unpkg.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://esm.sh; font-src 'self' https://fonts.gstatic.com; connect-src 'self' https://generativelanguage.googleapis.com https://api.counterapi.dev https://www.google-analytics.com https://esm.sh https://unpkg.com; frame-src https://googleads.g.doubleclick.net; upgrade-insecure-requests;">
     <title>ToolVerse | World's Largest Free Online Tools Platform</title>
     
-    <!-- Performance Pre-connects for faster loading -->
-    <link rel="preconnect" href="https://logo.clearbit.com">
+    <!-- Performance Pre-connects -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="dns-prefetch" href="https://api.counterapi.dev">
     
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800;900&display=swap" rel="stylesheet">
     <style>
-      :root { font-size: 18px; } /* Set baseline to 18px for "Medium" feel */
-      body { font-family: 'Inter', sans-serif; -webkit-font-smoothing: antialiased; text-rendering: optimizeLegibility; }
+      :root { font-size: 18px; }
+      body { font-family: 'Inter', sans-serif; background: #f8fafc; }
       
-      .glass {
-        background: rgba(255, 255, 255, 0.8);
-        backdrop-filter: blur(8px);
-        border: 1px solid rgba(255, 255, 255, 0.3);
+      .glass-card {
+        background: rgba(255, 255, 255, 0.7);
+        backdrop-filter: blur(12px);
+        border: 1px solid rgba(255, 255, 255, 0.5);
       }
 
-      /* Performance Optimization: Disable heavy animations on slow devices */
-      @media (prefers-reduced-motion: reduce) {
-        * { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
+      .hero-gradient {
+        background: radial-gradient(circle at top right, #eef2ff, #f8fafc 40%);
       }
 
-      ::-webkit-scrollbar { width: 10px; }
-      ::-webkit-scrollbar-track { background: #f8fafc; }
-      ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; border: 3px solid #f8fafc; }
-      ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+      @keyframes shimmer {
+        0% { background-position: -1000px 0; }
+        100% { background-position: 1000px 0; }
+      }
+      .skeleton {
+        background: linear-gradient(90deg, #f1f5f9 25%, #e2e8f0 50%, #f1f5f9 75%);
+        background-size: 1000px 100%;
+        animation: shimmer 2s infinite linear;
+      }
       
-      .brand-card-hover { transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1); }
-      .brand-card-hover:hover { transform: translateY(-8px); box-shadow: 0 30px 60px -12px rgba(79, 70, 229, 0.2); }
+      .stagger-load > * { opacity: 0; transform: translateY(20px); animation: fadeInUp 0.5s forwards; }
+      @keyframes fadeInUp { to { opacity: 1; transform: translateY(0); } }
+      .stagger-load > *:nth-child(1) { animation-delay: 0.1s; }
+      .stagger-load > *:nth-child(2) { animation-delay: 0.2s; }
+      .stagger-load > *:nth-child(3) { animation-delay: 0.3s; }
     </style>
     <script type="importmap">
 {
@@ -62,14 +70,14 @@
     "@tensorflow-models/body-pix": "https://esm.sh/@tensorflow-models/body-pix@2.2.1",
     "papaparse": "https://esm.sh/papaparse@5.4.1",
     "spark-md5": "https://esm.sh/spark-md5@3.0.2",
-    "@vitejs/plugin-react": "https://esm.sh/@vitejs/plugin-react@^5.1.2",
     "react-dom/": "https://esm.sh/react-dom@^19.2.3/",
-    "vite": "https://esm.sh/vite@^7.3.1"
+    "vite": "https://esm.sh/vite@^7.3.1",
+    "@vitejs/plugin-react": "https://esm.sh/@vitejs/plugin-react@^5.1.2"
   }
 }
 </script>
   </head>
-  <body class="bg-slate-50 text-slate-900 overflow-x-hidden">
+  <body class="overflow-x-hidden">
     <div id="root"></div>
     <script type="module" src="./index.tsx"></script>
   </body>
