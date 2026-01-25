@@ -1,42 +1,34 @@
+
 import { Tool, ToolCategory } from '../types';
 import { SITE_CONFIG } from '../config/site';
 
 /**
- * ToolVerse CTR Intelligence v5.0
- * Implements Query-Based Title Rewriting & Automated Schema Factory
+ * ToolVerse CTR Intelligence v6.0
+ * Implements Google Search Dominance Patterns
  */
 
 export const getHighCTRTitle = (tool: Tool): string => {
   const year = new Date().getFullYear();
   const title = tool.title;
 
-  // Pattern 1: High-RPM Finance/Tax (Geo + Year)
   if (tool.category === 'calculators') {
-    return `Best Free ${title} India (${year} Updated) – Accurate & Easy`;
+    return `Best ${title} India (${year}) – 100% Accurate Take-Home Calc`;
   }
 
-  // Pattern 2: Privacy-First Security (Trust Pattern)
-  if (tool.category === 'security' || tool.category === 'network') {
-    return `${title} Online – Secure & Private (No Login, No Data Stored)`;
+  if (tool.category === 'image' || tool.category === 'pdf') {
+    return `${title} Online – No Upload, 100% Private & Instant (${year})`;
   }
 
-  // Pattern 3: Developer Utilities (Action + Benefit)
-  if (tool.category === 'dev' || tool.category === 'data') {
-    return `Free ${title} – Format, Validate & Minify Code Instantly`;
+  if (tool.category === 'ai' || tool.category === 'social') {
+    return `Viral ${title} – AI Powered Content Engine (Free & Pro)`;
   }
 
-  // Pattern 4: Document/PDF (Professional Pattern)
-  if (tool.category === 'pdf' || tool.category === 'office') {
-    return `Professional ${title} – Free Tool to Edit & Convert Documents`;
-  }
-
-  // Pattern 5: Default (Intent-Based)
-  return `How to use ${title} Online – Free ${year} Professional Utility`;
+  return `Free ${title} Online – Professional Tools by Harish Rawat (${year})`;
 };
 
 /**
- * Automated FAQ Schema Factory
- * Generates SEO-compliant JSON-LD based on tool metadata
+ * Automated JSON-LD Schema Factory
+ * Ensures Rich Snippets in Search Results
  */
 export const getAutoFaqSchema = (tool: Tool) => {
   return {
@@ -45,58 +37,32 @@ export const getAutoFaqSchema = (tool: Tool) => {
     "mainEntity": [
       {
         "@type": "Question",
-        "name": `Is this ${tool.title} free to use?`,
+        "name": `Is the ${tool.title} tool safe for sensitive data?`,
         "acceptedAnswer": {
           "@type": "Answer",
-          "text": `Yes, our ${tool.title} is 100% free. You can use it without any registration, signup, or hidden daily limits.`
+          "text": `Absolutely. ToolVerse processes the ${tool.title} entirely in your browser using local logic nodes. Your files never leave your device, ensuring total privacy.`
         }
       },
       {
         "@type": "Question",
-        "name": `Is my data safe with the ${tool.title}?`,
+        "name": `Who developed the ${tool.title}?`,
         "acceptedAnswer": {
           "@type": "Answer",
-          "text": `Absolutely. ToolVerse uses browser-native logic. Your files are processed locally and never uploaded to any server, ensuring total privacy.`
-        }
-      },
-      {
-        "@type": "Question",
-        "name": `Can I use ${tool.title} on a smartphone?`,
-        "acceptedAnswer": {
-          "@type": "Answer",
-          "text": `Yes, ToolVerse is fully responsive. You can use this utility on any Android, iOS, or desktop device via your browser.`
+          "text": `This tool was architected and developed by Harish Rawat as part of the ToolVerse professional utility ecosystem.`
         }
       }
     ]
   };
 };
 
-/**
- * Breadcrumb Schema Factory
- */
 export const getBreadcrumbSchema = (category: ToolCategory, tool: Tool) => {
   return {
     "@context": "https://schema.org",
     "@type": "BreadcrumbList",
     "itemListElement": [
-      {
-        "@type": "ListItem",
-        "position": 1,
-        "name": "Home",
-        "item": SITE_CONFIG.baseUrl
-      },
-      {
-        "@type": "ListItem",
-        "position": 2,
-        "name": category.name,
-        "item": `${SITE_CONFIG.baseUrl}/category/${category.id}`
-      },
-      {
-        "@type": "ListItem",
-        "position": 3,
-        "name": tool.title,
-        "item": `${SITE_CONFIG.baseUrl}/tools/${tool.slug}`
-      }
+      { "@type": "ListItem", "position": 1, "name": "Home", "item": SITE_CONFIG.baseUrl },
+      { "@type": "ListItem", "position": 2, "name": category.name, "item": `${SITE_CONFIG.baseUrl}/category/${category.id}` },
+      { "@type": "ListItem", "position": 3, "name": tool.title, "item": `${SITE_CONFIG.baseUrl}/tools/${tool.slug}` }
     ]
   };
 };
