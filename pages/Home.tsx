@@ -1,13 +1,13 @@
 
-
-import React, { useMemo, useDeferredValue } from 'react';
+import React, { useMemo, useDeferredValue, useEffect } from 'react';
 import { CATEGORIES } from '../data/categories';
 import { TOOLS } from '../data/tools';
 import ToolCard from '../components/ToolCard';
 import SEOHead from '../components/SEOHead';
 import SiteStatus from '../components/SiteStatus';
 import RewardHub from '../components/RewardHub';
-import { trackToolClick } from '../utils/attraction';
+import TopSitesSection from '../components/TopSitesSection';
+import InternalLinking from '../components/InternalLinking';
 
 interface HomeProps {
   onNavigate: (page: string, params?: any) => void;
@@ -21,7 +21,7 @@ const Home: React.FC<HomeProps> = ({ onNavigate, searchQuery = '', favorites, on
   const deferredSearch = useDeferredValue(searchQuery);
 
   const topTools = useMemo(() => {
-    return TOOLS.sort((a,b) => (b.priority || 0) - (a.priority || 0)).slice(0, 20);
+    return TOOLS.sort((a,b) => (b.priority || 0) - (a.priority || 0)).slice(0, 24);
   }, []);
 
   const searchResults = useMemo(() => {
@@ -30,52 +30,96 @@ const Home: React.FC<HomeProps> = ({ onNavigate, searchQuery = '', favorites, on
     return TOOLS.filter(tool => {
       const searchBlob = `${tool.title} ${tool.description} ${tool.keywords.join(' ')}`.toLowerCase();
       return searchBlob.includes(query);
-    }).slice(0, 30);
+    }).slice(0, 40);
   }, [deferredSearch]);
+
+  const scrollToContent = () => {
+    const el = document.getElementById('main-content');
+    if (el) el.scrollIntoView({ behavior: 'smooth' });
+  };
 
   return (
     <div className="bg-white min-h-screen">
-      <SEOHead title="ToolVerse | Global Directory" description="Access the top 20 professional tools instantly. Secure, browser-native processing." url="https://toolverse-4gr.pages.dev/" />
+      <SEOHead title="ToolVerse | Global Utility Command Center" description="Access the world's most powerful collection of browser-native professional tools. Private, instant, and high-performance." url="https://toolverse-4gr.pages.dev/" />
 
-      {/* HERO SECTION */}
-      <section className="relative pt-24 pb-20 bg-slate-50 border-b border-slate-100 overflow-hidden">
-        <div className="max-w-7xl mx-auto px-6 text-center relative z-10">
-          <div className="inline-flex items-center px-4 py-1.5 rounded-full bg-white border border-slate-200 text-indigo-600 text-[10px] font-black uppercase tracking-[0.3em] mb-8">
-             ToolVerse OS v4.0 Active
+      {/* ENHANCED HERO */}
+      <section className="relative min-h-[90vh] flex flex-col items-center justify-center bg-slate-50 border-b border-slate-100 overflow-hidden px-6">
+        <div className="absolute inset-0 z-0 pointer-events-none opacity-40">
+           <div className="absolute top-1/4 left-1/4 w-[50vw] h-[50vw] bg-indigo-200/50 rounded-full blur-[120px] animate-pulse"></div>
+           <div className="absolute bottom-1/4 right-1/4 w-[40vw] h-[40vw] bg-emerald-200/50 rounded-full blur-[100px] animate-pulse delay-700"></div>
+        </div>
+
+        <div className="max-w-7xl mx-auto text-center relative z-10">
+          <div className="inline-flex items-center px-5 py-2 rounded-full bg-white border border-slate-200 text-indigo-600 text-[11px] font-black uppercase tracking-[0.3em] mb-12 shadow-sm animate-in fade-in slide-in-from-bottom-4 duration-700">
+             <span className="w-2 h-2 bg-indigo-600 rounded-full mr-3 animate-ping"></span>
+             Unified Logic Ecosystem Active
           </div>
-          <h1 className="text-6xl md:text-9xl font-black text-slate-900 tracking-tighter mb-8 leading-none">
-            Pure Logic. <br /><span className="text-indigo-600 italic">No Latency.</span>
-          </h1>
-          <p className="text-xl text-slate-500 font-medium max-w-2xl mx-auto mb-16">The ultimate command center for 120+ professional tools. <br/>All logic runs 100% locally in your browser.</p>
           
-          {/* USER ONBOARDING GUIDE */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-5xl mx-auto">
+          <h1 className="text-7xl md:text-[10rem] font-black text-slate-900 tracking-tighter mb-12 leading-[0.85] animate-in fade-in slide-in-from-bottom-6 duration-1000">
+            Pure Force. <br /><span className="text-indigo-600 italic">No Latency.</span>
+          </h1>
+          
+          <p className="text-xl md:text-3xl text-slate-500 font-medium max-w-3xl mx-auto mb-20 animate-in fade-in slide-in-from-bottom-8 duration-1000 delay-200 leading-relaxed">
+            Architect your digital workflow with 500+ logic nodes. <br className="hidden md:block" /> 
+            100% private. 100% browser-native.
+          </p>
+          
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-6 mb-24 animate-in fade-in slide-in-from-bottom-10 duration-1000 delay-300">
+             <button 
+              onClick={scrollToContent}
+              className="px-12 py-6 bg-slate-900 text-white rounded-[2rem] font-black text-xl shadow-2xl hover:bg-indigo-600 hover:-translate-y-2 transition-all group flex items-center gap-4"
+             >
+               Launch Workspace node
+               <span className="group-hover:translate-x-2 transition-transform">→</span>
+             </button>
+             <button 
+              onClick={() => window.dispatchEvent(new Event('tv_open_menu'))}
+              className="px-12 py-6 bg-white text-slate-900 border-2 border-slate-100 rounded-[2rem] font-black text-xl shadow-xl hover:border-indigo-100 hover:-translate-y-2 transition-all"
+             >
+               Browse Directory
+             </button>
+          </div>
+
+          {/* ONBOARDING TILES */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto animate-in fade-in slide-in-from-bottom-12 duration-1000 delay-500">
              {[
-               { id: '1', t: 'Explore Directory', d: 'Click the 3-dots on top-left to browse categories.', i: '📂' },
-               { id: '2', t: 'Local Processing', d: 'Your files are never uploaded. Privacy is 100% hardcoded.', i: '🔒' },
-               { id: '3', t: 'One-Click Utility', d: 'Click any tool to launch a dedicated workspace.', i: '⚡' }
+               { id: '1', t: 'Local Binary Core', d: 'Process images, videos, and PDFs entirely on your CPU via WebAssembly.', i: '🔒' },
+               { id: '2', t: 'Neural Augmentation', d: 'Leverage Gemini 3.0 Pro for advanced content synthesis and debugging.', i: '🧠' },
+               { id: '3', t: 'Zero Account UX', d: 'No signup. No tracking. Pure professional utility for the modern web.', i: '⚡' }
              ].map(step => (
-               <div key={step.id} className="bg-white p-8 rounded-[2.5rem] border border-slate-100 shadow-xl shadow-indigo-500/5 text-left group">
-                  <div className="text-4xl mb-4 group-hover:scale-110 transition-transform">{step.i}</div>
-                  <h3 className="font-black text-slate-900 uppercase tracking-widest text-xs mb-2">{step.t}</h3>
-                  <p className="text-slate-400 text-xs font-medium leading-relaxed">{step.d}</p>
+               <div key={step.id} className="bg-white/80 backdrop-blur-md p-10 rounded-[3rem] border border-white shadow-xl shadow-indigo-500/5 text-left group hover:bg-white hover:border-indigo-100 transition-all">
+                  <div className="text-5xl mb-6 group-hover:scale-110 group-hover:rotate-12 transition-transform duration-500">{step.i}</div>
+                  <h3 className="font-black text-slate-900 uppercase tracking-widest text-sm mb-3">{step.t}</h3>
+                  <p className="text-slate-500 text-xs font-semibold leading-relaxed">{step.d}</p>
                </div>
              ))}
           </div>
         </div>
+
+        {/* SCROLL INDICATOR */}
+        <button 
+          onClick={scrollToContent}
+          className="absolute bottom-12 left-1/2 -translate-x-1/2 flex flex-col items-center gap-4 opacity-50 hover:opacity-100 transition-opacity animate-bounce"
+        >
+          <span className="text-[10px] font-black text-slate-400 uppercase tracking-[0.4em]">Scroll to Discover</span>
+          <div className="w-6 h-10 border-2 border-slate-300 rounded-full flex justify-center pt-2">
+            <div className="w-1 h-2 bg-indigo-500 rounded-full"></div>
+          </div>
+        </button>
       </section>
 
-      <div className="max-w-[1600px] mx-auto px-6 py-20">
-        <div className="space-y-32">
+      <div id="main-content" className="max-w-[1600px] mx-auto px-6 py-32">
+        <div className="space-y-40">
           
-          {/* SEARCH RESULTS */}
+          {/* SEARCH RESULTS NODE */}
           {deferredSearch && searchResults && (
-            <section className="animate-in fade-in slide-in-from-bottom-4">
-              <h2 className="text-3xl font-black text-slate-900 mb-12 flex items-center gap-4">
-                <span className="w-1.5 h-8 bg-indigo-600 rounded-full"></span>
-                Search Results
-              </h2>
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+            <section className="animate-in fade-in slide-in-from-bottom-10 duration-700">
+              <div className="flex items-center gap-6 mb-16">
+                <div className="w-2 h-10 bg-indigo-600 rounded-full"></div>
+                <h2 className="text-5xl font-black text-slate-900 tracking-tight">Active Search Results</h2>
+                <div className="px-4 py-2 bg-slate-100 rounded-xl text-[10px] font-black text-slate-400 uppercase tracking-widest">{searchResults.length} Matches Found</div>
+              </div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-10">
                 {searchResults.map(tool => (
                   <ToolCard key={tool.slug} tool={tool} onClick={() => onNavigate('tool', { slug: tool.slug })} isFavorite={favorites.includes(tool.slug)} onToggleFavorite={onToggleFavorite} />
                 ))}
@@ -83,15 +127,23 @@ const Home: React.FC<HomeProps> = ({ onNavigate, searchQuery = '', favorites, on
             </section>
           )}
 
-          {/* TOP 20 TOOLS - PERFORMANCE OPTIMIZED */}
+          {/* TOP PERFORMANCE GRID */}
           {!deferredSearch && (
-            <section>
-              <div className="flex items-center justify-between mb-16 border-b border-slate-100 pb-8">
-                 <h2 className="text-4xl font-black text-slate-900 tracking-tight">Top Performance Nodes</h2>
-                 {/* Fix: Replaced direct call to undefined setIsMenuOpen with a custom event that Layout listens to */}
-                 <button onClick={() => window.dispatchEvent(new Event('tv_open_menu'))} className="px-8 py-3 bg-slate-900 text-white rounded-2xl font-black text-[10px] uppercase tracking-[0.2em] shadow-xl hover:bg-indigo-600 transition-all active:scale-95">Open Global Directory</button>
+            <section className="animate-in fade-in duration-1000">
+              <div className="flex flex-col md:flex-row md:items-end justify-between mb-20 border-b border-slate-100 pb-12 gap-8">
+                 <div className="space-y-3">
+                    <h2 className="text-5xl md:text-7xl font-black text-slate-900 tracking-tighter">Elite Performance Nodes.</h2>
+                    <p className="text-xl text-slate-400 font-medium max-w-xl leading-relaxed">Highly optimized, low-latency tools synchronized for professional workflows.</p>
+                 </div>
+                 <button 
+                  onClick={() => window.dispatchEvent(new Event('tv_open_menu'))} 
+                  className="px-12 py-5 bg-slate-900 text-white rounded-[2rem] font-black text-[12px] uppercase tracking-[0.2em] shadow-2xl hover:bg-indigo-600 transition-all active:scale-95 flex items-center gap-4"
+                 >
+                   Global Directory
+                   <span className="text-lg">📂</span>
+                 </button>
               </div>
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-10">
                 {topTools.map(tool => (
                   <ToolCard 
                     key={tool.slug} 
@@ -105,26 +157,34 @@ const Home: React.FC<HomeProps> = ({ onNavigate, searchQuery = '', favorites, on
             </section>
           )}
 
-          {/* CATEGORY EXPLORATION TILES */}
+          {/* INTELLIGENCE CATEGORIES */}
           {!deferredSearch && (
-            <section>
-               <h2 className="text-3xl font-black text-slate-900 mb-12">Browse Intelligence Clusters</h2>
-               <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-6">
+            <section className="animate-in fade-in duration-1000 delay-200">
+               <div className="text-center mb-24">
+                  <h2 className="text-5xl md:text-7xl font-black text-slate-900 tracking-tighter mb-6 leading-none">Intelligence Clusters</h2>
+                  <p className="text-lg text-slate-400 font-bold uppercase tracking-widest">Warp between domain-specific workspaces</p>
+               </div>
+               <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-8">
                  {CATEGORIES.map(cat => (
                    <button 
                     key={cat.id} 
                     onClick={() => onNavigate('category', { id: cat.id })}
-                    className="p-8 bg-slate-50 border border-slate-100 rounded-[2.5rem] flex flex-col items-center gap-4 hover:bg-white hover:shadow-2xl hover:border-indigo-100 hover:-translate-y-2 transition-all group"
+                    className="p-12 bg-slate-50 border border-slate-100 rounded-[3.5rem] flex flex-col items-center gap-6 hover:bg-white hover:shadow-2xl hover:border-indigo-100 hover:-translate-y-3 transition-all group relative overflow-hidden"
                    >
-                     <div className={`w-14 h-14 ${cat.color} rounded-2xl flex items-center justify-center text-2xl text-white shadow-lg group-hover:rotate-12 transition-transform`}>{cat.icon}</div>
-                     <span className="text-[10px] font-black uppercase tracking-widest text-slate-500 group-hover:text-indigo-600">{cat.name}</span>
+                     <div className={`w-20 h-20 ${cat.color} rounded-[1.5rem] flex items-center justify-center text-4xl text-white shadow-2xl shadow-black/10 group-hover:rotate-12 group-hover:scale-110 transition-transform duration-500`}>{cat.icon}</div>
+                     <span className="text-[11px] font-black uppercase tracking-[0.2em] text-slate-500 group-hover:text-indigo-600 transition-colors">{cat.name}</span>
+                     <div className="absolute top-0 right-0 w-20 h-20 bg-indigo-500/5 rounded-full -mr-10 -mt-10 group-hover:bg-indigo-500/10 transition-colors"></div>
                    </button>
                  ))}
                </div>
             </section>
           )}
 
+          <TopSitesSection />
+          
           <RewardHub />
+
+          <InternalLinking onNavigate={onNavigate} />
         </div>
       </div>
       <SiteStatus />
