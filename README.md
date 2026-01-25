@@ -4,49 +4,46 @@ ToolVerse is a world-class directory of 120+ high-traffic, professional-grade on
 
 ## 🚀 Fully Implemented Tool Inventory
 
-### 🖼️ Image & Visual Intelligence (25+ Tools)
+### 🖼️ Image & Visual Intelligence
 *   **KB Reducer (Exact)**: Hit 20KB/50KB limits for govt forms.
 *   **Passport Photo Maker**: Indian (35x45mm) and US (2x2in) standards.
 *   **Signature Fixer**: Remove shadows, boost ink contrast, and auto-crop.
 *   **Background Remover (Non-AI)**: Fast color-threshold based removal.
 *   **Image Authenticity**: Detect Canva/Photoshop metadata signatures.
-*   **DPI Myth Breaker**: Fact-check pixel density vs. quality.
-*   **Other Tools**: To WebP, Smart Compressor, Metadata Scrubber, Perspective Corrector, Palette Extractor, Noise Reducer, Perspective Fix.
+*   **DPI Checker**: Check and fix dots-per-inch metadata losslessly.
+*   **Diagnostic Tools**: Why Image Blurry Simulator, Social Media Compression Preview, Stretching Predictor.
 
-### 📄 PDF & Document Master (20+ Tools)
+### 📄 PDF & Document Master
 *   **Pro PDF OCR**: Local image-to-text extraction.
 *   **PDF Compare**: Side-by-side textual diffing.
-*   **Compliance Checker**: SSC/UPSC/Bank form validation.
 *   **Excel to PDF**: Styled workbook-to-document conversion.
 *   **PDF Reorder**: Solve duplex/manual scan page flips.
-*   **Other Tools**: Splitter, Merger, AES-256 Protector, Password Remover, Metadata Viewer, Watermark Tool, B&W Print Preview.
+*   **Binary Tools**: Splitter, Merger, Password Protector, Password Remover.
+*   **Audit Tools**: PDF Compliance Checker, Opening Failure Checker, Text Searchability Tester.
 
-### 💰 Finance & ROI Cluster (15+ Tools)
+### 💰 Finance & ROI Cluster
 *   **Salary Calculator**: India FY 24-25 Take-home (PF/Tax) breakdown.
 *   **Offer Comparison**: LPA vs. Stocks vs. Joining Bonus metrics.
-*   **EMI High? Explainer**: Why tenure vs interest is hurting your budget.
+*   **EMI Explainer**: "Why is my EMI so high?" tenure vs interest breakdown.
 *   **ROI Pro**: Annualized gain vs investment duration.
-*   **Other Tools**: Inflation Impact, Hidden Charges, "No Cost" EMI Truth, Effective Price, GST Master, Compound Interest Architect.
+*   **Hidden Costs**: Hidden Charges Finder, "No Cost" EMI Truth, Effective Price Calculator.
 
-### 💻 Developer & SEO Suite (20+ Tools)
-*   **JSON Formatter/Validator**: RFC-compliant beautifier.
-*   **HTML/CSS Minifier**: Production-ready code compression.
-*   **Regex Debugger**: Live pattern matching and capture groups.
-*   **Sitemap Generator**: XML & Robots.txt automation.
-*   **Other Tools**: Base64 Transcoder, JWT Decoder, Keyword Density, SERP Preview, Breadcrumb Schema.
+### 💻 Developer & SEO Suite
+*   **Formatters**: JSON, HTML, CSS, XML, YAML.
+*   **Minifiers**: HTML, CSS, JavaScript.
+*   **SEO Suite**: Title/Meta Length Checker, XML Sitemap Gen, Robots.txt Gen, SERP Preview, Breadcrumb Schema.
+*   **Security**: Hash Gen (MD5/SHA), Base64 Transcoder, JWT Decoder, Regex Tester.
 
-### 🛠️ Daily Utility & Life (20+ Tools)
-*   **Time Zone Converter**: Global city clock synchronization.
-*   **Event Countdown**: Generate countdown timers for deadlines.
-*   **Working Days**: Net working days (excluding weekends/holidays).
-*   **QR Architect**: High-res offline QR generator.
-*   **Other Tools**: Password Strength, Word Counter, Case Converter, UUID Gen, File Type Identifier, IP Info (Offline).
+### 🛠️ Daily Utility & Life
+*   **Time & Date**: Global Time Zone Converter, Event Countdown, Working Days Calc, Date Difference.
+*   **Content**: Word Counter, Char Counter, Text Cleaner, Case Converter.
+*   **Connectivity**: Why Internet Slow Analyzer, OTP Delivery Trace, Email Bounce Decoder.
+*   **Miscellaneous**: QR Architect, UUID Gen, File Type Identifier (Binary Signature).
 
-### 🎓 Academic & AI Hub (15+ Tools)
-*   **AI Study Planner**: Custom exam-date based schedules.
-*   **Text Summarizer**: rule-based and AI-powered takeaways.
-*   **AI Essay Auditor**: Rubric-based academic grading.
-*   **Citation Maker**: APA/MLA/IEEE bibliography generator.
+### 🎓 Academic & AI Hub
+*   **Writing**: AI Article Pro, Smart Rewriter, Professional Proofreader.
+*   **Education**: AI Study Planner, Notes Summarizer, AI Essay Auditor, Citation Architect.
+*   **Math**: Logic Solver, Equation Solver, Formula Generator.
 
 ---
 **ToolVerse Architecture**: Hardened Cloudflare Edge + Local WebAssembly Runtime. No accounts. No logs. No latency.
