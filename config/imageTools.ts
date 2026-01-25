@@ -1,3 +1,79 @@
+
+export const imageKbReducerConfig = {
+  slug: "image-kb-reducer",
+  title: "Image Size Reducer (Exact KB)",
+  description: "Target a specific file size (e.g. 20KB for govt forms). Our engine uses binary-search quality optimization to hit your goal.",
+  icon: "📉",
+  colorClass: "bg-emerald-500",
+  options: [
+    { id: "targetKb", type: "number", label: "Target Size (KB)", default: 50 },
+    { id: "format", type: "select", label: "Output Format", values: ["JPG", "WEBP"], default: "JPG" }
+  ]
+};
+
+export const passportPhotoConfig = {
+  slug: "passport-size-photo-maker",
+  title: "Passport Size Photo Maker",
+  description: "Official standard photo generator. Crop and align your face to Indian (35x45mm) or US (2x2in) specifications.",
+  icon: "🛂",
+  colorClass: "bg-indigo-600",
+  options: [
+    { id: "preset", type: "select", label: "Select Standard", values: ["Indian Passport (35x45mm)", "US Passport (2x2in)", "Custom (A4 Sheet)"], default: "Indian Passport (35x45mm)" }
+  ]
+};
+
+export const imageToWebpConfig = {
+  slug: "image-to-webp",
+  title: "Image to WebP Converter",
+  description: "Convert outdated JPG/PNG files to next-gen WebP. Reduce storage by up to 80% with no visible quality loss.",
+  icon: "🕸️",
+  colorClass: "bg-emerald-600",
+  options: [
+    { id: "quality", type: "slider", label: "Compression Quality", min: 10, max: 100, default: 80 }
+  ]
+};
+
+export const imageDpiConfig = {
+  slug: "image-dpi-checker",
+  title: "Image DPI Checker & Fixer",
+  description: "Portals reject photos if DPI metadata is missing. This tool injects standard 300 DPI headers into your image losslessly.",
+  icon: "🖨️",
+  colorClass: "bg-emerald-600",
+  options: []
+};
+
+export const imageCompressorConfig = {
+  slug: "image-compressor",
+  title: "Smart Image Compressor",
+  description: "Advanced lossy and lossless compression. Control the balance between file size and visual fidelity with precision.",
+  icon: "🖼️",
+  colorClass: "bg-emerald-600",
+  options: [
+    { id: "quality", type: "slider", label: "Quality (%)", min: 10, max: 100, default: 75 }
+  ]
+};
+
+export const imageFormatConverterConfig = {
+  slug: "image-format-converter",
+  title: "Universal Format Converter",
+  description: "Convert between JPG, PNG, and WebP formats instantly. Corrects background transparency for JPEG conversions.",
+  icon: "🔄",
+  colorClass: "bg-emerald-700",
+  options: [
+    { id: "targetFormat", type: "select", label: "Convert To", values: ["JPG", "PNG", "WebP"], default: "PNG" }
+  ]
+};
+
+export const imageMetadataViewerConfig = {
+  slug: "image-metadata-viewer",
+  title: "Deep Metadata Inspector",
+  description: "Extract hidden EXIF tags, GPS coordinates, and camera details. Essential for verifying image authenticity.",
+  icon: "🕵️",
+  colorClass: "bg-emerald-800",
+  options: []
+};
+
+// ... keep existing diagnostic configs
 export const dpiMythBreakerConfig = {
   slug: "image-dpi-myth-breaker",
   title: "Image DPI Myth Breaker",
@@ -282,75 +358,4 @@ export const backgroundBlurConfig = {
     { id: "blurAmount", type: "slider", label: "Blur Radius (px)", min: 1, max: 20, default: 5 },
     { id: "grayscale", type: "toggle", label: "Grayscale Background", default: false }
   ]
-};
-
-export const imageCompressorConfig = {
-  slug: "image-compressor",
-  title: "Smart Image Compressor",
-  description: "Advanced lossy and lossless compression for PNG, JPG, and WebP.",
-  icon: "🖼️",
-  colorClass: "bg-emerald-600",
-  options: [
-    { id: "quality", type: "slider", label: "Quality (%)", min: 10, max: 100, default: 75 }
-  ]
-};
-
-export const imageFormatConverterConfig = {
-  slug: "image-format-converter",
-  title: "Image Format Converter",
-  description: "Convert images between JPG, PNG, and WebP formats instantly.",
-  icon: "🔄",
-  colorClass: "bg-emerald-700",
-  options: [
-    { id: "targetFormat", type: "select", label: "Convert To", values: ["JPG", "PNG", "WebP"], default: "PNG" }
-  ]
-};
-
-export const imageMetadataViewerConfig = {
-  slug: "image-metadata-viewer",
-  title: "Image Metadata Viewer",
-  description: "Inspect hidden image details including resolution and EXIF data.",
-  icon: "🕵️",
-  colorClass: "bg-emerald-800",
-  options: []
-};
-
-export const imageKbReducerConfig = {
-  slug: "image-kb-reducer",
-  title: "Image Size Reducer (Exact KB)",
-  description: "Reduce image size to a specific target (e.g. 20KB, 50KB).",
-  icon: "📉",
-  colorClass: "bg-emerald-500",
-  options: [
-    { id: "targetKb", type: "number", label: "Target Size (KB)", default: 50 }
-  ]
-};
-
-export const passportPhotoConfig = {
-  slug: "passport-size-photo-maker",
-  title: "Passport Size Photo Maker",
-  description: "Generate official passport and visa photos.",
-  icon: "🛂",
-  colorClass: "bg-indigo-600",
-  options: [
-    { id: "preset", type: "select", label: "Select Standard", values: ["Indian Passport (35x45mm)", "US Passport (2x2in)"], default: "Indian Passport (35x45mm)" }
-  ]
-};
-
-export const imageToWebpConfig = {
-  slug: "image-to-webp",
-  title: "Image to WebP Converter",
-  description: "Convert JPG/PNG to next-gen WebP format.",
-  icon: "🕸️",
-  colorClass: "bg-emerald-600",
-  options: []
-};
-
-export const imageDpiConfig = {
-  slug: "image-dpi-checker",
-  title: "Image DPI Checker & Fixer",
-  description: "Check and modify image Dots Per Inch (DPI).",
-  icon: "🖨️",
-  colorClass: "bg-emerald-600",
-  options: []
 };

@@ -1,8 +1,10 @@
+
 import React, { useState, useEffect, useMemo } from 'react';
-import { GoogleGenAI } from "@google/genai";
 import ToolLayout from '../ToolLayout';
 import OptionsPanel from '../OptionsPanel';
 import { getToolConfig } from '../../utils/configRegistry';
+import { executeTool } from '../../services/executionEngine';
+import { parseUserAgent, checkUrlSafetyHeuristic } from '../../tools/executors/networkCluster';
 
 interface ToolProps {
   slug: string;
@@ -13,7 +15,7 @@ interface ToolProps {
 const NetworkTools: React.FC<ToolProps> = ({ slug, onSuccess, onError }) => {
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
-  const [result, setResult] = useState<string | null>(null);
+  const [result, setResult] = useState<any>(null);
 
   const activeConfig = useMemo(() => getToolConfig(slug), [slug]);
   const [options, setOptions] = useState<Record<string, any>>({});
@@ -26,38 +28,45 @@ const NetworkTools: React.FC<ToolProps> = ({ slug, onSuccess, onError }) => {
     setOptions(initial);
     setInput("");
     setResult(null);
+
+    // Auto-fill IP and UA for convenience
+    if (slug === 'user-agent-parser') setInput(navigator.userAgent);
   }, [slug, activeConfig]);
 
-  const handleMasking = () => {
-    let res = input;
-    if (options.maskEmails) res = res.replace(/[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/g, "[EMAIL_MASKED]");
-    if (options.maskIps) res = res.replace(/\b\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\b/g, "[IP_MASKED]");
-    if (options.maskCc) res = res.replace(/\b(?:\d[ -]*?){13,16}\b/g, "[CC_MASKED]");
-    setResult(res);
-    onSuccess("PII Obfuscated!");
-  };
-
   const handleRun = async () => {
-    if (!input.trim()) return onError("Input data required.");
-    
-    if (slug === 'data-masking-tool') {
-      handleMasking();
+    if (!input.trim() && slug !== 'internet-speed-test') {
+      onError("Please provide a target IP, Domain, or URL.");
       return;
     }
 
     setLoading(true);
+    setResult(null);
+
     try {
-      const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
-      const prompt = `Tool: ${slug}. Payload: "${input}". Provide technical analysis report.`;
-      const response = await ai.models.generateContent({
-        model: 'gemini-3-flash-preview',
-        contents: prompt,
-        config: { systemInstruction: "Network & Security Intel Node. Markdown Table focused.", temperature: 0.1 }
-      });
-      setResult(response.text || "");
-      onSuccess("Report Dispatched!");
-    } catch (err) {
-      onError("Gateway timeout.");
+      let output: any = null;
+
+      // 1. Local Logic Path
+      if (slug === 'user-agent-parser') {
+        output = parseUserAgent(input);
+      } else if (slug === 'url-safety-checker') {
+        output = checkUrlSafetyHeuristic(input);
+      } 
+      // 2. Edge/Server Logic Path
+      else {
+        const res = await executeTool({
+          slug,
+          category: 'network',
+          input: { target: input, ...options }
+        });
+        if (!res.success) throw new Error(res.error);
+        output = res.data;
+      }
+
+      setResult(output);
+      onSuccess("Network Diagnostics Complete!");
+    } catch (err: any) {
+      console.error(err);
+      onError(err.message || "Failed to reach Edge diagnostic node.");
     } finally {
       setLoading(false);
     }
@@ -70,16 +79,56 @@ const NetworkTools: React.FC<ToolProps> = ({ slug, onSuccess, onError }) => {
       icon={activeConfig.icon}
       colorClass={activeConfig.colorClass}
       input={
-        <textarea
-          value={input}
-          onChange={e => setInput(e.target.value)}
-          placeholder={slug.includes('mask') ? "Paste sensitive data here..." : "Paste raw email headers or target IP..."}
-          className="w-full h-64 p-8 bg-slate-50 border border-slate-200 rounded-[2.5rem] outline-none font-mono text-sm text-slate-700 shadow-inner"
-        />
+        <div className="space-y-4">
+          <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest px-2">Diagnostic Target</label>
+          <input
+            type="text"
+            value={input}
+            onChange={e => setInput(e.target.value)}
+            placeholder={
+              slug === 'dns-lookup' ? "e.g. google.com" :
+              slug === 'ip-to-location' ? "e.g. 8.8.8.8" :
+              "Enter domain, URL or IP address..."
+            }
+            className="w-full p-6 bg-slate-50 border border-slate-200 rounded-3xl outline-none font-mono text-lg font-bold text-slate-700 shadow-inner focus:ring-8 focus:ring-indigo-500/5 transition-all"
+          />
+        </div>
       }
-      options={<OptionsPanel options={activeConfig.options as any} values={options} onChange={(id, v) => setOptions(p => ({...p, [id]: v}))} />}
-      actions={<button onClick={handleRun} disabled={loading} className={`w-full py-7 ${activeConfig.colorClass} text-white rounded-[2.5rem] font-black text-2xl shadow-2xl`}>Dispatch Node</button>}
-      result={result && <div className="p-10 bg-slate-950 text-emerald-400 font-mono text-xs shadow-2xl rounded-[3rem] whitespace-pre-wrap">{result}</div>}
+      options={activeConfig.options?.length > 0 ? <OptionsPanel options={activeConfig.options as any} values={options} onChange={(id, v) => setOptions(p => ({...p, [id]: v}))} /> : undefined}
+      actions={
+        <button onClick={handleRun} disabled={loading} className={`w-full py-7 ${activeConfig.colorClass} text-white rounded-[2.5rem] font-black text-2xl shadow-2xl transition-all active:scale-95 disabled:opacity-50`}>
+          {loading ? "Querying Global Nodes..." : `Run ${activeConfig.title}`}
+        </button>
+      }
+      result={result && (
+        <div className="space-y-6 animate-in zoom-in-95">
+           <div className="bg-slate-950 p-8 md:p-12 rounded-[3rem] shadow-2xl border border-slate-800 relative overflow-hidden group">
+              <div className="absolute top-0 right-0 p-8 opacity-5">
+                 <div className="text-8xl font-black italic">RESOLVED</div>
+              </div>
+              <div className="relative z-10">
+                 {typeof result === 'string' ? (
+                   <pre className="text-emerald-400 font-mono text-sm leading-relaxed whitespace-pre-wrap">{result}</pre>
+                 ) : (
+                   <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-6">
+                      {Object.entries(result).map(([k, v]) => (
+                        <div key={k} className="border-b border-white/5 pb-2">
+                           <span className="text-[9px] font-black text-slate-500 uppercase tracking-[0.2em]">{k}</span>
+                           <div className={`text-sm font-bold ${k.includes('Risk') ? (v === 'LOW' ? 'text-emerald-400' : 'text-rose-500') : 'text-indigo-300'}`}>
+                             {Array.isArray(v) ? (
+                               <ul className="list-disc pl-4 mt-1">
+                                 {v.map((item, i) => <li key={i}>{item}</li>)}
+                               </ul>
+                             ) : (v as string)}
+                           </div>
+                        </div>
+                      ))}
+                   </div>
+                 )}
+              </div>
+           </div>
+        </div>
+      )}
     />
   );
 };

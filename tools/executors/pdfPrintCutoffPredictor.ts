@@ -1,4 +1,3 @@
-
 type PageSize = "A4" | "Letter" | "Legal" | "Custom";
 type Printer = "inkjet" | "laser";
 type Scaling = "actual" | "fit" | "custom";
@@ -9,7 +8,7 @@ const NON_PRINTABLE_MM = {
   laser: 4
 };
 
-// Implementation of the PDF Print Cutoff Predictor logic
+// Fix: Implementation consolidated here in the lowercase filename version.
 export function pdfPrintCutoffPredictor({
   pageSize,
   printerType,

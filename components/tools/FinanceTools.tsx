@@ -1,8 +1,8 @@
+
 import React, { useState, useEffect } from 'react';
 import ToolLayout from '../ToolLayout';
 import OptionsPanel from '../OptionsPanel';
 import { getToolConfig } from '../../utils/configRegistry';
-import { whyEmiHighExplainer, actualInterestAnalyzer, noCostEmiRealityChecker } from '../../tools/executors/financeCluster';
 
 interface ToolProps {
   slug: string;
@@ -26,28 +26,39 @@ const FinanceTools: React.FC<ToolProps> = ({ slug, onSuccess, onError }) => {
     setMathResult(null);
   }, [slug, activeConfig]);
 
-  const calculate = async () => {
+  const calculate = () => {
     setLoading(true);
-    try {
-      if (slug === 'why-emi-high-explainer') {
-        setMathResult(whyEmiHighExplainer({ ...options }));
-        onSuccess("Audit Complete!");
-      } else if (slug === 'actual-interest-analyzer') {
-        setMathResult(actualInterestAnalyzer({ ...options }));
-        onSuccess("Bank Trick Analyzed!");
-      } else if (slug === 'no-cost-emi-reality-checker') {
-        setMathResult(noCostEmiRealityChecker({ ...options }));
-        onSuccess("Reality Verified!");
-      } else {
-        // ... maintain old calculator logic (Salary, ROI, etc.)
-        setMathResult({ "Status": "Logic Node Registered", "Output": "Mathematical proof verified." });
+    setTimeout(() => {
+      try {
+        let res: any = null;
+        if (slug === 'salary-calculator') {
+          const ctc = options.ctc || 1200000;
+          const monthly = ctc / 12;
+          const tax = ctc > 700000 ? (ctc * 0.15) / 12 : 0; // Simple India New Regime logic
+          res = {
+            "Gross Monthly": `₹${Math.round(monthly).toLocaleString()}`,
+            "Monthly Tax (Est)": `₹${Math.round(tax).toLocaleString()}`,
+            "Take-Home Pay": `₹${Math.round(monthly - tax - 1800).toLocaleString()}`,
+            "Note": "Includes PF and basic tax estimates for FY 24-25."
+          };
+        } else if (slug === 'roi-calculator') {
+          const gain = options.amountReturned - options.amountInvested;
+          const roi = (gain / options.amountInvested) * 100;
+          res = {
+            "Total Gain/Loss": `₹${gain.toLocaleString()}`,
+            "Total ROI": `${roi.toFixed(2)}%`,
+            "Annualized ROI": `${(roi / options.tenureYears).toFixed(2)}%`,
+            "Verdict": roi > 0 ? "Profitable Investment" : "Loss-making Investment"
+          };
+        }
+        setMathResult(res);
         onSuccess("Calculation Complete!");
+      } catch (e) {
+        onError("Math engine fault.");
+      } finally {
+        setLoading(false);
       }
-    } catch (err) {
-      onError("Processing failure.");
-    } finally {
-      setLoading(false);
-    }
+    }, 400);
   };
 
   return (
@@ -59,23 +70,17 @@ const FinanceTools: React.FC<ToolProps> = ({ slug, onSuccess, onError }) => {
       input={
         <div className="py-12 bg-slate-50 rounded-[3rem] border border-dashed border-slate-200 text-center">
           <div className="text-8xl mb-4">{activeConfig.icon}</div>
-          <p className="text-slate-400 font-black text-[10px] uppercase tracking-widest italic">HARDENED FINANCE ISOLATE V2.1</p>
+          <p className="text-slate-400 font-black text-[10px] uppercase tracking-widest italic">PRO FINANCIAL ISOLATE ACTIVE</p>
         </div>
       }
       options={<OptionsPanel options={activeConfig.options as any} values={options} onChange={(id, val) => setOptions(p => ({...p, [id]: val}))} />}
-      actions={<button onClick={calculate} disabled={loading} className={`w-full py-6 ${activeConfig.colorClass} text-white rounded-[2rem] font-black text-xl shadow-2xl transition-all`}>Execute Financial Math</button>}
+      actions={<button onClick={calculate} disabled={loading} className={`w-full py-6 ${activeConfig.colorClass} text-white rounded-2xl font-black text-xl shadow-2xl`}>Execute Financial Logic</button>}
       result={mathResult && (
         <div className="grid grid-cols-1 gap-4 animate-in zoom-in-95">
            {Object.entries(mathResult).map(([k, v]) => (
-             <div key={k} className="bg-slate-50 p-6 rounded-2xl border border-slate-100 flex flex-col md:flex-row justify-between items-start md:items-center gap-2">
+             <div key={k} className="bg-slate-50 p-6 rounded-2xl border border-slate-100 flex flex-col md:flex-row justify-between items-center gap-2">
                 <span className="text-[9px] font-black text-slate-400 uppercase tracking-widest">{k}</span>
-                <span className="text-sm font-black text-indigo-600">
-                   {Array.isArray(v) ? (
-                      <ul className="list-disc pl-4 text-left">
-                        {v.map((item, i) => <li key={i}>{item}</li>)}
-                      </ul>
-                   ) : (v as string)}
-                </span>
+                <span className="text-sm font-black text-indigo-600">{(v as string)}</span>
              </div>
            ))}
         </div>

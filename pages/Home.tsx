@@ -6,7 +6,6 @@ import ToolCard from '../components/ToolCard';
 import SEOHead from '../components/SEOHead';
 import SiteStatus from '../components/SiteStatus';
 import RightSideMenu from '../components/RightSideMenu';
-import { getToolPriorityScore } from '../utils/toolPriority';
 import { trackToolClick } from '../utils/attraction';
 
 const RewardHub = lazy(() => import('../components/RewardHub'));
@@ -23,11 +22,6 @@ interface HomeProps {
 const Home: React.FC<HomeProps> = ({ onNavigate, searchQuery = '', favorites, onToggleFavorite }) => {
   const deferredSearch = useDeferredValue(searchQuery);
 
-  // Featured tools logic (Priority based)
-  const featuredTools = useMemo(() => {
-    return TOOLS.sort((a, b) => getToolPriorityScore(b) - getToolPriorityScore(a)).slice(0, 12);
-  }, []);
-
   const searchResults = useMemo(() => {
     const query = deferredSearch.toLowerCase().trim();
     if (!query) return null;
@@ -35,7 +29,7 @@ const Home: React.FC<HomeProps> = ({ onNavigate, searchQuery = '', favorites, on
     return TOOLS.filter(tool => {
       const searchBlob = `${tool.title} ${tool.description} ${tool.category} ${tool.keywords.join(' ')}`.toLowerCase();
       return queryTerms.every(term => searchBlob.includes(term));
-    }).slice(0, 30); // Support up to 30 results for search
+    }).slice(0, 30);
   }, [deferredSearch]);
 
   const handleToolClick = (tool: any) => {
@@ -46,83 +40,95 @@ const Home: React.FC<HomeProps> = ({ onNavigate, searchQuery = '', favorites, on
   return (
     <div className="bg-white min-h-screen">
       <SEOHead 
-        title="ToolVerse - World's Largest Professional Online Tools Hub"
-        description="500+ lightweight professional tools for PDF, images, video, and AI. Fast and private."
+        title="ToolVerse - Ultimate Professional Online Tools Hub"
+        description="Access 120+ professional tools for PDF, Image, Finance, and AI. All client-side and secure."
         url="https://toolverse-4gr.pages.dev/"
       />
       
-      {/* COMPACT HERO */}
+      {/* HERO SECTION */}
       {!deferredSearch && (
-        <section className="pt-20 pb-24 border-b border-slate-50 bg-slate-50/30">
-          <div className="max-w-4xl mx-auto px-6 text-center">
-            <h1 className="text-4xl md:text-5xl font-black text-slate-900 tracking-tight mb-4">
-              Access the <span className="text-indigo-600">Ultimate Toolset.</span>
-            </h1>
-            <p className="text-base text-slate-500 font-medium mb-10">
-              500+ Production-ready utilities. No cloud latency. 100% Client-side.
-            </p>
-            
-            <div className="flex flex-wrap justify-center gap-2">
-               {CATEGORIES.map(cat => (
-                 <button 
-                  key={cat.id}
-                  onClick={() => onNavigate('category', { id: cat.id })}
-                  className="px-4 py-2 bg-white border border-slate-200 rounded-xl text-[10px] font-bold text-slate-600 hover:border-indigo-500 hover:text-indigo-600 transition-all flex items-center gap-2"
-                 >
-                   <span>{cat.icon}</span> {cat.name}
-                 </button>
-               ))}
+        <section className="pt-24 pb-20 border-b border-slate-50 bg-slate-50/50 overflow-hidden relative">
+          <div className="absolute top-0 right-0 w-full h-full opacity-5 pointer-events-none">
+             <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-indigo-500 rounded-full blur-[180px]"></div>
+          </div>
+          <div className="max-w-7xl mx-auto px-6 text-center relative z-10">
+            <div className="inline-flex items-center px-4 py-1.5 rounded-full bg-indigo-50 text-indigo-600 text-[10px] font-black uppercase tracking-widest mb-8 border border-indigo-100">
+               PRO HUB V3.0 • SECURE & PRIVATE
             </div>
+            <h1 className="text-5xl md:text-8xl font-black text-slate-900 tracking-tighter mb-6 leading-none">
+              The Engine of <br /><span className="text-indigo-600 italic">Everything.</span>
+            </h1>
+            <p className="text-xl md:text-2xl text-slate-500 font-medium mb-12 max-w-2xl mx-auto leading-relaxed">
+              120+ Production-ready utilities. No cloud latency. <br className="hidden md:block"/> 100% Client-side privacy.
+            </p>
           </div>
         </section>
       )}
 
       <div className="max-w-7xl mx-auto px-6 py-12">
-        <div className="flex flex-col lg:flex-row gap-12">
-          {/* Main Content Column */}
-          <div className="flex-grow space-y-16">
+        <div className="flex flex-col lg:flex-row gap-16">
+          <div className="flex-grow space-y-24">
             
-            {/* SEARCH OR FEATURED SECTION */}
-            <section>
-              <div className="flex items-center justify-between mb-8">
-                <h2 className="text-xl font-bold text-slate-900 uppercase tracking-wider text-xs">
-                  {deferredSearch ? `Search Results (${searchResults?.length})` : 'Trending Professional Tools'}
-                </h2>
-                {!deferredSearch && <span className="text-[10px] font-bold text-slate-400">UPDATED REAL-TIME</span>}
-              </div>
-
-              <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6">
-                {(searchResults || featuredTools).map(tool => (
-                  <ToolCard 
-                    key={tool.slug} 
-                    tool={tool} 
-                    onClick={() => handleToolClick(tool)} 
-                    isFavorite={favorites.includes(tool.slug)}
-                    onToggleFavorite={onToggleFavorite}
-                  />
-                ))}
-              </div>
-            </section>
-
-            {/* QUICK CLUSTER GRID */}
-            {!deferredSearch && (
-              <section className="py-12 border-t border-slate-100">
-                <h2 className="text-xs font-bold text-slate-400 uppercase tracking-[0.2em] mb-8">Browse the Vault Clusters</h2>
-                <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-                  {CATEGORIES.map(cat => (
-                    <button 
-                      key={cat.id} 
-                      onClick={() => onNavigate('category', { id: cat.id })}
-                      className="p-6 bg-slate-50 rounded-2xl border border-slate-100 text-center hover:bg-indigo-50 hover:border-indigo-200 transition-all group"
-                    >
-                        <div className="text-3xl mb-3 group-hover:scale-110 transition-transform">{cat.icon}</div>
-                        <div className="text-xs font-bold text-slate-800">{cat.name}</div>
-                        <div className="text-[8px] font-bold text-slate-400 mt-1 uppercase">Explore Cluster</div>
-                    </button>
+            {/* SEARCH RESULTS VIEW */}
+            {deferredSearch && searchResults && (
+              <section className="animate-in fade-in slide-in-from-bottom-5">
+                <div className="flex items-center gap-4 mb-8">
+                   <h2 className="text-2xl font-black text-slate-900">Found {searchResults.length} Tools</h2>
+                   <div className="h-px flex-grow bg-slate-100"></div>
+                </div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6">
+                  {searchResults.map(tool => (
+                    <ToolCard 
+                      key={tool.slug} 
+                      tool={tool} 
+                      onClick={() => handleToolClick(tool)} 
+                      isFavorite={favorites.includes(tool.slug)}
+                      onToggleFavorite={onToggleFavorite}
+                    />
                   ))}
                 </div>
               </section>
             )}
+
+            {/* MEGA DIRECTORY (CATEGORY STATIONS) */}
+            {!deferredSearch && CATEGORIES.map(category => {
+              const categoryTools = TOOLS.filter(t => t.category === category.id).slice(0, 6);
+              if (categoryTools.length === 0) return null;
+
+              return (
+                <section key={category.id} className="space-y-8">
+                  <div className="flex items-end justify-between border-b-2 border-slate-50 pb-6">
+                     <div className="flex items-center gap-5">
+                        <div className={`w-14 h-14 ${category.color} rounded-2xl flex items-center justify-center text-3xl shadow-xl`}>
+                          {category.icon}
+                        </div>
+                        <div>
+                           <h3 className="text-2xl font-black text-slate-900 uppercase tracking-tight">{category.name}</h3>
+                           <p className="text-xs text-slate-400 font-bold uppercase tracking-widest">{category.description}</p>
+                        </div>
+                     </div>
+                     <button 
+                       onClick={() => onNavigate('category', { id: category.id })}
+                       className="px-6 py-3 bg-slate-50 text-indigo-600 rounded-xl font-black text-[10px] uppercase tracking-widest hover:bg-indigo-600 hover:text-white transition-all shadow-sm"
+                     >
+                       Explore Full Hub →
+                     </button>
+                  </div>
+
+                  <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6">
+                    {categoryTools.map(tool => (
+                      <ToolCard 
+                        key={tool.slug} 
+                        tool={tool} 
+                        onClick={() => handleToolClick(tool)} 
+                        isFavorite={favorites.includes(tool.slug)}
+                        onToggleFavorite={onToggleFavorite}
+                      />
+                    ))}
+                  </div>
+                </section>
+              );
+            })}
 
             <Suspense fallback={<div className="h-32 skeleton rounded-3xl"></div>}>
               <TopSitesSection />
@@ -133,17 +139,11 @@ const Home: React.FC<HomeProps> = ({ onNavigate, searchQuery = '', favorites, on
             </Suspense>
           </div>
 
-          {/* Right-Side Sidebar Menu */}
+          {/* PERSISTENT DIRECTORY MENU */}
           <div className="w-full lg:w-80 flex-shrink-0">
             <RightSideMenu onNavigate={onNavigate} />
           </div>
         </div>
-
-        {!deferredSearch && (
-          <div className="py-12 text-center border-t border-slate-50 mt-16">
-             <p className="text-slate-400 text-xs font-medium">Looking for something specific? Use the global search at the top or the directory on the right.</p>
-          </div>
-        )}
       </div>
       <SiteStatus />
     </div>

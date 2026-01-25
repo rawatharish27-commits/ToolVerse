@@ -1,12 +1,11 @@
+
 export const seoTitleCheckerConfig = {
   slug: "seo-title-length-checker",
   title: "SEO Title Length Checker",
   description: "Check if your page title is optimized for Google Search. Ensures it stays within the pixel limit to avoid truncation.",
   icon: "📛",
   colorClass: "bg-blue-600",
-  options: [
-    { id: "device", type: "select", label: "Preview Device", values: ["Mobile (600px)", "Desktop (580px)"], default: "Desktop (580px)" }
-  ]
+  options: []
 };
 
 export const seoMetaCheckerConfig = {
@@ -25,8 +24,8 @@ export const serpPreviewToolConfig = {
   icon: "👁️",
   colorClass: "bg-emerald-600",
   options: [
-    { id: "viewMode", type: "select", label: "View Mode", values: ["Desktop", "Mobile"], default: "Desktop" },
-    { id: "highlightKeywords", type: "text", label: "Bold Keywords (CSV)", default: "" }
+    { id: "description", type: "text", label: "Meta Description", default: "" },
+    { id: "url", type: "text", label: "Page URL", default: "https://yoursite.com/page-title" }
   ]
 };
 
@@ -36,9 +35,7 @@ export const internalLinkGeneratorConfig = {
   description: "Generate natural internal linking suggestions based on your target keyword and page structure.",
   icon: "🔗",
   colorClass: "bg-cyan-600",
-  options: [
-    { id: "anchorStyle", type: "select", label: "Anchor Text Style", values: ["Exact Match", "Descriptive", "LSI-based"], default: "Descriptive" }
-  ]
+  options: []
 };
 
 export const keywordDifficultyConfig = {
@@ -47,9 +44,7 @@ export const keywordDifficultyConfig = {
   description: "Analyze how hard it is to rank for a keyword based on search volume and competition heuristics.",
   icon: "🏔️",
   colorClass: "bg-slate-700",
-  options: [
-    { id: "region", type: "select", label: "Target Region", values: ["Global", "India", "USA", "UK"], default: "Global" }
-  ]
+  options: []
 };
 
 export const keywordDensityConfig = {
@@ -59,7 +54,7 @@ export const keywordDensityConfig = {
   icon: "📊",
   colorClass: "bg-indigo-500",
   options: [
-    { id: "ignoreCommon", type: "toggle", label: "Ignore Stopwords (the, a, is)", default: true }
+    { id: "ignoreCommon", type: "toggle", label: "Ignore Stopwords", default: true }
   ]
 };
 
@@ -82,8 +77,8 @@ export const xmlSitemapConfig = {
   icon: "🗺️",
   colorClass: "bg-orange-600",
   options: [
-    { id: "priority", type: "select", label: "Default Priority", values: ["0.5", "0.8", "1.0"], default: "0.8" },
-    { id: "changefreq", type: "select", label: "Change Frequency", values: ["daily", "weekly", "monthly"], default: "weekly" }
+    { id: "priority", type: "select", label: "Priority", values: ["0.5", "0.8", "1.0"], default: "0.8" },
+    { id: "changefreq", type: "select", label: "Frequency", values: ["always", "hourly", "daily", "weekly", "monthly", "yearly", "never"], default: "weekly" }
   ]
 };
 
@@ -102,24 +97,5 @@ export const breadcrumbSchemaConfig = {
   description: "Create structured data for breadcrumbs to improve site hierarchy in SERPs.",
   icon: "🍞",
   colorClass: "bg-amber-600",
-  options: []
-};
-
-// Original ones maintained for compatibility
-export const aiSeoAnalyzerConfig = {
-  slug: "ai-seo-analyzer",
-  title: "AI SEO Content Architect",
-  description: "Generate deep on-page SEO audits and content architecture plans.",
-  icon: "🔍",
-  colorClass: "bg-indigo-600",
-  options: []
-};
-
-export const metaTagGeneratorConfig = {
-  slug: "meta-tag-generator",
-  title: "AI SEO Meta Tag Generator",
-  description: "Generate click-worthy meta tags optimized for CTR.",
-  icon: "🧠",
-  colorClass: "bg-blue-600",
   options: []
 };

@@ -1,3 +1,5 @@
-
-/* Standardized lowercase version - proxying to implementation in lowercase version to resolve casing conflict */
-export * from './pdfPrintCutoffPredictor';
+/* 
+ * This file (with uppercase 'O') is now deprecated to resolve casing conflict errors.
+ * All logic has been consolidated into tools/executors/pdfPrintCutoffPredictor.ts.
+ */
+export {};

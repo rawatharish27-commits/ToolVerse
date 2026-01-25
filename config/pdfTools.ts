@@ -1,3 +1,44 @@
+
+export const pdfToJpgConfig = {
+  slug: "pdf-to-jpg-converter",
+  title: "PDF to JPG Converter",
+  description: "Convert PDF pages into high-quality JPEG images locally in your browser. All pages are bundled into a ZIP file.",
+  icon: "🖼️",
+  colorClass: "bg-red-500",
+  options: [
+    { id: "quality", type: "slider", label: "Image Quality", min: 10, max: 100, default: 80 },
+    { id: "dpi", type: "select", label: "Render Density", values: [72, 150, 300], default: 150 }
+  ]
+};
+
+export const jpgToPdfConfig = {
+  slug: "jpg-to-pdf-converter",
+  title: "JPG to PDF Converter",
+  description: "Merge multiple images (JPG, PNG) into a single, professional PDF document.",
+  icon: "📄",
+  colorClass: "bg-emerald-600",
+  options: [
+    { id: "pageSize", type: "select", label: "Page Size", values: ["A4", "LETTER"], default: "A4" },
+    { id: "orientation", type: "select", label: "Orientation", values: ["PORTRAIT", "LANDSCAPE"], default: "PORTRAIT" },
+    { id: "margin", type: "number", label: "Margin (px)", default: 20 }
+  ]
+};
+
+export const pdfWatermarkConfig = {
+  slug: "pdf-watermark-tool",
+  title: "PDF Watermark Tool",
+  description: "Protect your intellectual property by adding custom text watermarks across all pages of your PDF.",
+  icon: "🛡️",
+  colorClass: "bg-blue-600",
+  options: [
+    { id: "text", type: "text", label: "Watermark Text", default: "CONFIDENTIAL" },
+    { id: "opacity", type: "slider", label: "Opacity", min: 1, max: 100, default: 30 },
+    { id: "rotation", type: "slider", label: "Rotation", min: -90, max: 90, default: 45 },
+    { id: "fontSize", type: "number", label: "Font Size", default: 50 }
+  ]
+};
+
+// ... existing configs (pdfOpeningCheckerConfig, pdfCompatibilityConfig, etc.)
 export const pdfOpeningCheckerConfig = {
   slug: "pdf-opening-checker",
   title: "Portal Opening Checker",
@@ -127,17 +168,6 @@ export const pdfPageOrderConfig = {
     { id: "scanType", type: "select", label: "Scan Logic", values: ["single-side", "duplex"], default: "single-side" },
     { id: "feederUsed", type: "toggle", label: "Used Auto Feeder?", default: true },
     { id: "patternObserved", type: "select", label: "Observed Pattern", values: ["reversed", "odd-even", "random"], default: "random" }
-  ]
-};
-
-export const pdfComplianceConfig = {
-  slug: "pdf-compliance-checker",
-  title: "PDF Compliance Checker",
-  description: "Check if your PDF file meets common submission standards for banking, legal, and government portals.",
-  icon: "⚖️",
-  colorClass: "bg-emerald-700",
-  options: [
-    { id: "standard", type: "select", label: "Target Standard", values: ["Govt Portal (SSC/UPSC)", "Banking KYC", "Legal Filing (e-Court)"], default: "Govt Portal (SSC/UPSC)" }
   ]
 };
 

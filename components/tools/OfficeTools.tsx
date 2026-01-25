@@ -1,10 +1,9 @@
+
 import React, { useState, useEffect } from 'react';
 import ToolLayout from '../ToolLayout';
 import OptionsPanel from '../OptionsPanel';
 import { getToolConfig } from '../../utils/configRegistry';
 import { GoogleGenAI } from "@google/genai";
-import { Document, Packer, Paragraph, TextRun } from 'docx';
-import { resumeRejectionAnalyzer } from '../../tools/executors/resumeRejectionAnalyzer';
 import { atsKeywordGapFinder, resumeFormatChecker, resumeFileNameChecker } from '../../tools/executors/jobCluster';
 
 interface ToolProps {
@@ -34,39 +33,41 @@ const OfficeTools: React.FC<ToolProps> = ({ slug, onSuccess, onError }) => {
   }, [slug, activeConfig]);
 
   const handleRun = async () => {
+    if (!inputText.trim()) {
+      onError("Please provide context for the AI Architect.");
+      return;
+    }
+
     setLoading(true);
     try {
-      if (slug === 'resume-rejection-analyzer') {
-        setResult(resumeRejectionAnalyzer({ ...options }));
-        onSuccess("Audit Report Generated!");
-      } else if (slug === 'ats-keyword-gap-finder') {
+      if (slug === 'ats-keyword-gap-finder') {
         setResult(atsKeywordGapFinder(inputText, secondaryText));
         onSuccess("Gap Analysis Complete!");
-      } else if (slug === 'resume-format-checker') {
-        setResult(resumeFormatChecker({ ...options }));
-        onSuccess("Format Diagnostic Ready!");
       } else if (slug === 'resume-filename-checker') {
         setResult(resumeFileNameChecker(inputText));
         onSuccess("Filename Audit Ready!");
       } else {
-        // AI Fallback Orchestrator
+        // AI Generation Path (Resume Builder, Invoice Generator)
         const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+        const systemInstruction = slug === 'invoice-generator' 
+          ? "You are an Expert Accountant. Generate a clean, structured Markdown invoice. Include placeholders for Company, Client, Itemized List, and Totals."
+          : "You are a Professional Career Coach. Generate a high-impact, ATS-optimized Resume in Markdown based on the user's provided details. Use professional tone.";
+
         const response = await ai.models.generateContent({
           model: 'gemini-3-flash-preview',
-          contents: `Task: ${slug}. Content: ${inputText}. JD: ${secondaryText}. Options: ${JSON.stringify(options)}`,
-          config: { systemInstruction: "Professional Recruiter/Office Node. Direct output." }
+          contents: [{ parts: [{ text: `Generate ${slug} for: ${inputText}. Options: ${JSON.stringify(options)}` }] }],
+          config: { systemInstruction }
         });
+
         setResult(response.text || "");
-        onSuccess("Task Complete!");
+        onSuccess("Intelligence Dispatched Successfully!");
       }
-    } catch (e) {
-      onError("Logic failure.");
+    } catch (e: any) {
+      onError("AI Engine synchronization error.");
     } finally {
       setLoading(false);
     }
   };
-
-  const isComparisonTool = slug === 'ats-keyword-gap-finder' || slug === 'resume-match-percentage';
 
   return (
     <ToolLayout
@@ -76,36 +77,35 @@ const OfficeTools: React.FC<ToolProps> = ({ slug, onSuccess, onError }) => {
       colorClass={activeConfig.colorClass}
       input={
         <div className="space-y-6">
-          <div className="space-y-2">
-            <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest px-2">
-              {isComparisonTool ? "Resume Text Content" : slug === 'resume-filename-checker' ? "Current Filename (e.g. MyResume.pdf)" : "Primary Document Buffer"}
-            </label>
-            <textarea
-              value={inputText}
-              onChange={e => setInputText(e.target.value)}
-              placeholder="..."
-              className="w-full h-44 p-6 bg-slate-50 border border-slate-200 rounded-[2rem] outline-none font-sans text-sm text-slate-700 shadow-inner resize-none focus:ring-8 focus:ring-indigo-500/5 transition-all"
-            />
-          </div>
-          {isComparisonTool && (
-            <div className="space-y-2">
-              <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest px-2">Job Description (JD) Content</label>
-              <textarea
-                value={secondaryText}
-                onChange={e => setSecondaryText(e.target.value)}
-                placeholder="Paste the target Job Description here..."
-                className="w-full h-44 p-6 bg-slate-50 border border-slate-200 rounded-[2rem] outline-none font-sans text-sm text-slate-700 shadow-inner resize-none focus:ring-8 focus:ring-indigo-500/5 transition-all"
-              />
-            </div>
-          )}
+          <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest px-2">Data Workspace</label>
+          <textarea
+            value={inputText}
+            onChange={e => setInputText(e.target.value)}
+            placeholder={
+              slug === 'invoice-generator' ? "Details: Sold 5 chairs to X Inc for $50 each..." :
+              slug === 'resume-builder' ? "Experience: Sr Developer at Meta, 2 years. Skills: React, TS..." :
+              "Paste your content here..."
+            }
+            className="w-full h-44 p-8 bg-slate-50 border border-slate-200 rounded-[2.5rem] outline-none font-sans text-lg font-bold text-slate-700 shadow-inner resize-none focus:ring-8 focus:ring-indigo-500/5 transition-all"
+          />
         </div>
       }
-      options={<OptionsPanel options={activeConfig.options as any} values={options} onChange={(id, val) => setOptions(p => ({ ...p, [id]: val }))} />}
-      actions={<button onClick={handleRun} disabled={loading} className={`w-full py-7 ${activeConfig.colorClass} text-white rounded-[2.5rem] font-black text-2xl shadow-2xl transition-all`}>{loading ? "Synchronizing..." : "Execute Logic Node"}</button>}
+      options={activeConfig.options?.length > 0 ? <OptionsPanel options={activeConfig.options as any} values={options} onChange={(id, val) => setOptions(p => ({ ...p, [id]: val }))} /> : undefined}
+      actions={<button onClick={handleRun} disabled={loading} className={`w-full py-7 ${activeConfig.colorClass} text-white rounded-[2.5rem] font-black text-2xl shadow-2xl transition-all active:scale-95`}>{loading ? "Synchronizing Logic..." : `Run ${activeConfig.title}`}</button>}
       result={result && (
         <div className="animate-in zoom-in-95">
            {typeof result === 'string' ? (
-             <div className="p-10 bg-white rounded-[3rem] border border-slate-100 shadow-inner prose prose-slate max-w-none whitespace-pre-wrap">{result}</div>
+             <div className="space-y-6">
+                <div className="bg-white p-10 md:p-16 rounded-[3rem] border border-slate-100 shadow-inner prose prose-slate max-w-none font-medium leading-relaxed whitespace-pre-wrap">
+                   {result}
+                </div>
+                <button 
+                  onClick={() => { navigator.clipboard.writeText(result); onSuccess("Copied!"); }}
+                  className="w-full py-5 bg-slate-900 text-white rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-slate-800 transition-all shadow-xl"
+                >
+                  Copy Document to Clipboard
+                </button>
+             </div>
            ) : (
              <div className="grid grid-cols-1 gap-4">
                 {Object.entries(result).map(([k, v]) => (

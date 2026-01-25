@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect, useMemo } from 'react';
 import { TOOLS } from '../data/tools';
 import { CATEGORIES } from '../data/categories';
@@ -11,39 +10,6 @@ import { isAdSlotEnabled } from '../utils/adPolicy';
 import { trackEvent } from '../utils/analytics';
 import { AD_CONFIG } from '../config/ads';
 import { getHighCTRTitle, getBreadcrumbSchema, getAutoFaqSchema } from '../utils/seo';
-
-// Import executors
-import { photoRejectionReasonFinder } from "../tools/executors/photoRejectionReasonFinder";
-import { signatureUploadFixTool } from "../tools/executors/signatureUploadFixTool";
-import { govtFormFileRuleDecoder } from "../tools/executors/govtFormFileRuleDecoder";
-import { sizeVsDpiConflictExplainer } from "../tools/executors/sizeVsDpiConflictExplainer";
-import { formDeadlineDateLogicChecker } from "../tools/executors/formDeadlineDateLogicChecker";
-import { invalidDobErrorSolver } from "../tools/executors/invalidDobErrorSolver";
-import { panAadhaarImageValidator } from "../tools/executors/panAadhaarImageValidator";
-import { statusDecoder } from "../tools/executors/statusDecoder";
-import { formatTranslator } from "../tools/executors/formatTranslator";
-import { socialMediaCompressionPreview } from "../tools/executors/socialMediaCompressionPreview";
-import { imageStretchingIssuePredictor } from "../tools/executors/imageStretchingIssuePredictor";
-import { pixelToKbCalculator } from "../tools/executors/pixelToKbCalculator";
-import { cameraVsScreenshotTool } from "../tools/executors/cameraVsScreenshotTool";
-import { photoClarityAnalyzer } from "../tools/executors/photoClarityAnalyzer";
-import { printVsScreenDifferenceTool } from "../tools/executors/printVsScreenDifferenceTool";
-import { imageDpiMythBreaker } from "../tools/executors/imageDpiMythBreaker";
-import { mobileCameraSettingAdvisor } from "../tools/executors/mobileCameraSettingAdvisor";
-import { backgroundRejectionPredictor } from "../tools/executors/backgroundRejectionPredictor";
-
-// PDF Cluster Executors (21-30)
-import { pdfOpeningChecker } from "../tools/executors/pdfOpeningChecker";
-import { pdfCompatibilityLevelAnalyzer } from "../tools/executors/pdfCompatibilityLevelAnalyzer";
-import { scannedPdfReadabilityTester } from "../tools/executors/scannedPdfReadabilityTester";
-import { pdfSizeIncreaseExplainer } from "../tools/executors/pdfSizeIncreaseExplainer";
-// Fix: Standardized import casing to lowercase 'o' for filename to match implementation file and resolve casing conflict error
-import { pdfPrintCutoffPredictor } from "../tools/executors/pdfPrintCutoffPredictor";
-import { fontNotSupportedDecoder } from "../tools/executors/fontNotSupportedDecoder";
-import { pdfTextSelectable } from "../tools/executors/pdfTextSelectable";
-import { pdfUploadTimeEstimator } from "../tools/executors/pdfUploadTimeEstimator";
-import { pdfPageOrderSolver } from "../tools/executors/pdfPageOrderSolver";
-import { pdfBwPrintPreview } from "../tools/executors/pdfBwPrintPreview";
 
 interface ToolPageProps {
   slug: string;
