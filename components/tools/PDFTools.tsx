@@ -7,7 +7,7 @@ import {
   pdfCompressorConfig, pdfMergerConfig, pdfSplitterConfig, pdfProtectConfig, 
   pdfUnlockConfig, pdfMetadataConfig, pdfCompareConfig, pdfOcrConfig, 
   excelToPdfConfig, pdfOpeningCheckerConfig, pdfCompatibilityConfig,
-  scannedPdfReadabilityConfig, pdfSizeIncreaseExplainerConfig, pdfPrintCutoffConfig,
+  scannedPdfReadabilityTesterConfig, pdfSizeIncreaseExplainerConfig, pdfPrintCutoffConfig,
   pdfFontErrorDecoderConfig, pdfTextSelectableConfig, pdfBwPreviewConfig,
   pdfUploadTimeConfig, pdfPageOrderConfig 
 } from '../../config/pdfTools';
@@ -19,8 +19,8 @@ import { pdfUploadTimeEstimator } from '../../tools/executors/pdfUploadTimeEstim
 import { pdfCompatibilityLevelAnalyzer } from '../../tools/executors/pdfCompatibilityLevelAnalyzer';
 import { scannedPdfReadabilityTester } from '../../tools/executors/scannedPdfReadabilityTester';
 import { pdfSizeIncreaseExplainer } from '../../tools/executors/pdfSizeIncreaseExplainer';
-// Fix: Standardized import casing to uppercase 'O' to match implementation file and resolve casing conflict error
-import { pdfPrintCutoffPredictor } from '../../tools/executors/pdfPrintCutOffPredictor';
+// Fix: Standardized import casing to lowercase 'o' for filename to match implementation file and resolve casing conflict error
+import { pdfPrintCutoffPredictor } from '../../tools/executors/pdfPrintCutoffPredictor';
 import { fontNotSupportedDecoder } from '../../tools/executors/fontNotSupportedDecoder';
 import { pdfPageOrderSolver } from '../../tools/executors/pdfPageOrderSolver';
 import { pdfBwPrintPreview } from '../../tools/executors/pdfBwPrintPreview';
@@ -43,7 +43,7 @@ const PDFTools: React.FC<ToolProps> = ({ slug, onSuccess, onError }) => {
     pdfMergerConfig, pdfSplitterConfig, pdfProtectConfig, 
     pdfUnlockConfig, pdfMetadataConfig, pdfCompareConfig, 
     pdfOcrConfig, excelToPdfConfig, pdfCompressorConfig,
-    pdfOpeningCheckerConfig, pdfCompatibilityConfig, scannedPdfReadabilityConfig,
+    pdfOpeningCheckerConfig, pdfCompatibilityConfig, scannedPdfReadabilityTesterConfig,
     pdfSizeIncreaseExplainerConfig, pdfPrintCutoffConfig, pdfFontErrorDecoderConfig,
     pdfTextSelectableConfig, pdfBwPreviewConfig, pdfUploadTimeConfig, pdfPageOrderConfig
   ].find(c => c.slug === slug) || pdfCompressorConfig, [slug]);
