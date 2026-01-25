@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { CATEGORIES } from '../data/categories';
 import { TOOLS } from '../data/tools';
@@ -18,8 +19,7 @@ const InternalLinking: React.FC<InternalLinkingProps> = ({ onNavigate }) => {
           {CATEGORIES.map(cat => {
             const catTools = TOOLS
               .filter(t => t.category === cat.id)
-              .sort((a, b) => (b.priority || 0) - (a.priority || 0))
-              .slice(0, 8);
+              .sort((a, b) => (b.priority || 0) - (a.priority || 0));
               
             if (catTools.length === 0) return null;
 

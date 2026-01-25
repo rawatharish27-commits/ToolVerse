@@ -1,3 +1,4 @@
+
 import React, { useState, useMemo, useEffect } from 'react';
 import { getPdfLib, renderPdfToImages, runOCRTask } from '../../lib/wasm-engines';
 import ToolLayout from '../ToolLayout';
@@ -18,8 +19,8 @@ import { pdfUploadTimeEstimator } from '../../tools/executors/pdfUploadTimeEstim
 import { pdfCompatibilityLevelAnalyzer } from '../../tools/executors/pdfCompatibilityLevelAnalyzer';
 import { scannedPdfReadabilityTester } from '../../tools/executors/scannedPdfReadabilityTester';
 import { pdfSizeIncreaseExplainer } from '../../tools/executors/pdfSizeIncreaseExplainer';
-/* Fix: Standardized import casing to lowercase 'o' to match implementation file and resolve casing conflict error */
-import { pdfPrintCutoffPredictor } from '../../tools/executors/pdfPrintCutoffPredictor';
+// Fix: Standardized import casing to uppercase 'O' to match implementation file and resolve casing conflict error
+import { pdfPrintCutoffPredictor } from '../../tools/executors/pdfPrintCutOffPredictor';
 import { fontNotSupportedDecoder } from '../../tools/executors/fontNotSupportedDecoder';
 import { pdfPageOrderSolver } from '../../tools/executors/pdfPageOrderSolver';
 import { pdfBwPrintPreview } from '../../tools/executors/pdfBwPrintPreview';

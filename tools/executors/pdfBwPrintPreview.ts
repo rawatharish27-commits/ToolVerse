@@ -23,51 +23,51 @@ export function pdfBwPrintPreview({
 
   if (colorUsage === "heavy") {
     verdict = "Risky";
-    risks.push("Heavy color usage loses distinction in B/W print.");
-    fixes.push("Convert colors to distinct grayscale shades.");
+    risks.push("Heavy color usage loses necessary distinction in B/W print.");
+    fixes.push("Convert color layers to distinct grayscale shades (dark/light contrast).");
   }
 
   if (usesHighlights) {
     verdict = "Risky";
-    risks.push("Highlights (yellow/green) may disappear or look like solid blocks in B/W print.");
-    fixes.push("Replace highlights with borders, bold text, or gray shading.");
+    risks.push("Yellow/Light highlights often appear as solid gray blocks or disappear in B/W print.");
+    fixes.push("Replace highlights with text borders or bold font styles.");
   }
 
   if (usesLightGrayText) {
     verdict = "Poor";
-    risks.push("Light gray text becomes unreadable or invisible in physical print.");
-    fixes.push("Change text color to dark gray or pure black.");
+    risks.push("Light gray text becomes unreadable or invisible after halftone conversion.");
+    fixes.push("Change text color to at least 70% gray or pure black.");
   }
 
   if (thinLines) {
     verdict = verdict === "Good" ? "Risky" : verdict;
-    risks.push("Thin colored lines may break or vanish after halftone conversion.");
-    fixes.push("Increase line thickness to at least 1pt and use solid black.");
+    risks.push("Thin colored lines may break or vanish during printing.");
+    fixes.push("Increase line weight to at least 1pt and use solid black.");
   }
 
   if (contentType === "chart" && colorUsage !== "none") {
     verdict = "Poor";
-    risks.push("Charts relying only on color categories will be unclear in grayscale.");
-    fixes.push("Add patterns (stripes/dots), labels, or direct data values.");
+    risks.push("Data series relying only on color will be impossible to tell apart in grayscale.");
+    fixes.push("Use patterns (stripes, dots), distinct markers, or text labels on charts.");
   }
 
   if (background !== "white") {
-    risks.push("Non-white background reduces overall text contrast in print.");
-    fixes.push("Use a white background and remove page gradients for printing.");
+    risks.push("Non-white background reduces overall contrast significantly in print.");
+    fixes.push("Print on white background for maximum readability.");
   }
 
   if (risks.length === 0) {
     return {
-      "Final Verdict": verdict.toUpperCase(),
-      "Message": "Your PDF is optimized for clear black & white printing.",
+      "Verdict": verdict.toUpperCase(),
+      "Message": "PDF appears safe for clear black & white printing.",
       "Print Safe Preset": "Black text on white background, no highlights"
     };
   }
 
   return {
-    "Readability Verdict": verdict.toUpperCase(),
+    "Verdict": verdict.toUpperCase(),
     "At-Risk Elements": risks,
-    "Corrective Actions": fixes,
-    "Safe Print Preset": "Black text, strong contrast, patterned charts"
+    "Safe Fix Path": fixes,
+    "Strategic Advice": "Increase contrast manually before printing to ensure all elements remain distinct in grayscale."
   };
 }

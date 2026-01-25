@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { CATEGORIES } from '../data/categories';
 import { TOOLS } from '../data/tools';
@@ -103,7 +104,7 @@ const CategoryPage: React.FC<CategoryPageProps> = ({ categoryId, onNavigate, fav
               <div className="relative z-10">
                 <h3 className="font-black text-slate-900 mb-6 uppercase text-[10px] tracking-[0.2em] border-b border-slate-100 pb-4">Other Hubs</h3>
                 <div className="space-y-2">
-                  {CATEGORIES.filter(c => c.id !== categoryId).slice(0, 6).map(cat => (
+                  {CATEGORIES.filter(c => c.id !== categoryId).map(cat => (
                     <button 
                       key={cat.id}
                       onClick={() => onNavigate('category', { id: cat.id })}

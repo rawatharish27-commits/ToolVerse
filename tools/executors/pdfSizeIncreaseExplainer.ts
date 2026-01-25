@@ -29,60 +29,70 @@ export function pdfSizeIncreaseExplainer({
 }) {
   const causes: Cause[] = [];
 
-  // OCR Logic
+  // OCR
   if (ocrApplied) {
     causes.push({
       reason: "OCR layer added",
-      explanation: "OCR adds a searchable text layer and font data, increasing the internal complexity and file size.",
-      fix: "Use OCR only if text search or selection is strictly required; otherwise, keep the original scanned PDF.",
+      explanation:
+        "OCR adds a searchable text layer and font data, increasing the internal binary complexity and file size.",
+      fix:
+        "Use OCR only if text search is required; otherwise keep the original scanned PDF.",
       score: 9
     });
   }
 
-  // Print to PDF Logic
+  // Print to PDF
   if (compressionMethod === "print-to-pdf") {
     causes.push({
       reason: "Print-to-PDF embeds all elements",
-      explanation: "Printing re-renders the entire document, often embedding images at higher uncompressed states and re-embedding all font sets.",
-      fix: "Use an 'Export' or 'Save As Optimized PDF' function instead of the virtual printer route.",
+      explanation:
+        "Printing re-renders pages and often embeds images and fonts fully rather than using compressed references.",
+      fix:
+        "Use optimized save/export features instead of print-to-PDF virtual printers.",
       score: 8
     });
   }
 
-  // Font embedding Logic
+  // Font embedding
   if (fontsEmbedded) {
     causes.push({
       reason: "Full fonts embedded during save",
-      explanation: "Embedding complete font sets ensures compatibility but adds significant 'meta' weight to the file.",
-      fix: "Embed 'Subsets' only or use standard system fonts (Arial, Times New Roman) when possible.",
+      explanation:
+        "Embedding full font sets ensures compatibility across devices but adds significant KB/MB to the total file size.",
+      fix:
+        "Check 'Subset fonts' or 'Only embed characters used' in your PDF software settings.",
       score: 7
     });
   }
 
-  // Image re-encoding Logic
+  // Image re-encoding
   if (imagesReencoded && pdfType !== "text") {
     causes.push({
-      reason: "Images re-encoded with higher fidelity",
-      explanation: "The optimization tool may have used a higher JPEG quality setting than the original file, causing binary inflation.",
-      fix: "Manually lower the image quality setting (DPI/Quality) or downscale dimensions before PDF creation.",
+      reason: "Images re-encoded at higher quality",
+      explanation:
+        "The compression tool used may have re-encoded existing images with less aggressive settings than the original.",
+      fix:
+        "Manually lower image quality/DPI or downscale resolution before saving.",
       score: 8
     });
   }
 
-  // Color conversion Logic
+  // Color conversion
   if (colorConverted) {
     causes.push({
-      reason: "Color space conversion overhead",
-      explanation: "Converting from RGB to CMYK or adjusting color profiles can expand pixel data instead of reducing it.",
-      fix: "Keep the original color space unless grayscale is specifically required by the portal.",
+      reason: "Color space conversion increased data",
+      explanation:
+        "Some conversions (e.g., from Index color to RGB) expand pixel data, making the file heavier.",
+      fix:
+        "Maintain the original color space unless a specific conversion is required.",
       score: 6
     });
   }
 
   if (causes.length === 0) {
     return {
-      "Explanation": "PDF compression changed internal binary structure, causing overhead that outweighs the data savings.",
-      "Primary Suggestion": "Try using a multi-pass optimizer or targeted image reduction tools."
+      "Explanation": "PDF compression changed the internal structure, adding overhead that outweighed data savings.",
+      "Primary Suggestion": "Use targeted optimization based on content (e.g., downscale images for scanned docs)."
     };
   }
 
@@ -92,8 +102,8 @@ export function pdfSizeIncreaseExplainer({
     "Status": "Inflation Detected",
     "Primary Cause": causes[0].reason,
     "Why it Happened": causes[0].explanation,
-    "Actionable Fix": causes[0].fix,
+    "Correct Fix": causes[0].fix,
     "Secondary Factors": causes.slice(1).map(c => c.reason),
-    "One-Line Takeaway": "Compression must match content; choosing the wrong method (like Print-to-PDF) often backfires."
+    "One-Line Takeaway": "Compression must match PDF content; wrong method (like Print-to-PDF) often increases size."
   };
 }

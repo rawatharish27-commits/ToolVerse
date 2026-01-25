@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect, useMemo } from 'react';
 import { TOOLS } from '../data/tools';
 import { CATEGORIES } from '../data/categories';
@@ -36,8 +37,8 @@ import { pdfOpeningChecker } from "../tools/executors/pdfOpeningChecker";
 import { pdfCompatibilityLevelAnalyzer } from "../tools/executors/pdfCompatibilityLevelAnalyzer";
 import { scannedPdfReadabilityTester } from "../tools/executors/scannedPdfReadabilityTester";
 import { pdfSizeIncreaseExplainer } from "../tools/executors/pdfSizeIncreaseExplainer";
-/* Fix: Standardized import casing to lowercase 'o' to match implementation file and resolve casing conflict error */
-import { pdfPrintCutoffPredictor } from "../tools/executors/pdfPrintCutoffPredictor";
+// Fix: Standardized import casing to uppercase 'O' to match implementation file and resolve casing conflict error
+import { pdfPrintCutoffPredictor } from "../tools/executors/pdfPrintCutOffPredictor";
 import { fontNotSupportedDecoder } from "../tools/executors/fontNotSupportedDecoder";
 import { pdfTextSelectable } from "../tools/executors/pdfTextSelectable";
 import { pdfUploadTimeEstimator } from "../tools/executors/pdfUploadTimeEstimator";

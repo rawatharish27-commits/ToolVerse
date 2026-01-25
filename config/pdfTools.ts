@@ -82,7 +82,7 @@ export const pdfTextSelectableConfig = {
   slug: "pdf-text-selectable-checker",
   title: "Searchability Checker",
   description: "Check if your document is 'Flat' (Image) or 'Searchable' (Text). Critical for legal and research submissions.",
-  icon: "鼠标",
+  icon: "🖱️",
   colorClass: "bg-red-600",
   options: []
 };

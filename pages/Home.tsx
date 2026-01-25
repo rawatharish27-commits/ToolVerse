@@ -1,16 +1,16 @@
 
-import React, { useMemo, useDeferredValue, useState, Suspense, lazy, useEffect } from 'react';
+import React, { useMemo, useDeferredValue, useState, Suspense, lazy } from 'react';
 import { CATEGORIES } from '../data/categories';
 import { TOOLS } from '../data/tools';
 import ToolCard from '../components/ToolCard';
 import SEOHead from '../components/SEOHead';
 import SiteStatus from '../components/SiteStatus';
+import RightSideMenu from '../components/RightSideMenu';
 import { getToolPriorityScore } from '../utils/toolPriority';
-import { getTopCategories, getToolOfDay, trackToolClick } from '../utils/attraction';
+import { trackToolClick } from '../utils/attraction';
 
 const RewardHub = lazy(() => import('../components/RewardHub'));
 const TopSitesSection = lazy(() => import('../components/TopSitesSection'));
-const SpinWheel = lazy(() => import('../components/SpinWheel'));
 
 interface HomeProps {
   onNavigate: (page: string, params?: any) => void;
@@ -22,9 +22,8 @@ interface HomeProps {
 
 const Home: React.FC<HomeProps> = ({ onNavigate, searchQuery = '', favorites, onToggleFavorite }) => {
   const deferredSearch = useDeferredValue(searchQuery);
-  const [activeCategory, setActiveCategory] = useState<string | null>(null);
 
-  // Systematic Filtering
+  // Featured tools logic (Priority based)
   const featuredTools = useMemo(() => {
     return TOOLS.sort((a, b) => getToolPriorityScore(b) - getToolPriorityScore(a)).slice(0, 12);
   }, []);
@@ -36,7 +35,7 @@ const Home: React.FC<HomeProps> = ({ onNavigate, searchQuery = '', favorites, on
     return TOOLS.filter(tool => {
       const searchBlob = `${tool.title} ${tool.description} ${tool.category} ${tool.keywords.join(' ')}`.toLowerCase();
       return queryTerms.every(term => searchBlob.includes(term));
-    }).slice(0, 24);
+    }).slice(0, 30); // Support up to 30 results for search
   }, [deferredSearch]);
 
   const handleToolClick = (tool: any) => {
@@ -64,7 +63,7 @@ const Home: React.FC<HomeProps> = ({ onNavigate, searchQuery = '', favorites, on
             </p>
             
             <div className="flex flex-wrap justify-center gap-2">
-               {CATEGORIES.slice(0, 12).map(cat => (
+               {CATEGORIES.map(cat => (
                  <button 
                   key={cat.id}
                   onClick={() => onNavigate('category', { id: cat.id })}
@@ -78,61 +77,71 @@ const Home: React.FC<HomeProps> = ({ onNavigate, searchQuery = '', favorites, on
         </section>
       )}
 
-      <div className="max-w-7xl mx-auto px-6 space-y-16 py-12">
-        
-        {/* SEARCH OR FEATURED */}
-        <section>
-          <div className="flex items-center justify-between mb-8">
-            <h2 className="text-xl font-bold text-slate-900 uppercase tracking-wider text-xs">
-              {deferredSearch ? `Search Results (${searchResults?.length})` : 'Trending Professional Tools'}
-            </h2>
-            {!deferredSearch && <span className="text-[10px] font-bold text-slate-400">UPDATED REAL-TIME</span>}
+      <div className="max-w-7xl mx-auto px-6 py-12">
+        <div className="flex flex-col lg:flex-row gap-12">
+          {/* Main Content Column */}
+          <div className="flex-grow space-y-16">
+            
+            {/* SEARCH OR FEATURED SECTION */}
+            <section>
+              <div className="flex items-center justify-between mb-8">
+                <h2 className="text-xl font-bold text-slate-900 uppercase tracking-wider text-xs">
+                  {deferredSearch ? `Search Results (${searchResults?.length})` : 'Trending Professional Tools'}
+                </h2>
+                {!deferredSearch && <span className="text-[10px] font-bold text-slate-400">UPDATED REAL-TIME</span>}
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6">
+                {(searchResults || featuredTools).map(tool => (
+                  <ToolCard 
+                    key={tool.slug} 
+                    tool={tool} 
+                    onClick={() => handleToolClick(tool)} 
+                    isFavorite={favorites.includes(tool.slug)}
+                    onToggleFavorite={onToggleFavorite}
+                  />
+                ))}
+              </div>
+            </section>
+
+            {/* QUICK CLUSTER GRID */}
+            {!deferredSearch && (
+              <section className="py-12 border-t border-slate-100">
+                <h2 className="text-xs font-bold text-slate-400 uppercase tracking-[0.2em] mb-8">Browse the Vault Clusters</h2>
+                <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+                  {CATEGORIES.map(cat => (
+                    <button 
+                      key={cat.id} 
+                      onClick={() => onNavigate('category', { id: cat.id })}
+                      className="p-6 bg-slate-50 rounded-2xl border border-slate-100 text-center hover:bg-indigo-50 hover:border-indigo-200 transition-all group"
+                    >
+                        <div className="text-3xl mb-3 group-hover:scale-110 transition-transform">{cat.icon}</div>
+                        <div className="text-xs font-bold text-slate-800">{cat.name}</div>
+                        <div className="text-[8px] font-bold text-slate-400 mt-1 uppercase">Explore Cluster</div>
+                    </button>
+                  ))}
+                </div>
+              </section>
+            )}
+
+            <Suspense fallback={<div className="h-32 skeleton rounded-3xl"></div>}>
+              <TopSitesSection />
+            </Suspense>
+
+            <Suspense fallback={<div className="h-64 skeleton rounded-3xl"></div>}>
+              <RewardHub />
+            </Suspense>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-            {(searchResults || featuredTools).map(tool => (
-              <ToolCard 
-                key={tool.slug} 
-                tool={tool} 
-                onClick={() => handleToolClick(tool)} 
-                isFavorite={favorites.includes(tool.slug)}
-                onToggleFavorite={onToggleFavorite}
-              />
-            ))}
+          {/* Right-Side Sidebar Menu */}
+          <div className="w-full lg:w-80 flex-shrink-0">
+            <RightSideMenu onNavigate={onNavigate} />
           </div>
-        </section>
-
-        {/* SYSTEMATIC CATEGORY HUB (REPLACES 500 REPEATED TOOLS) */}
-        {!deferredSearch && (
-          <section className="py-12 border-t border-slate-100">
-            <h2 className="text-xs font-bold text-slate-400 uppercase tracking-[0.2em] mb-8">Browse the Vault Clusters</h2>
-            <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
-               {CATEGORIES.map(cat => (
-                 <button 
-                  key={cat.id} 
-                  onClick={() => onNavigate('category', { id: cat.id })}
-                  className="p-6 bg-slate-50 rounded-2xl border border-slate-100 text-center hover:bg-indigo-50 hover:border-indigo-200 transition-all group"
-                 >
-                    <div className="text-3xl mb-3 group-hover:scale-110 transition-transform">{cat.icon}</div>
-                    <div className="text-xs font-bold text-slate-800">{cat.name}</div>
-                    <div className="text-[8px] font-bold text-slate-400 mt-1 uppercase">Explore Cluster</div>
-                 </button>
-               ))}
-            </div>
-          </section>
-        )}
-
-        <Suspense fallback={<div className="h-32 skeleton rounded-3xl"></div>}>
-          <TopSitesSection />
-        </Suspense>
-
-        <Suspense fallback={<div className="h-64 skeleton rounded-3xl"></div>}>
-          <RewardHub />
-        </Suspense>
+        </div>
 
         {!deferredSearch && (
-          <div className="py-12 text-center border-t border-slate-50">
-             <p className="text-slate-400 text-xs font-medium">Looking for something specific? Use the global search at the top.</p>
+          <div className="py-12 text-center border-t border-slate-50 mt-16">
+             <p className="text-slate-400 text-xs font-medium">Looking for something specific? Use the global search at the top or the directory on the right.</p>
           </div>
         )}
       </div>

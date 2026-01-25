@@ -14,18 +14,18 @@ export function pdfUploadTimeEstimator({
   stability?: Stability;
   concurrentUploads?: number;
 }) {
-  // Real-world protocol overhead (TCP, SSL, API handshake)
+  // Real-world overhead factor (Handshake, SSL, API processing)
   let overhead = 1.3; 
   if (stability === "poor") overhead = 1.7;
   if (stability === "good") overhead = 1.15;
 
-  // Bandwidth sharing for multiple tabs or background sync
+  // Bandwidth sharing
   const effectiveSpeedMbps = uploadSpeedMbps / Math.max(1, concurrentUploads);
 
-  // Time in seconds = (Size in Megabits) / Speed in Megabits per second
+  // Time in seconds: (Size in Megabits) / Speed in Mbps * overhead
   const seconds = ((fileSizeMB * 8) / Math.max(0.1, effectiveSpeedMbps)) * overhead;
 
-  // Portal timeout assumptions (seconds before portal kicks you out)
+  // Portal timeout assumptions (seconds)
   const portalTimeout = (portal === "government" || portal === "bank") ? 120 : 300;
 
   let risk: "Low" | "Medium" | "High" = "Low";
@@ -35,22 +35,24 @@ export function pdfUploadTimeEstimator({
   const tips: string[] = [];
   if (risk !== "Low") {
     tips.push("Reduce PDF file size below 2MB before uploading.");
-    tips.push("Upload during off-peak hours (Late night/Early morning) when portal load is low.");
+    tips.push("Upload during off-peak hours (Late night/Early morning).");
   }
   if (stability === "poor") {
-    tips.push("Switch to a stable Broadband/Fiber network instead of Mobile Hotspot.");
+    tips.push("Switch to a stable Broadband/Fiber network; avoid mobile hotspots.");
   }
   if (concurrentUploads > 1) {
-    tips.push("Pause other active uploads or downloads to prioritize this file.");
+    tips.push("Pause other active uploads to prioritize this session.");
   }
 
   const safeSizeMB = Math.floor((portalTimeout * effectiveSpeedMbps) / (8 * overhead)) || 1;
 
   return {
-    "Estimated Duration": seconds < 60 ? `${Math.ceil(seconds)} seconds` : `${Math.ceil(seconds / 60)}m ${Math.ceil(seconds % 60)}s`,
-    "Portal Timeout Risk": risk.toUpperCase(),
-    "Network Bottleneck": stability === "poor" ? "High Packet Loss Expected" : "Standard Latency",
-    "Optimization Steps": tips,
-    "Recommended File Cap": `${safeSizeMB} MB for this connection`
+    "Estimated Time": seconds < 60 
+      ? `${Math.ceil(seconds)} seconds` 
+      : `${Math.ceil(seconds / 60)} minutes`,
+    "Timeout Risk": risk.toUpperCase(),
+    "Bottleneck Analysis": stability === "poor" ? "High Latency & Packet Loss" : "Standard Connection",
+    "Actionable Tips": tips,
+    "Safe File Suggestion": `${safeSizeMB} MB or smaller for this connection`
   };
 }

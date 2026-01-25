@@ -71,7 +71,7 @@ const Layout: React.FC<LayoutProps> = ({ children, onNavigate, onSearch, searchQ
         </div>
 
         {isMobileMenuOpen && (
-          <div className="md:hidden bg-white border-t border-slate-100 p-6 space-y-2">
+          <div className="md:hidden bg-white border-t border-slate-100 p-6 space-y-2 overflow-y-auto max-h-[80vh]">
              <input 
                 type="text" 
                 value={searchQuery}
@@ -79,7 +79,7 @@ const Layout: React.FC<LayoutProps> = ({ children, onNavigate, onSearch, searchQ
                 placeholder="Search..." 
                 className="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl mb-4"
               />
-             {CATEGORIES.slice(0, 8).map(cat => (
+             {CATEGORIES.map(cat => (
                <button key={cat.id} onClick={() => { setIsMobileMenuOpen(false); onNavigate('category', { id: cat.id }); }} className="w-full p-4 text-left text-xs font-bold uppercase tracking-widest hover:bg-indigo-50 rounded-xl flex items-center gap-3">
                  <span>{cat.icon}</span> {cat.name}
                </button>
