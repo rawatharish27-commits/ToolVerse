@@ -1,4 +1,3 @@
-
 import { Tool } from '../types';
 
 export type ToolTier = 'TIER_1' | 'TIER_2' | 'TIER_3';
@@ -13,21 +12,17 @@ export function calculateToolTier(tool: Tool): ToolTier {
   let score = 0;
 
   // Search Intent Heuristic (Keywords in Slug/Title)
-  const highIntentKeywords = /compress|converter|calculator|resize|merge|split|writer|generator|remover|checker/i;
+  const highIntentKeywords = /compress|converter|calculator|resize|merge|split|writer|generator|remover|checker|invoice|plan|swot/i;
   if (highIntentKeywords.test(tool.slug) || highIntentKeywords.test(tool.title)) {
     score += 8;
   }
 
-  // Category Multiplier
-  const highValueCategories = /ai|calculators|seo/i;
+  // Category Multiplier (Business is now High-RPM Tier 1)
+  const highValueCategories = /ai|calculators|seo|business|social/i;
   const medValueCategories = /pdf|image|video|office/i;
   
   if (highValueCategories.test(tool.category)) score += 10;
   else if (medValueCategories.test(tool.category)) score += 5;
-
-  // Description Depth (Signifies complexity/SEO value)
-  if (tool.longDescription && tool.longDescription.length > 100) score += 4;
-  if (tool.faqs && tool.faqs.length > 0) score += 3;
 
   // Final Tier Decision
   if (score >= 18) return 'TIER_1';

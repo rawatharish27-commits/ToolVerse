@@ -188,4 +188,15 @@ export const CATEGORIES: ToolCategory[] = [
       'https://images.unsplash.com/photo-1503676260728-1c00da094a0b?auto=format&fit=crop&q=80&w=1200'
     ]
   },
+  { 
+    id: 'business', 
+    name: 'Business Tools', 
+    description: 'Professional commerce and management utilities', 
+    icon: '💼', 
+    color: 'bg-slate-900',
+    images: [
+      'https://images.unsplash.com/photo-1454165833767-017546b5aa22?auto=format&fit=crop&q=80&w=1200',
+      'https://images.unsplash.com/photo-1664575602276-acd073f104c1?auto=format&fit=crop&q=80&w=1200'
+    ]
+  },
 ];

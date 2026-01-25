@@ -15,7 +15,8 @@ export type CategorySlug =
   | 'education'
   | 'file'
   | 'data'
-  | 'social';
+  | 'social'
+  | 'business';
 
 export interface ToolCategory {
   id: CategorySlug;

@@ -18,33 +18,100 @@ export const pdfCompressorConfig = {
   ],
 };
 
+export const pdfSizeReducerConfig = {
+  slug: "pdf-size-reducer",
+  title: "PDF Size Reducer (MB Target)",
+  description: "Reduce PDF file size to a specific target (1MB, 2MB, etc.) while maintaining document readability.",
+  icon: "📉",
+  colorClass: "bg-red-600",
+  options: [
+    { id: "targetMB", type: "select", label: "Target Size", values: ["1 MB", "2 MB", "5 MB", "10 MB", "Custom"], default: "2 MB" },
+    { id: "customMB", type: "number", label: "Custom MB Limit", default: 2 },
+    { id: "strategy", type: "select", label: "Compression Strategy", values: ["Balanced", "Aggressive", "Quality-First"], default: "Balanced" },
+    { id: "dpi", type: "select", label: "Resolution (DPI)", values: [72, 150, 300], default: 150 },
+    { id: "quality", type: "slider", label: "Visual Quality (%)", min: 10, max: 100, default: 80 }
+  ],
+};
+
+export const pdfToImageConfig = {
+  slug: "pdf-to-jpg",
+  title: "Pro PDF to JPG Converter",
+  description: "Convert PDF pages to high-quality JPG images. Select specific pages, control DPI, and adjust compression levels.",
+  icon: "🖼️",
+  colorClass: "bg-orange-600",
+  options: [
+    { id: "pageMode", type: "select", label: "Page Selection", values: ["All Pages", "Page Range", "Specific Pages"], default: "All Pages" },
+    { id: "pageRange", type: "text", label: "Enter Pages (e.g. 1-3, 5)", default: "1" },
+    { id: "quality", type: "slider", label: "JPG Quality (%)", min: 10, max: 100, default: 85 },
+    { id: "dpi", type: "select", label: "Resolution (DPI)", values: [72, 150, 300, 600], default: 150 },
+    { id: "zipOutput", type: "toggle", label: "Download as ZIP (Multi-page)", default: true },
+  ],
+};
+
+export const pdfPageNumbersConfig = {
+  slug: "pdf-page-number-adder",
+  title: "PDF Page Number Adder",
+  description: "Professionally add page numbers with custom formats (Roman, Fractions), ranges, and precise positioning.",
+  icon: "🔢",
+  colorClass: "bg-red-500",
+  options: [
+    { id: "position", type: "select", label: "Position", values: ["bottom-center", "bottom-left", "bottom-right", "top-center", "top-left", "top-right"], default: "bottom-center" },
+    { id: "format", type: "select", label: "Number Format", values: ["number", "page-number", "fraction", "roman"], default: "number" },
+    { id: "startFrom", type: "number", label: "Start From Page #", default: 1 },
+    { id: "rangeStart", type: "number", label: "Only Start at Page #", default: 1 },
+    { id: "rangeEnd", type: "number", label: "Stop at Page # (0 = End)", default: 0 },
+    { id: "fontSize", type: "slider", label: "Font Size (px)", min: 6, max: 36, default: 12 },
+    { id: "color", type: "select", label: "Text Color", values: ["#000000", "#FF0000", "#0000FF", "#808080"], default: "#000000" },
+    { id: "margin", type: "slider", label: "Margin Offset (px)", min: 5, max: 100, default: 25 },
+  ]
+};
+
+export const pdfWatermarkProConfig = {
+  slug: "pdf-watermark-pro",
+  title: "Professional PDF Watermark",
+  description: "Protect and brand your PDF documents with custom text or image watermarks. Full control over opacity and placement.",
+  icon: "🖋️",
+  colorClass: "bg-red-800",
+  options: [
+    { id: "type", type: "select", label: "Watermark Type", values: ["Text", "Image (Logo)"], default: "Text" },
+    { id: "text", type: "text", label: "Watermark Text", default: "CONFIDENTIAL" },
+    { id: "opacity", type: "slider", label: "Opacity (%)", min: 5, max: 100, default: 20 },
+    { id: "rotation", type: "slider", label: "Rotation (Deg)", min: 0, max: 360, default: 45 },
+    { id: "fontSize", type: "slider", label: "Text Size", min: 10, max: 150, default: 50 },
+    { id: "color", type: "select", label: "Text Color", values: ["#000000", "#FF0000", "#0000FF", "#808080"], default: "#808080" },
+    { id: "imageScale", type: "slider", label: "Image Scale (%)", min: 5, max: 200, default: 50 },
+    { id: "rangeStart", type: "number", label: "Start at Page #", default: 1 },
+    { id: "rangeEnd", type: "number", label: "End at Page # (0 = All)", default: 0 },
+  ]
+};
+
 export const pdfMergerConfig = {
   slug: "pdf-merger",
-  title: "Pro PDF Merger",
-  description: "Combine multiple PDF files into a single high-quality document. Order is preserved exactly as selected.",
+  title: "Professional PDF Merger",
+  description: "Combine multiple PDF files with precise page range control per file and optional size normalization.",
   icon: "📂",
   colorClass: "bg-red-500",
   options: [
-    { id: "removeMetadata", type: "toggle", label: "Strip Metadata", default: true },
-    { id: "compressAfterMerge", type: "toggle", label: "Optimize Output", default: true },
-    { id: "flattenForms", type: "toggle", label: "Flatten Forms", default: false },
-    { id: "addOutline", type: "toggle", label: "Generate Outlines", default: true },
-    { id: "normalizePages", type: "toggle", label: "Normalize Page Size", default: false },
+    { id: "normalizeSize", type: "select", label: "Page Size Normalization", values: ["Original Sizes", "Convert all to A4", "Convert all to Letter"], default: "Original Sizes" },
+    { id: "removeMetadata", type: "toggle", label: "Strip Internal Metadata", default: true },
+    { id: "optimizeOutput", type: "toggle", label: "Optimize for Fast Web View", default: true },
+    { id: "flattenForms", type: "toggle", label: "Flatten Interactive Forms", default: false },
+    { id: "addOutline", type: "toggle", label: "Generate TOC from Filenames", default: true },
   ],
 };
 
 export const pdfSplitterConfig = {
   slug: "pdf-splitter",
-  title: "Pro PDF Splitter",
-  description: "Extract specific pages or split your PDF document into multiple separate files instantly.",
+  title: "Professional PDF Splitter",
+  description: "Extract specific pages, split by ranges, or separate every page into individual documents.",
   icon: "✂️",
   colorClass: "bg-rose-500",
   options: [
-    { id: "mode", type: "select", label: "Split Mode", values: ["Page Range", "Every Page", "Every N Pages"], default: "Page Range" },
-    { id: "pageRange", type: "text", label: "Page Range (e.g. 1-3,5)", default: "1-1" },
-    { id: "everyN", type: "select", label: "Split Every N Pages", values: [1, 2, 3, 5, 10], default: 1 },
+    { id: "mode", type: "select", label: "Split Mode", values: ["Individual Pages", "Page Range", "Custom List", "Odd Pages", "Even Pages"], default: "Individual Pages" },
+    { id: "pageRange", type: "text", label: "Pages (e.g. 1-3, 5, 8-10)", default: "1" },
+    { id: "outputType", type: "select", label: "Output Type", values: ["Multiple PDFs (ZIP)", "Single PDF (Subset)"], default: "Multiple PDFs (ZIP)" },
     { id: "removeMetadata", type: "toggle", label: "Remove Metadata", default: true },
-    { id: "compressOutput", type: "toggle", label: "Compress Resulting Files", default: true },
+    { id: "compressOutput", type: "toggle", label: "Optimize Resulting Files", default: true },
   ],
 };
 
@@ -62,69 +129,57 @@ export const pdfPageReorderConfig = {
 
 export const pdfProtectConfig = {
   slug: "pdf-password-protect",
-  title: "PDF Password Protector",
-  description: "Secure your PDF with AES-256 bit encryption. Set user passwords for opening and owner passwords for editing permissions.",
+  title: "Advanced PDF Protector",
+  description: "Secure your PDF with AES-256 bit encryption. Control user access and granular editing/printing permissions.",
   icon: "🔒",
   colorClass: "bg-red-900",
   options: [
-    { id: "userPassword", type: "text", label: "Password to Open", default: "" },
+    { id: "userPassword", type: "text", label: "Open Password", default: "" },
     { id: "ownerPassword", type: "text", label: "Owner Password (Perms)", default: "" },
-    { id: "allowPrint", type: "toggle", label: "Allow Printing", default: true },
-    { id: "allowCopy", type: "toggle", label: "Allow Copying Content", default: true },
+    { id: "encryption", type: "select", label: "Encryption Strength", values: ["AES-256 (Secure)", "AES-128 (Legacy)"], default: "AES-256 (Secure)" },
+    { id: "allowPrint", type: "toggle", label: "Allow Printing", default: false },
+    { id: "allowCopy", type: "toggle", label: "Allow Content Copying", default: false },
+    { id: "allowModify", type: "toggle", label: "Allow Modification", default: false },
   ],
 };
 
 export const pdfUnlockConfig = {
-  slug: "pdf-unlock",
+  slug: "pdf-password-remover",
   title: "PDF Password Remover",
-  description: "Remove passwords and restrictions from your PDF files. Requires current password to decrypt the file locally.",
+  description: "Remove passwords and restrictions from your PDF files instantly. Requires the correct current password to decrypt locally.",
   icon: "🔓",
   colorClass: "bg-red-500",
   options: [
     { id: "password", type: "text", label: "Current Password", default: "" },
+    { id: "fullUnlock", type: "toggle", label: "Remove All Restrictions", default: true }
   ],
 };
 
 export const pdfMetadataConfig = {
-  slug: "pdf-metadata-editor",
-  title: "PDF Metadata Editor",
-  description: "View and edit internal PDF data properties like Title, Author, and Producer without changing document content.",
-  icon: "📝",
+  slug: "pdf-metadata-viewer",
+  title: "PDF Metadata Inspector",
+  description: "Examine hidden PDF properties including Author, Creation Date, Producer, and internal XMP data tags.",
+  icon: "🕵️",
   colorClass: "bg-red-800",
   options: [
-    { id: "title", type: "text", label: "Document Title", default: "" },
-    { id: "author", type: "text", label: "Author", default: "" },
-    { id: "subject", type: "text", label: "Subject", default: "" },
-    { id: "creator", type: "text", label: "Creator App", default: "ToolVerse" },
-  ],
-};
-
-export const pdfToImageConfig = {
-  slug: "pdf-to-image",
-  title: "Pro PDF to Image",
-  description: "Convert PDF pages into high-resolution JPG or PNG images. Fast, secure, and accurate rendering.",
-  icon: "🖼️",
-  colorClass: "bg-orange-600",
-  options: [
-    { id: "format", type: "select", label: "Output Format", values: ["png", "jpg"], default: "png" },
-    { id: "dpi", type: "select", label: "Resolution (DPI)", values: [72, 150, 300, 600], default: 150 },
-    { id: "quality", type: "slider", label: "Compression Quality", min: 10, max: 100, default: 85 },
-    { id: "zipOutput", type: "toggle", label: "Package as ZIP", default: true },
+    { id: "detailLevel", type: "select", label: "Inspection Depth", values: ["Standard Info", "Extended Metadata", "Raw XMP Tags"], default: "Standard Info" },
+    { id: "privacyCheck", type: "toggle", label: "Detect Privacy Risks", default: true }
   ],
 };
 
 export const imageToPdfConfig = {
   slug: "image-to-pdf",
-  title: "Pro Image to PDF",
-  description: "Convert multiple JPG or PNG images into a single professional PDF document. Fast and local processing.",
+  title: "Pro JPG to PDF Converter",
+  description: "Convert multiple JPG/PNG images into a single professional PDF document with orientation, fit, and margin control.",
   icon: "📄",
   colorClass: "bg-rose-600",
   options: [
-    { id: "pageSize", type: "select", label: "Page Size", values: ["A4", "Letter", "Original"], default: "A4" },
+    { id: "pageSize", type: "select", label: "Page Size", values: ["A4", "Letter", "Original Image Size"], default: "A4" },
     { id: "orientation", type: "select", label: "Orientation", values: ["Portrait", "Landscape"], default: "Portrait" },
+    { id: "fitMode", type: "select", label: "Image Fit", values: ["Fit to Page", "Fill Page", "Original (Centered)"], default: "Fit to Page" },
     { id: "margin", type: "slider", label: "Margin (px)", min: 0, max: 100, default: 20 },
-    { id: "fitMode", type: "select", label: "Image Fit", values: ["Contain", "Cover"], default: "Contain" },
-    { id: "compress", type: "toggle", label: "Compress Images", default: true },
+    { id: "dpi", type: "select", label: "Output DPI", values: [72, 150, 300], default: 150 },
+    { id: "zipOutput", type: "toggle", label: "Individual Pages as ZIP", default: false }
   ],
 };
 

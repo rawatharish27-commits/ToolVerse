@@ -1,16 +1,84 @@
 export const imageCompressorConfig = {
   slug: "image-compressor",
   title: "Smart Image Compressor",
-  description: "Advanced lossy and lossless compression for PNG, JPG, and WebP. Reduce file size by up to 90% without visible quality loss.",
+  description: "Advanced lossy and lossless compression for PNG, JPG, and WebP. Reduce file size significantly while keeping original pixels and resolution intact.",
   icon: "🖼️",
   colorClass: "bg-emerald-600",
   options: [
-    { id: "quality", type: "slider", label: "Target Quality (%)", min: 10, max: 100, default: 75 },
-    { id: "maxWidthOrHeight", type: "number", label: "Max Dimension (px)", default: 1920 },
+    { id: "preset", type: "select", label: "Quality Preset", values: ["Custom (Slider)", "High Quality (90%)", "Balanced (75%)", "Web Optimized (60%)", "Maximum Compression (40%)"], default: "Balanced (75%)" },
+    { id: "quality", type: "slider", label: "Custom Quality (%)", min: 10, max: 100, default: 75 },
+    { id: "maxWidthOrHeight", type: "number", label: "Max Dimension (px)", default: 4000 },
     { id: "useWebWorker", type: "toggle", label: "Use Multi-threading", default: true },
     { id: "preserveExif", type: "toggle", label: "Preserve EXIF Metadata", default: false },
     { id: "fileType", type: "select", label: "Output Format", values: ["original", "image/jpeg", "image/png", "image/webp"], default: "original" },
   ],
+};
+
+export const imageFormatConverterConfig = {
+  slug: "image-format-converter",
+  title: "Image Format Converter",
+  description: "Convert images between JPG, PNG, and WebP formats instantly. Preserve quality or choose custom compression levels.",
+  icon: "🔄",
+  colorClass: "bg-emerald-700",
+  options: [
+    { id: "targetFormat", type: "select", label: "Convert To", values: ["JPG", "PNG", "WebP"], default: "PNG" },
+    { id: "qualityPreset", type: "select", label: "Quality Profile", values: ["Lossless", "High", "Balanced", "Minimum Size"], default: "High" },
+    { id: "customQuality", type: "slider", label: "Custom Quality (%)", min: 10, max: 100, default: 90 },
+    { id: "zipOutput", type: "toggle", label: "Download as ZIP (Batch)", default: true }
+  ]
+};
+
+export const imageMetadataViewerConfig = {
+  slug: "image-metadata-viewer",
+  title: "Image Metadata Viewer",
+  description: "Inspect hidden image details including resolution, file type, color depth, and internal properties without any modifications.",
+  icon: "🕵️",
+  colorClass: "bg-emerald-800",
+  options: [
+    { id: "showAdvanced", type: "toggle", label: "Show Internal Headers", default: false }
+  ]
+};
+
+export const imageKbReducerConfig = {
+  slug: "image-kb-reducer",
+  title: "Image Size Reducer (Exact KB)",
+  description: "Reduce image size to a specific target (e.g. 20KB, 50KB) while keeping original pixels and resolution intact.",
+  icon: "📉",
+  colorClass: "bg-emerald-500",
+  options: [
+    { id: "targetKb", type: "number", label: "Target Size (KB)", default: 50 },
+    { id: "format", type: "select", label: "Save As", values: ["jpeg", "webp"], default: "jpeg" },
+    { id: "noResize", type: "toggle", label: "Keep Original Dimensions", default: true }
+  ]
+};
+
+export const passportPhotoConfig = {
+  slug: "passport-size-photo-maker",
+  title: "Passport Size Photo Maker",
+  description: "Generate official passport and visa photos. Select from presets for India, US, or set custom dimensions with DPI control.",
+  icon: "🛂",
+  colorClass: "bg-indigo-600",
+  options: [
+    { id: "preset", type: "select", label: "Select Standard", values: ["Indian Passport (35x45mm)", "US Passport (2x2in)", "Schengen Visa (35x45mm)", "Custom Dimensions"], default: "Indian Passport (35x45mm)" },
+    { id: "customWidth", type: "number", label: "Custom Width (mm)", default: 35 },
+    { id: "customHeight", type: "number", label: "Custom Height (mm)", default: 45 },
+    { id: "bg", type: "select", label: "Background Color", values: ["White", "Light Blue", "Off White", "Transparent"], default: "White" },
+    { id: "dpi", type: "select", label: "Print Quality (DPI)", values: [300, 600, 150, 72], default: 300 },
+    { id: "autoCrop", type: "toggle", label: "Auto-Center Head (AI)", default: true },
+    { id: "outputFormat", type: "select", label: "Save As", values: ["jpeg", "png"], default: "jpeg" }
+  ]
+};
+
+export const imageToWebpConfig = {
+  slug: "image-to-webp",
+  title: "Image to WebP Converter",
+  description: "Convert JPG/PNG to next-gen WebP format for superior compression and faster web loading.",
+  icon: "🕸️",
+  colorClass: "bg-emerald-600",
+  options: [
+    { id: "quality", type: "slider", label: "Lossy Quality (%)", min: 10, max: 100, default: 80 },
+    { id: "lossless", type: "toggle", label: "Use Lossless Mode", default: false }
+  ]
 };
 
 export const imageResizerConfig = {
@@ -108,5 +176,17 @@ export const imageMetadataRemoverConfig = {
   options: [
     { id: "format", type: "select", label: "Re-save As", values: ["jpeg", "png", "webp"], default: "jpeg" },
     { id: "quality", type: "slider", label: "Output Quality", min: 50, max: 100, default: 95 },
+  ]
+};
+
+export const imageDpiConfig = {
+  slug: "image-dpi-checker",
+  title: "Image DPI Checker & Fixer",
+  description: "Check and modify image Dots Per Inch (DPI) for high-quality printing.",
+  icon: "🖨️",
+  colorClass: "bg-emerald-600",
+  options: [
+    { id: "targetDpi", type: "number", label: "Target DPI", default: 300 },
+    { id: "format", type: "select", label: "Output Format", values: ["jpeg", "png", "webp"], default: "jpeg" }
   ]
 };

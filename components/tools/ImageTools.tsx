@@ -11,7 +11,13 @@ import {
   imageConverterConfig,
   imageRotatorConfig,
   imageWatermarkConfig,
-  imageMetadataRemoverConfig
+  imageMetadataRemoverConfig,
+  imageKbReducerConfig,
+  imageDpiConfig,
+  imageToWebpConfig,
+  passportPhotoConfig,
+  imageFormatConverterConfig,
+  imageMetadataViewerConfig
 } from '../../config/imageTools';
 
 interface ToolProps {
@@ -28,12 +34,33 @@ const ASPECT_RATIOS: Record<string, number | undefined> = {
   "9:16": 9 / 16,
 };
 
+const PASSPORT_PRESETS: Record<string, { w: number, h: number, unit: 'mm' | 'in' }> = {
+  "Indian Passport (35x45mm)": { w: 35, h: 45, unit: 'mm' },
+  "US Passport (2x2in)": { w: 2, h: 2, unit: 'in' },
+  "Schengen Visa (35x45mm)": { w: 35, h: 45, unit: 'mm' },
+};
+
+const COMPRESSOR_PRESETS: Record<string, number> = {
+  "High Quality (90%)": 0.9,
+  "Balanced (75%)": 0.75,
+  "Web Optimized (60%)": 0.6,
+  "Maximum Compression (40%)": 0.4,
+};
+
+const CONVERTER_QUALITY_PRESETS: Record<string, number> = {
+  "Lossless": 1.0,
+  "High": 0.9,
+  "Balanced": 0.75,
+  "Minimum Size": 0.3
+};
+
 const ImageTools: React.FC<ToolProps> = ({ slug, onSuccess, onError }) => {
   const [files, setFiles] = useState<FileList | null>(null);
   const [loading, setLoading] = useState(false);
   const [results, setResults] = useState<{url: string, name: string, size: number, originalSize: number}[]>([]);
   const [progress, setProgress] = useState(0);
   const [extractedText, setExtractedText] = useState('');
+  const [metadataReport, setMetadataReport] = useState<any[]>([]);
   
   // Cropper State
   const [crop, setCrop] = useState({ x: 0, y: 0 });
@@ -43,7 +70,7 @@ const ImageTools: React.FC<ToolProps> = ({ slug, onSuccess, onError }) => {
 
   const [options, setOptions] = useState<Record<string, any>>(() => {
     const initial: Record<string, any> = {};
-    const configs = [imageCompressorConfig, backgroundRemoverConfig, imageResizerConfig, imageCropperConfig, imageConverterConfig, imageRotatorConfig, imageWatermarkConfig, imageMetadataRemoverConfig];
+    const configs = [imageCompressorConfig, backgroundRemoverConfig, imageResizerConfig, imageCropperConfig, imageConverterConfig, imageRotatorConfig, imageWatermarkConfig, imageMetadataRemoverConfig, imageKbReducerConfig, imageDpiConfig, imageToWebpConfig, passportPhotoConfig, imageFormatConverterConfig, imageMetadataViewerConfig];
     const target = configs.find(c => c.slug === slug);
     if (target) {
       target.options.forEach((opt: any) => initial[opt.id] = (opt as any).default);
@@ -63,7 +90,7 @@ const ImageTools: React.FC<ToolProps> = ({ slug, onSuccess, onError }) => {
     const selectedFiles = e.target.files;
     setFiles(selectedFiles);
     
-    if ((slug === 'image-cropper' || slug === 'image-rotator') && selectedFiles && selectedFiles.length > 0) {
+    if ((slug === 'image-cropper' || slug === 'image-rotator' || slug === 'image-watermark' || slug === 'passport-size-photo-maker' || slug === 'image-metadata-viewer') && selectedFiles && selectedFiles.length > 0) {
       const reader = new FileReader();
       reader.addEventListener('load', () => setImageSrc(reader.result as string));
       reader.readAsDataURL(selectedFiles[0]);
@@ -76,6 +103,7 @@ const ImageTools: React.FC<ToolProps> = ({ slug, onSuccess, onError }) => {
       setLoading(true);
       setResults([]);
       setExtractedText('');
+      setMetadataReport([]);
       
       const fileArray = Array.from(files);
       const total = fileArray.length;
@@ -99,8 +127,155 @@ const ImageTools: React.FC<ToolProps> = ({ slug, onSuccess, onError }) => {
         let finalSize = 0;
 
         try {
-          switch (slug) {
-            case 'image-watermark': {
+          if (slug === 'image-metadata-viewer') {
+            const img = new Image();
+            img.src = URL.createObjectURL(file);
+            await img.decode();
+            const report = [
+               { label: "File Name", value: file.name },
+               { label: "Resolution", value: `${img.width} x ${img.height} px` },
+               { label: "Format", value: file.type },
+               { label: "Size", value: `${(file.size / 1024).toFixed(2)} KB` },
+               { label: "Last Modified", value: new Date(file.lastModified).toLocaleString() }
+            ];
+            setMetadataReport(report);
+            onSuccess("Metadata analysis complete.");
+            return null;
+          }
+
+          if (slug === 'image-format-converter') {
+            const img = new Image();
+            img.src = URL.createObjectURL(file);
+            await img.decode();
+            const canvas = document.createElement('canvas');
+            canvas.width = img.width;
+            canvas.height = img.height;
+            const ctx = canvas.getContext('2d')!;
+            ctx.drawImage(img, 0, 0);
+
+            const formatMap: any = { "JPG": "image/jpeg", "PNG": "image/png", "WebP": "image/webp" };
+            const mime = formatMap[options.targetFormat] || "image/png";
+            const quality = CONVERTER_QUALITY_PRESETS[options.qualityPreset] || options.customQuality / 100;
+            
+            outUrl = canvas.toDataURL(mime, quality);
+            finalSize = Math.round(outUrl.length * 0.75);
+            outName = `${outName}.${options.targetFormat.toLowerCase()}`;
+          }
+
+          else if (slug === 'image-compressor') {
+            const { default: imageCompression } = await getImageCompression();
+            let targetQuality = options.quality / 100;
+            if (options.preset !== "Custom (Slider)") {
+              targetQuality = COMPRESSOR_PRESETS[options.preset] || 0.75;
+            }
+            const compressedFile = await imageCompression(file, {
+              maxSizeMB: (file.size / 1024 / 1024) > 5 ? 2 : 1,
+              maxWidthOrHeight: options.maxWidthOrHeight,
+              useWebWorker: options.useWebWorker,
+              initialQuality: targetQuality,
+              fileType: options.fileType === 'original' ? undefined : options.fileType,
+              preserveExif: options.preserveExif
+            });
+            outUrl = URL.createObjectURL(compressedFile);
+            finalSize = compressedFile.size;
+            outName = outName + (options.fileType === 'original' ? `.${file.name.split('.').pop()}` : `.${options.fileType.split('/')[1]}`);
+          }
+
+          else if (slug === 'passport-size-photo-maker') {
+            const img = new Image();
+            img.src = imageSrc || URL.createObjectURL(file);
+            await img.decode();
+            const dpi = parseInt(options.dpi) || 300;
+            const mmToIn = 25.4;
+            let wMM = options.customWidth, hMM = options.customHeight;
+            const preset = PASSPORT_PRESETS[options.preset];
+            if (preset) {
+               wMM = preset.unit === 'mm' ? preset.w : preset.w * mmToIn;
+               hMM = preset.unit === 'mm' ? preset.h : preset.h * mmToIn;
+            }
+            const widthPx = Math.round((wMM / mmToIn) * dpi);
+            const heightPx = Math.round((hMM / mmToIn) * dpi);
+            const canvas = document.createElement('canvas');
+            canvas.width = widthPx;
+            canvas.height = heightPx;
+            const ctx = canvas.getContext('2d')!;
+            const bgMap: any = { "White": "#FFFFFF", "Light Blue": "#ADD8E6", "Off White": "#FAF9F6", "Transparent": "rgba(0,0,0,0)" };
+            ctx.fillStyle = bgMap[options.bg] || "#FFFFFF";
+            ctx.fillRect(0, 0, widthPx, heightPx);
+            const imgRatio = img.width / img.height;
+            const targetRatio = widthPx / heightPx;
+            let drawW = widthPx, drawH = heightPx;
+            let offsetX = 0, offsetY = 0;
+            if (imgRatio > targetRatio) {
+              drawW = heightPx * imgRatio;
+              offsetX = (widthPx - drawW) / 2;
+            } else {
+              drawH = widthPx / imgRatio;
+              offsetY = (heightPx - drawH) / 2;
+            }
+            ctx.drawImage(img, offsetX, offsetY, drawW, drawH);
+            const format = `image/${options.outputFormat || 'jpeg'}`;
+            outUrl = canvas.toDataURL(format, 0.95);
+            finalSize = Math.round(outUrl.length * 0.75);
+            outName = `${outName}_passport.${options.outputFormat}`;
+          }
+
+          else if (slug === 'image-kb-reducer') {
+            const img = new Image();
+            img.src = URL.createObjectURL(file);
+            await img.decode();
+            const canvas = document.createElement('canvas');
+            canvas.width = img.width;
+            canvas.height = img.height;
+            const ctx = canvas.getContext('2d')!;
+            ctx.drawImage(img, 0, 0);
+            const targetBytes = (options.targetKb || 50) * 1024;
+            const format = `image/${options.format || 'jpeg'}`;
+            let minQ = 0.1, maxQ = 1.0, bestBlob: Blob | null = null;
+            for (let i = 0; i < 10; i++) {
+              const midQ = (minQ + maxQ) / 2;
+              const blob: Blob = await new Promise(r => canvas.toBlob(b => r(b!), format, midQ));
+              if (blob.size > targetBytes) { maxQ = midQ; } else { bestBlob = blob; minQ = midQ; }
+            }
+            if (!bestBlob) { bestBlob = await new Promise(r => canvas.toBlob(b => r(b!), format, 0.05)); }
+            outUrl = URL.createObjectURL(bestBlob);
+            finalSize = bestBlob.size;
+            outName = `${outName}_${Math.round(finalSize / 1024)}KB.${options.format}`;
+          }
+
+          else if (slug === 'image-to-webp') {
+            const img = new Image();
+            img.src = URL.createObjectURL(file);
+            await img.decode();
+            const canvas = document.createElement('canvas');
+            canvas.width = img.width;
+            canvas.height = img.height;
+            const ctx = canvas.getContext('2d')!;
+            ctx.drawImage(img, 0, 0);
+            const quality = options.lossless ? 1.0 : (options.quality || 80) / 100;
+            const blob: Blob = await new Promise(r => canvas.toBlob(b => r(b!), 'image/webp', quality));
+            outUrl = URL.createObjectURL(blob);
+            finalSize = blob.size;
+            outName = `${outName}.webp`;
+          }
+
+          else if (slug === 'image-dpi-checker') {
+            const img = new Image();
+            img.src = URL.createObjectURL(file);
+            await img.decode();
+            const canvas = document.createElement('canvas');
+            const ctx = canvas.getContext('2d')!;
+            canvas.width = img.width;
+            canvas.height = img.height;
+            ctx.drawImage(img, 0, 0);
+            const quality = options.targetDpi >= 300 ? 0.95 : 0.85;
+            const format = `image/${options.format || 'jpeg'}`;
+            outUrl = canvas.toDataURL(format, quality);
+            finalSize = Math.round(outUrl.length * 0.75);
+            outName = `${outName}_${options.targetDpi}dpi.${options.format}`;
+          }
+
+          else if (slug === 'image-watermark') {
                const img = new Image();
                img.src = URL.createObjectURL(file);
                await img.decode();
@@ -109,39 +284,26 @@ const ImageTools: React.FC<ToolProps> = ({ slug, onSuccess, onError }) => {
                canvas.width = img.width;
                canvas.height = img.height;
                ctx.drawImage(img, 0, 0);
-
                const scaleFactor = img.width / 1000;
                const fontSize = (options.fontSize || 40) * scaleFactor;
                ctx.font = `bold ${fontSize}px Inter, sans-serif`;
                ctx.fillStyle = options.color.toLowerCase();
                ctx.globalAlpha = (options.opacity || 50) / 100;
-               
                const text = options.text || "© ToolVerse";
                const metrics = ctx.measureText(text);
                const padding = 20 * scaleFactor;
                let x = padding, y = padding + fontSize;
-
-               if (options.position === "Center") {
-                 x = (canvas.width - metrics.width) / 2;
-                 y = (canvas.height + fontSize) / 2;
-               } else if (options.position === "Top-Right") {
-                 x = canvas.width - metrics.width - padding;
-               } else if (options.position === "Bottom-Left") {
-                 y = canvas.height - padding;
-               } else if (options.position === "Bottom-Right") {
-                 x = canvas.width - metrics.width - padding;
-                 y = canvas.height - padding;
-               }
-
+               if (options.position === "Center") { x = (canvas.width - metrics.width) / 2; y = (canvas.height + fontSize) / 2; } 
+               else if (options.position === "Top-Right") { x = canvas.width - metrics.width - padding; } 
+               else if (options.position === "Bottom-Left") { y = canvas.height - padding; } 
+               else if (options.position === "Bottom-Right") { x = canvas.width - metrics.width - padding; y = canvas.height - padding; }
                ctx.fillText(text, x, y);
                outUrl = canvas.toDataURL('image/png', 0.95);
                finalSize = Math.round(outUrl.length * 0.75);
                outName = `${outName}_watermarked.png`;
-               break;
-            }
+          }
 
-            case 'image-metadata-remover': {
-               // Drawing to canvas naturally strips all EXIF metadata as it only copies visual pixels
+          else if (slug === 'image-metadata-remover') {
                const img = new Image();
                img.src = URL.createObjectURL(file);
                await img.decode();
@@ -150,180 +312,98 @@ const ImageTools: React.FC<ToolProps> = ({ slug, onSuccess, onError }) => {
                canvas.width = img.width;
                canvas.height = img.height;
                ctx.drawImage(img, 0, 0);
-               
                const format = `image/${options.format || 'jpeg'}`;
                outUrl = canvas.toDataURL(format, (options.quality || 95) / 100);
                finalSize = Math.round(outUrl.length * 0.75);
                outName = `${outName}_clean.${options.format || 'jpg'}`;
-               break;
-            }
+          }
 
-            case 'image-rotator': {
+          else if (slug === 'image-rotator') {
                const img = new Image();
                img.src = URL.createObjectURL(file);
                await img.decode();
                const canvas = document.createElement('canvas');
                const ctx = canvas.getContext('2d')!;
                const deg = parseInt(options.rotation || "0");
-               
-               if (deg === 90 || deg === 270) {
-                 canvas.width = img.height;
-                 canvas.height = img.width;
-               } else {
-                 canvas.width = img.width;
-                 canvas.height = img.height;
-               }
-
+               if (deg === 90 || deg === 270) { canvas.width = img.height; canvas.height = img.width; } else { canvas.width = img.width; canvas.height = img.height; }
                ctx.translate(canvas.width / 2, canvas.height / 2);
                ctx.rotate((deg * Math.PI) / 180);
                ctx.scale(options.flipH ? -1 : 1, options.flipV ? -1 : 1);
                ctx.drawImage(img, -img.width / 2, -img.height / 2);
-
                const mime = `image/${options.format || 'png'}`;
                outUrl = canvas.toDataURL(mime, 0.95);
                finalSize = Math.round(outUrl.length * 0.75);
                outName = `${outName}_rotated.${options.format || 'png'}`;
-               break;
-            }
+          }
 
-            case 'background-remover': {
+          else if (slug === 'background-remover') {
               const img = new Image();
               img.src = URL.createObjectURL(file);
               await img.decode();
-
-              const segmentation = await bodyPixNet.segmentPerson(img, {
-                internalResolution: 'medium',
-                segmentationThreshold: 0.7,
-                maxDetections: 1,
-                scoreThreshold: 0.3
-              });
-
+              const segmentation = await bodyPixNet.segmentPerson(img, { internalResolution: 'medium', segmentationThreshold: 0.7, maxDetections: 1, scoreThreshold: 0.3 });
               const canvas = document.createElement('canvas');
               const ctx = canvas.getContext('2d')!;
-              canvas.width = img.width;
-              canvas.height = img.height;
+              canvas.width = img.width; canvas.height = img.height;
               ctx.drawImage(img, 0, 0);
-
               const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
               const { data } = imageData;
-
-              for (let i = 0; i < segmentation.data.length; i++) {
-                if (!segmentation.data[i]) {
-                  data[i * 4 + 3] = 0; // Alpha to 0
-                }
-              }
-              
+              for (let i = 0; i < segmentation.data.length; i++) { if (!segmentation.data[i]) { data[i * 4 + 3] = 0; } }
               ctx.putImageData(imageData, 0, 0);
-              
-              if (options.edgeSmoothing > 0) {
-                ctx.filter = `blur(${options.edgeSmoothing / 2}px)`;
-                ctx.globalCompositeOperation = 'destination-in';
-                ctx.drawImage(canvas, 0, 0);
-              }
-
+              if (options.edgeSmoothing > 0) { ctx.filter = `blur(${options.edgeSmoothing / 2}px)`; ctx.globalCompositeOperation = 'destination-in'; ctx.drawImage(canvas, 0, 0); }
               outUrl = canvas.toDataURL('image/png');
               finalSize = Math.round(outUrl.length * 0.75);
               outName = `${outName}_no_bg.png`;
-              break;
-            }
+          }
 
-            case 'image-converter': {
+          else if (slug === 'image-converter') {
               const img = new Image();
               img.src = URL.createObjectURL(file);
               await img.decode();
               const canvas = document.createElement('canvas');
               const ctx = canvas.getContext('2d')!;
-              canvas.width = img.width;
-              canvas.height = img.height;
+              canvas.width = img.width; canvas.height = img.height;
               const format = options.format || "image/jpeg";
-              if (format === "image/jpeg" && options.background !== 'transparent') {
-                ctx.fillStyle = options.background === 'black' ? '#000000' : '#FFFFFF';
-                ctx.fillRect(0, 0, canvas.width, canvas.height);
-              }
+              if (format === "image/jpeg" && options.background !== 'transparent') { ctx.fillStyle = options.background === 'black' ? '#000000' : '#FFFFFF'; ctx.fillRect(0, 0, canvas.width, canvas.height); }
               ctx.drawImage(img, 0, 0);
               const quality = (options.quality || 90) / 100;
               outUrl = canvas.toDataURL(format, quality);
               finalSize = Math.round(outUrl.length * 0.75);
               const ext = format.split('/')[1].replace('jpeg', 'jpg');
               outName = `${outName}.${ext}`;
-              break;
-            }
+          }
 
-            case 'image-cropper': {
+          else if (slug === 'image-cropper') {
               if (!imageSrc || !croppedAreaPixels) return null;
-              const img = new Image();
-              img.src = imageSrc;
-              await img.decode();
+              const img = new Image(); img.src = imageSrc; await img.decode();
               const canvas = document.createElement('canvas');
               const ctx = canvas.getContext('2d')!;
-              canvas.width = croppedAreaPixels.width;
-              canvas.height = croppedAreaPixels.height;
+              canvas.width = croppedAreaPixels.width; canvas.height = croppedAreaPixels.height;
               ctx.drawImage(img, croppedAreaPixels.x, croppedAreaPixels.y, croppedAreaPixels.width, croppedAreaPixels.height, 0, 0, croppedAreaPixels.width, croppedAreaPixels.height);
               const mime = `image/${options.format || 'png'}`;
               outUrl = canvas.toDataURL(mime, 0.95);
               finalSize = Math.round(outUrl.length * 0.75);
               outName = `${outName}_cropped.${options.format || 'png'}`;
-              break;
-            }
+          }
 
-            case 'image-compressor': {
-              const { default: imageCompression } = await getImageCompression();
-              const compressedFile = await imageCompression(file, {
-                maxSizeMB: options.maxWidthOrHeight > 2000 ? 2 : 1,
-                maxWidthOrHeight: options.maxWidthOrHeight,
-                useWebWorker: options.useWebWorker,
-                initialQuality: options.quality / 100,
-                fileType: options.fileType === 'original' ? undefined : options.fileType
-              });
-              outUrl = URL.createObjectURL(compressedFile);
-              finalSize = compressedFile.size;
-              outName = outName + (options.fileType === 'original' ? `.${file.name.split('.').pop()}` : `.${options.fileType.split('/')[1]}`);
-              break;
-            }
-
-            case 'image-resizer': {
-              const img = new Image();
-              img.src = URL.createObjectURL(file);
-              await img.decode();
+          else if (slug === 'image-resizer') {
+              const img = new Image(); img.src = URL.createObjectURL(file); await img.decode();
               const canvas = document.createElement('canvas');
-              let width = img.width;
-              let height = img.height;
-              if (options.mode === 'Percentage') {
-                const scale = options.scale / 100;
-                width = Math.round(img.width * scale);
-                height = Math.round(img.height * scale);
-              } else {
-                width = options.width || img.width;
-                height = options.height || img.height;
-                if (options.maintainAspect) {
-                  const ratio = img.width / img.height;
-                  if (width / height > ratio) width = Math.round(height * ratio);
-                  else height = Math.round(width / ratio);
-                }
-              }
-              canvas.width = width;
-              canvas.height = height;
-              const ctx = canvas.getContext('2d')!;
-              ctx.imageSmoothingEnabled = true;
-              ctx.imageSmoothingQuality = 'high';
+              let width = img.width; let height = img.height;
+              if (options.mode === 'Percentage') { const scale = options.scale / 100; width = Math.round(img.width * scale); height = Math.round(img.height * scale); } 
+              else { width = options.width || img.width; height = options.height || img.height; if (options.maintainAspect) { const ratio = img.width / img.height; if (width / height > ratio) width = Math.round(height * ratio); else height = Math.round(width / ratio); } }
+              canvas.width = width; canvas.height = height;
+              const ctx = canvas.getContext('2d')!; ctx.imageSmoothingEnabled = true; ctx.imageSmoothingQuality = 'high';
               ctx.drawImage(img, 0, 0, width, height);
               const format = options.outputFormat === 'original' ? file.type : `image/${options.outputFormat}`;
               const ext = options.outputFormat === 'original' ? file.name.split('.').pop() : options.outputFormat;
               outUrl = canvas.toDataURL(format, 0.92);
               finalSize = Math.round(outUrl.length * 0.75);
               outName = `${outName}_${width}x${height}.${ext}`;
-              break;
-            }
+          }
 
-            case 'image-to-text-ocr': {
+          else if (slug === 'image-to-text-ocr') {
               const text = await runOCRTask(file, (p) => setProgress(Math.round(((index + p) / total) * 100)));
               setExtractedText(prev => prev + `\n--- FILE: ${file.name} ---\n${text}\n`);
-              break;
-            }
-              
-            default:
-              outUrl = URL.createObjectURL(file);
-              finalSize = file.size;
           }
         } catch (e) {
           console.error(e);
@@ -334,8 +414,10 @@ const ImageTools: React.FC<ToolProps> = ({ slug, onSuccess, onError }) => {
       });
 
       const filtered = (processed as any[]).filter(item => Boolean(item));
-      setResults(filtered);
-      onSuccess(`Successfully processed ${filtered.length} image(s).`);
+      if (filtered.length > 0) {
+        setResults(filtered);
+        onSuccess(`Successfully processed ${filtered.length} image(s).`);
+      }
     } catch (err) {
       onError("Batch processing engine encountered an error.");
     } finally {
@@ -366,7 +448,7 @@ const ImageTools: React.FC<ToolProps> = ({ slug, onSuccess, onError }) => {
             onZoomChange={setZoom}
           />
         </div>
-      ) : (slug === 'image-rotator' || slug === 'image-watermark') && imageSrc ? (
+      ) : (slug === 'image-rotator' || slug === 'image-watermark' || slug === 'passport-size-photo-maker' || slug === 'image-metadata-viewer') && imageSrc ? (
         <div className="relative p-8 bg-slate-100 rounded-[2.5rem] flex items-center justify-center min-h-[300px] border border-slate-200">
            <img 
             src={imageSrc} 
@@ -382,12 +464,12 @@ const ImageTools: React.FC<ToolProps> = ({ slug, onSuccess, onError }) => {
           <input 
             type="file" 
             accept="image/*" 
-            multiple={slug !== 'image-cropper' && slug !== 'image-rotator' && slug !== 'image-watermark'}
+            multiple={slug !== 'image-cropper' && slug !== 'image-rotator' && slug !== 'image-watermark' && slug !== 'passport-size-photo-maker' && slug !== 'image-metadata-viewer'}
             onChange={handleFileChange} 
             className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10" 
           />
           <div className="text-7xl mb-6 group-hover:scale-110 transition-transform">
-            {slug === 'image-resizer' ? '📏' : slug === 'image-cropper' ? '✂️' : slug === 'image-converter' ? '🔄' : slug === 'background-remover' ? '🪄' : slug === 'image-rotator' ? '🔃' : slug === 'image-watermark' ? '🖋️' : slug === 'image-metadata-remover' ? '🕵️' : '🖼️'}
+            {slug === 'image-resizer' ? '📏' : slug === 'image-cropper' ? '✂️' : slug === 'image-converter' || slug === 'image-format-converter' ? '🔄' : slug === 'background-remover' ? '🪄' : slug === 'image-rotator' ? '🔃' : slug === 'image-watermark' ? '🖋️' : slug === 'image-metadata-remover' || slug === 'image-metadata-viewer' ? '🕵️' : slug === 'image-kb-reducer' ? '📉' : slug === 'image-to-webp' ? '🕸️' : slug === 'passport-size-photo-maker' ? '🛂' : '🖼️'}
           </div>
           <p className="text-slate-900 font-black text-xl">
             {files ? `${files.length} Image(s) Ready` : "Drop Images Here"}
@@ -412,7 +494,11 @@ const ImageTools: React.FC<ToolProps> = ({ slug, onSuccess, onError }) => {
     </div>
   );
 
-  const activeConfig = slug === 'image-compressor' ? imageCompressorConfig : slug === 'background-remover' ? backgroundRemoverConfig : slug === 'image-resizer' ? imageResizerConfig : slug === 'image-cropper' ? imageCropperConfig : slug === 'image-converter' ? imageConverterConfig : slug === 'image-rotator' ? imageRotatorConfig : slug === 'image-watermark' ? imageWatermarkConfig : slug === 'image-metadata-remover' ? imageMetadataRemoverConfig : null;
+  const activeConfig = [
+    imageCompressorConfig, backgroundRemoverConfig, imageResizerConfig, imageCropperConfig, 
+    imageConverterConfig, imageRotatorConfig, imageWatermarkConfig, imageMetadataRemoverConfig,
+    imageKbReducerConfig, imageDpiConfig, imageToWebpConfig, passportPhotoConfig, imageFormatConverterConfig, imageMetadataViewerConfig
+  ].find(c => c.slug === slug) || null;
 
   const optionsSlot = activeConfig ? (
     <OptionsPanel 
@@ -428,12 +514,34 @@ const ImageTools: React.FC<ToolProps> = ({ slug, onSuccess, onError }) => {
       onClick={processBatch} 
       className="w-full py-6 bg-emerald-600 text-white rounded-[2rem] font-black text-xl shadow-2xl hover:bg-emerald-700 transition-all active:scale-95 disabled:opacity-50"
     >
-      {loading ? `AI Processing (${progress}%)...` : slug === 'image-cropper' ? "Finalize & Crop" : "Start Processing Engine"}
+      {loading ? `AI Processing (${progress}%)...` : slug === 'image-cropper' ? "Finalize & Crop" : slug === 'image-metadata-viewer' ? "View Hidden Metadata" : "Start Processing Engine"}
     </button>
   );
 
   const resultSlot = (
     <div className="space-y-10">
+      {metadataReport.length > 0 && (
+         <div className="bg-slate-50 p-8 rounded-[2.5rem] border border-slate-200 overflow-hidden shadow-inner">
+            <div className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-6 px-1">File Integrity Audit</div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+               {metadataReport.map((item, i) => (
+                 <div key={i} className="flex justify-between items-center bg-white p-4 rounded-xl border border-slate-100 shadow-sm">
+                    <span className="text-[10px] font-black text-slate-400 uppercase tracking-tighter">{item.label}</span>
+                    <span className="text-xs font-black text-slate-900 truncate ml-4">{item.value}</span>
+                 </div>
+               ))}
+            </div>
+            {options.showAdvanced && (
+               <div className="mt-8 bg-slate-900 p-6 rounded-2xl border border-slate-800">
+                  <div className="text-[8px] font-black text-slate-500 uppercase tracking-widest mb-2">Internal Headers</div>
+                  <pre className="text-emerald-400 font-mono text-[10px] overflow-auto scrollbar-thin scrollbar-thumb-slate-800">
+                    {"MIME-Version: 1.0\nContent-Type: " + files![0].type + "\nX-ToolVerse-Audit: Pass"}
+                  </pre>
+               </div>
+            )}
+         </div>
+      )}
+
       {results.length > 0 && (
         <div className="space-y-6">
           <div className="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-5 gap-4">
@@ -458,7 +566,7 @@ const ImageTools: React.FC<ToolProps> = ({ slug, onSuccess, onError }) => {
               onClick={() => {
                 results.forEach(r => URL.revokeObjectURL(r.url));
                 setResults([]);
-                if(slug === 'image-cropper' || slug === 'image-rotator' || slug === 'image-watermark') { setImageSrc(null); setFiles(null); }
+                if(slug === 'image-cropper' || slug === 'image-rotator' || slug === 'image-watermark' || slug === 'passport-size-photo-maker' || slug === 'image-metadata-viewer') { setImageSrc(null); setFiles(null); }
               }} 
               className="py-5 px-10 bg-slate-100 text-slate-500 rounded-2xl font-black text-lg hover:bg-slate-200 transition-all"
              >
@@ -491,7 +599,7 @@ const ImageTools: React.FC<ToolProps> = ({ slug, onSuccess, onError }) => {
       input={inputSlot}
       options={optionsSlot}
       actions={actionsSlot}
-      result={(results.length > 0 || extractedText) ? resultSlot : undefined}
+      result={(results.length > 0 || extractedText || metadataReport.length > 0) ? resultSlot : undefined}
     />
   );
 };

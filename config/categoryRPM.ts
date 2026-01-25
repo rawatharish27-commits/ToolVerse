@@ -1,13 +1,10 @@
-
 import { CategorySlug } from '../types';
 
-// Fix: Change 'const' to 'type' for correct TypeScript union type definition
 export type RPMLevel = 'HIGH' | 'MEDIUM' | 'LOW';
 
-// Add missing 'data' and 'social' categories to mapping to ensure all CategorySlug values are covered
-// Fix: Added 'social' category mapping
 export const CATEGORY_RPM: Record<CategorySlug, RPMLevel> = {
   'ai': 'HIGH',
+  'business': 'HIGH',
   'calculators': 'HIGH',
   'unit-converters': 'HIGH',
   'seo': 'HIGH',

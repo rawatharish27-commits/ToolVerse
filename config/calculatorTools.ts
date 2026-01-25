@@ -16,6 +16,58 @@ export const compoundInterestConfig = {
   ],
 };
 
+export const simpleInterestConfig = {
+  slug: "simple-interest-calc",
+  title: "Simple Interest Calculator",
+  description: "Calculate basic interest on principal amounts for loans or savings without compounding.",
+  icon: "🧮",
+  colorClass: "bg-indigo-500",
+  options: [
+    { id: "siPrincipal", type: "number", label: "Principal Amount", default: 10000 },
+    { id: "siRate", type: "slider", label: "Rate of Interest (%)", min: 1, max: 50, default: 5 },
+    { id: "siTenure", type: "number", label: "Time (Years)", default: 1 }
+  ]
+};
+
+export const ageCalculatorConfig = {
+  slug: "age-calculator",
+  title: "Age Calculator Pro",
+  description: "Accurately determine age in years, months, and days. Ideal for forms, insurance, and milestones.",
+  icon: "📅",
+  colorClass: "bg-orange-500",
+  options: [
+    { id: "dob", type: "text", label: "Date of Birth (YYYY-MM-DD)", default: "1995-01-01" },
+    { id: "targetDate", type: "text", label: "Age at Date (Optional)", default: new Date().toISOString().split('T')[0] }
+  ]
+};
+
+export const percentageCalculatorConfig = {
+  slug: "percentage-calculator",
+  title: "Percentage Calculator Master",
+  description: "Solve any percentage problem: What is X% of Y? X is what % of Y? Percentage change?",
+  icon: "🔢",
+  colorClass: "bg-indigo-600",
+  options: [
+    { id: "mode", type: "select", label: "Math Mode", values: ["What is X% of Y", "X is what % of Y", "Percentage Increase/Decrease"], default: "What is X% of Y" },
+    { id: "valX", type: "number", label: "Value X", default: 20 },
+    { id: "valY", type: "number", label: "Value Y", default: 200 }
+  ]
+};
+
+export const discountCalculatorConfig = {
+  slug: "discount-calculator",
+  title: "Smart Discount Calculator",
+  description: "Calculate savings and final price after discount and sales tax.",
+  icon: "🏷️",
+  colorClass: "bg-rose-500",
+  options: [
+    { id: "price", type: "number", label: "Original Price", default: 1000 },
+    { id: "discount", type: "slider", label: "Discount (%)", min: 1, max: 99, default: 20 },
+    { id: "tax", type: "number", label: "Sales Tax (%)", default: 0 }
+  ]
+};
+
+// ... (Rest of configs preserved)
 export const mortgageCalculatorConfig = {
   slug: "mortgage-calculator",
   title: "Mortgage Amortization Pro",
