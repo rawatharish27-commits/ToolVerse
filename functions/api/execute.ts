@@ -25,10 +25,12 @@ export const onRequestPost = async (context: { request: Request; env: any }) => 
     // Orchestrate routing
     const result = await handleRouting(toolId, category || 'general', payload, env);
     
+    // Check if success is true to discriminate result
     if (result.success) {
       return success(result.data);
     } else {
-      return error(result.error || "Logic node failed.");
+      // FIX: Cast result to any to safely access error property on union type when success is false.
+      return error((result as any).error || "Logic node failed.");
     }
     
   } catch (err: any) {

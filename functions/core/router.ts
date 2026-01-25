@@ -6,8 +6,9 @@ import { getToolExecutor } from "./toolRegistry";
  * ToolVerse Universal Backend Router
  * Determines if a request should go to AI or a specific Micro-Service logic node.
  */
-export const handleRouting = async (toolId: string, category: string, input: any, env: any) => {
-  const options = input.options || {};
+export const handleRouting = async (toolId: string, category: string, payload: any, env: any) => {
+  const options = payload.options || {};
+  const input = payload.input || "";
   
   // 1. AI Task Orchestration
   if (category === 'ai' || toolId.startsWith('ai-') || toolId.includes('generator')) {
@@ -18,7 +19,7 @@ export const handleRouting = async (toolId: string, category: string, input: any
   try {
     const executor = getToolExecutor(toolId);
     if (executor) {
-      const data = await executor(input, env);
+      const data = await executor(payload, env);
       return { success: true, data };
     }
   } catch (e) {}
