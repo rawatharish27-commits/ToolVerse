@@ -1,66 +1,39 @@
 
-import { routeRequest } from "../core/router";
-import { isAllowed } from "../core/ratelimit";
-import { enforcePayloadLimit, withTimeout } from "../core/safety";
-import { checkUsage } from "../core/usage";
+import { handleRouting } from "../core/router";
 import { success, error } from "../core/response";
-import { verifyProToken } from "../core/pro";
-import { verifyAdProof } from "../core/adUnlock";
+import { checkUsage } from "../core/usage";
 import { logToolUsage } from "../core/analytics";
 
 /**
- * ToolVerse Production Gateway (V3.5 Hybrid Orchestrator)
+ * ToolVerse Cloudflare Edge API Handler
+ * High-performance entry point for all server-side logic.
  */
 export const onRequestPost = async (context: { request: Request; env: any }) => {
   const { request, env } = context;
-  
-  (globalThis as any).process = {
-    env: { API_KEY: env.API_KEY || "" }
-  };
-
   const ip = request.headers.get("CF-Connecting-IP") || "anonymous";
 
   try {
     const payload = await request.json();
-    const { toolId, category, input, adProof } = payload;
+    const { toolId, category, input } = payload;
 
-    if (!toolId) return error("toolId is mandatory.");
+    if (!toolId) return error("Missing toolId.");
 
-    // Identity and Pro Status Check
-    const authHeader = request.headers.get("Authorization");
-    let isPro = false;
-    if (authHeader?.startsWith("Bearer ")) {
-      const token = authHeader.split(" ")[1];
-      const proData = await verifyProToken(token, env.PRO_SECRET || "default_secret");
-      if (proData) isPro = true;
-    }
-
-    // Rate Limiting (Stricter for AI if not Pro)
-    const isAITool = toolId.startsWith('ai-') || category === 'ai';
-    const limit = isPro ? 500 : (adProof ? 20 : 5);
-    
-    checkUsage(ip, toolId, limit);
+    // Rate limiting & Analytics
+    checkUsage(ip, toolId, 100);
     logToolUsage(toolId);
 
-    // Execute with Pro status injected into input payload
-    const enrichedInput = { ...input, isProStatus: isPro, toolId };
-
-    const data = await withTimeout(
-      routeRequest(toolId, category || 'general', enrichedInput, env),
-      15000 
-    );
+    // Orchestrate routing
+    const result = await handleRouting(toolId, category || 'general', payload, env);
     
-    return success({ 
-      ...data, 
-      proStatus: isPro,
-      engine: isPro ? "Neural-V3" : "Instant-V1"
-    });
-  } catch (err: any) {
-    if (err.message?.includes("Usage limit")) {
-      return error("Session limit reached. Upgrade to Pro for unlimited neural access.", 429);
+    if (result.success) {
+      return success(result.data);
+    } else {
+      return error(result.error || "Logic node failed.");
     }
-    console.error(`[GW_ERR]: ${err.message}`);
-    return error(err.message || "Internal Engine Error", 500);
+    
+  } catch (err: any) {
+    console.error(`[API_EXEC_ERR]: ${err.message}`);
+    return error(err.message || "Engine Error", 500);
   }
 };
 
