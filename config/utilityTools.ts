@@ -1,3 +1,73 @@
+export const internetSlowConfig = {
+  slug: "internet-slow-analyzer",
+  title: "Slow Internet Analyzer",
+  description: "Diagnose why your 100Mbps line feels like 1Mbps. Checks for latency spikes and DNS bottlenecks.",
+  icon: "🌐",
+  colorClass: "bg-indigo-600",
+  options: [
+    { id: "connectionType", type: "select", label: "Connection", values: ["Wi-Fi", "Mobile Data", "Ethernet"], default: "Wi-Fi" }
+  ]
+};
+
+export const upDownExplainerConfig = {
+  slug: "upload-download-explainer",
+  title: "Upload vs Download Explainer",
+  description: "Why is uploading so much slower? Analysis of asymmetric DSL/Fiber bandwidth logic.",
+  icon: "⏳",
+  colorClass: "bg-indigo-500",
+  options: []
+};
+
+export const appInstallConfig = {
+  slug: "app-install-checker",
+  title: "App Install Compatibility",
+  description: "Checks APK/App Store requirements against your device specs to solve 'App Not Installed' errors.",
+  icon: "📲",
+  colorClass: "bg-indigo-700",
+  options: [
+    { id: "os", type: "select", label: "Your OS", values: ["Android 11+", "iOS 15+", "Legacy"], default: "Android 11+" }
+  ]
+};
+
+export const fileCorruptionConfig = {
+  slug: "file-corruption-predictor",
+  title: "File Corruption Risk Predictor",
+  description: "Is your USB drive or cloud link likely to corrupt your data? Based on checksum stability models.",
+  icon: "❌",
+  colorClass: "bg-indigo-800",
+  options: [
+    { id: "transferMethod", type: "select", label: "Transfer Method", values: ["USB 2.0", "Cloud Sync", "Email Attachment", "FTP"], default: "Cloud Sync" }
+  ]
+};
+
+export const otpAnalyzerConfig = {
+  slug: "otp-not-coming-analyzer",
+  title: "OTP Delivery Trace",
+  description: "Find out if DND, Signal Strength, or Carrier Filters are blocking your urgent OTPs.",
+  icon: "💬",
+  colorClass: "bg-indigo-900",
+  options: []
+};
+
+export const emailBounceConfig = {
+  slug: "email-bounce-decoder",
+  title: "Email Bounce Decoder",
+  description: "Translate 5.5.0 or 4.4.1 errors into plain English reasons like 'Full Mailbox' or 'SPF Fail'.",
+  icon: "📨",
+  colorClass: "bg-indigo-400",
+  options: []
+};
+
+export const responsiveAnalyzerConfig = {
+  slug: "responsive-layout-analyzer",
+  title: "Mobile Layout Analyzer",
+  description: "Why does this site look broken on your phone? Checks viewport meta and CSS flexbox issues.",
+  icon: "📱",
+  colorClass: "bg-indigo-600",
+  options: []
+};
+
+// ... keep existing status decoder, format translator, etc.
 export const statusDecoderConfig = {
   slug: "application-status-meaning-decoder",
   title: "Application Status Meaning Decoder",

@@ -1,3 +1,75 @@
+export const emiHighExplainerConfig = {
+  slug: "why-emi-high-explainer",
+  title: "Why EMI So High? Explainer",
+  description: "Identify mathematical reasons for high EMI like short tenure or front-loaded interest.",
+  icon: "📈",
+  colorClass: "bg-rose-600",
+  options: [
+    { id: "loanAmount", type: "number", label: "Principal", default: 500000 },
+    { id: "tenureYears", type: "number", label: "Tenure (Years)", default: 3 },
+    { id: "interestRate", type: "number", label: "Interest Rate (%)", default: 12 }
+  ]
+};
+
+export const hiddenChargesDiscoveryConfig = {
+  slug: "hidden-charges-discovery",
+  title: "Hidden Charges Finder",
+  description: "Analyze your bill or loan statement for insurance, processing, and convenience fees.",
+  icon: "🕵️",
+  colorClass: "bg-rose-500",
+  options: []
+};
+
+export const interestAnalyzerConfig = {
+  slug: "actual-interest-analyzer",
+  title: "Bank vs Actual Rate Analyzer",
+  description: "Calculates the real interest rate for flat-rate loans, which is often 2x the quoted rate.",
+  icon: "⚖️",
+  colorClass: "bg-rose-700",
+  options: [
+    { id: "quotedRate", type: "number", label: "Quoted Flat Rate (%)", default: 8 },
+    { id: "tenureMonths", type: "number", label: "Tenure (Months)", default: 24 }
+  ]
+};
+
+export const offerPriceTruthConfig = {
+  slug: "offer-price-truth-calculator",
+  title: "Effective Price Calculator",
+  description: "What's the real cost after GST, convenience fees, and cashback offset?",
+  icon: "🏷️",
+  colorClass: "bg-rose-800",
+  options: [
+    { id: "mrp", type: "number", label: "MRP", default: 1000 },
+    { id: "discount", type: "number", label: "Discount (%)", default: 20 },
+    { id: "gst", type: "number", label: "GST (%)", default: 18 },
+    { id: "fees", type: "number", label: "Handling Fees", default: 50 }
+  ]
+};
+
+export const subscriptionTrapConfig = {
+  slug: "subscription-trap-analyzer",
+  title: "Subscription Trap Analyzer",
+  description: "Checks for auto-renewal clauses and 'Difficult to Cancel' dark patterns.",
+  icon: "🕸️",
+  colorClass: "bg-rose-900",
+  options: [
+    { id: "renewalType", type: "select", label: "Renewal Type", values: ["Manual", "Auto-Debit", "Lifetime"], default: "Auto-Debit" }
+  ]
+};
+
+export const refundAmountConfig = {
+  slug: "refund-amount-explainer",
+  title: "Refund Difference Explainer",
+  description: "Why is your refund ₹800 when you paid ₹1000? Breakdown of non-refundable taxes and fees.",
+  icon: "💸",
+  colorClass: "bg-rose-500",
+  options: [
+    { id: "paid", type: "number", label: "Amount Paid", default: 1000 },
+    { id: "refunded", type: "number", label: "Amount Refunded", default: 800 }
+  ]
+};
+
+// ... keep existing salary, offer comparison, hidden charges, inflation, etc.
 export const salaryCalculatorConfig = {
   slug: "salary-calculator",
   title: "Salary Calculator (CTC to In-Hand)",

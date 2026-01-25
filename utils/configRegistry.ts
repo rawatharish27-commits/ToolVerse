@@ -1,7 +1,7 @@
 import { aiArticleGeneratorConfig, aiRewriterConfig, aiGrammarConfig, aiToneConverterConfig, aiSeoOptimizerConfig, aiEmailGeneratorConfig, aiResumeWriterConfig, aiStoryGeneratorConfig, aiYoutubeScriptConfig, aiProductDescConfig } from '../config/aiTools';
 import { instagramHashtagAnalyzerConfig, reelHookGeneratorConfig, youtubeIdeaGeneratorConfig, viralCaptionFormatterConfig, socialBioFormatterConfig, youtubeTitleGeneratorConfig, youtubeDescriptionGeneratorConfig, instagramCaptionGeneratorConfig, commentReplyGeneratorConfig, generalHashtagGeneratorConfig } from '../config/socialTools';
 import { eduStudyPlannerConfig, eduSummaryGeneratorConfig, eduEssayGraderConfig, eduMathSolverConfig, eduQuizGeneratorConfig, eduCitationConfig, eduAssignmentFormatterConfig, eduResearchAssistantConfig, eduLanguageTutorConfig, eduConceptExplainerConfig, eduCodingTutorConfig, eduEquationSolverConfig, eduFormulaGeneratorConfig, eduUnitPracticeConfig, eduFlashcardGeneratorConfig } from '../config/educationTools';
-import { ageCalculatorConfig, percentageCalculatorConfig, discountCalculatorConfig, simpleInterestConfig, emiCalculatorConfig, bmiCalculatorConfig, gstCalculatorConfig, compoundInterestConfig, profitLossConfig, loanCalculatorConfig, roiCalculatorConfig, durationCalculatorConfig, salaryCalculatorConfig, offerComparisonConfig, hiddenChargesConfig, inflationCalculatorConfig } from '../config/calculatorTools';
+import { ageCalculatorConfig, percentageCalculatorConfig, discountCalculatorConfig, simpleInterestConfig, emiCalculatorConfig, bmiCalculatorConfig, gstCalculatorConfig, compoundInterestConfig, profitLossConfig, loanCalculatorConfig, roiCalculatorConfig, durationCalculatorConfig, salaryCalculatorConfig, offerComparisonConfig, hiddenChargesConfig, inflationCalculatorConfig, emiHighExplainerConfig, hiddenChargesDiscoveryConfig, interestAnalyzerConfig, offerPriceTruthConfig, subscriptionTrapConfig, refundAmountConfig } from '../config/calculatorTools';
 import { 
   imageKbReducerConfig, imageDpiConfig, imageToWebpConfig, passportPhotoConfig, 
   imageFormatConverterConfig, imageMetadataViewerConfig, imageCompressorConfig, 
@@ -10,16 +10,25 @@ import {
   imageAuthenticityConfig, imageUploadFailureConfig, imageMetadataRemoverConfig,
   backgroundRemoverNonAIConfig, formImageFixerConfig, signatureFixerConfig,
   blurSimulatorConfig, socialCompressionPreviewConfig, stretchingPredictorConfig, pixelToKbConfig,
-  cameraVsScreenshotConfig, photoClarityConfig, printVsScreenConfig
+  cameraVsScreenshotConfig, photoClarityConfig, printVsScreenConfig,
+  dpiMythBreakerConfig, mobileCameraAdvisorConfig, backgroundPredictorConfig
 } from '../config/imageTools';
-import { pdfPageNumbersConfig, pdfWatermarkProConfig, pdfToImageConfig, imageToPdfConfig, pdfSizeReducerConfig, pdfSplitterConfig, pdfProtectConfig, pdfUnlockConfig, pdfMetadataConfig, pdfCompareConfig, pdfOcrConfig, excelToPdfConfig, pdfCompressorConfig, pdfMergerConfig, pdfComplianceConfig } from '../config/pdfTools';
+import { 
+  pdfOpeningCheckerConfig, pdfCompatibilityConfig, scannedPdfReadabilityConfig, 
+  pdfSizeIncreaseExplainerConfig, pdfPrintCutoffConfig, pdfFontErrorDecoderConfig, 
+  pdfTextSelectableConfig, pdfBwPreviewConfig, pdfUploadTimeConfig, pdfPageOrderConfig,
+  pdfSplitterConfig, pdfProtectConfig, pdfUnlockConfig, pdfMetadataConfig, 
+  pdfCompareConfig, pdfOcrConfig, excelToPdfConfig, pdfCompressorConfig, 
+  pdfMergerConfig, pdfComplianceConfig 
+} from '../config/pdfTools';
 import { 
   passwordStrengthConfig, charCounterConfig, wordCounterConfig, caseConverterConfig, 
   dateDiffConfig, fileSizeConfig, randomNumberConfig, uuidGeneratorConfig, 
   qrCodeConfig, urlEncoderConfig as utilityUrlEncoderConfig, timeZoneConverterConfig, 
   ageDiffConfig, htmlMinifierConfig, cssBeautifierConfig, textSummarizerConfig, 
   countdownGeneratorConfig, workingDaysConfig, docReadinessConfig, deviceCompatConfig,
-  uploadRejectionConfig, govtRuleDecoderConfig, dpiConflictConfig, statusDecoderConfig, formatTranslatorConfig
+  uploadRejectionConfig, govtRuleDecoderConfig, dpiConflictConfig, statusDecoderConfig, formatTranslatorConfig,
+  internetSlowConfig, upDownExplainerConfig, appInstallConfig, fileCorruptionConfig, otpAnalyzerConfig, emailBounceConfig, responsiveAnalyzerConfig
 } from '../config/utilityTools';
 import { 
   seoTitleCheckerConfig, seoMetaCheckerConfig, serpPreviewToolConfig, 
@@ -36,7 +45,7 @@ import {
   fileConverterConfig, fileCompressorConfig, fileSplitterConfig, 
   fileMergerConfig, fileHashConfig, fileTypeIdentifierConfig 
 } from '../config/fileTools';
-import { invoiceGeneratorConfig, resumeBuilderConfig, textToDocxConfig, docxMetadataConfig } from '../config/officeTools';
+import { invoiceGeneratorConfig, resumeBuilderConfig, textToDocxConfig, docxMetadataConfig, resumeRejectionAnalyzerConfig, atsKeywordGapConfig, resumeFormatConfig, experienceResolverConfig, noticePeriodConfig, resumeFilenameConfig, coverLetterOptimizerConfig, gapExplanationConfig } from '../config/officeTools';
 import { 
   ipLookupConfig, dnsLookupConfig, sslCheckerConfig, uaParserConfig, 
   headerCheckerConfig, urlSafetyConfig, internetSpeedTestConfig, portCheckerConfig, 
@@ -45,49 +54,44 @@ import {
 import { jsonValidatorConfig, jsonFormatterConfig, htmlCssFormatterConfig, jsMinifierConfig, base64Config, jwtDecoderConfig, regexTesterConfig, urlEncoderConfig as devUrlEncoderConfig, apiResponseViewerConfig } from '../config/devTools';
 
 export const TOOL_CONFIG_REGISTRY: Record<string, any> = {
-  // Utility
+  // Utility & Daily Life
+  'internet-slow-analyzer': internetSlowConfig,
+  'upload-download-explainer': upDownExplainerConfig,
+  'app-install-checker': appInstallConfig,
+  'file-corruption-predictor': fileCorruptionConfig,
+  'otp-not-coming-analyzer': otpAnalyzerConfig,
+  'email-bounce-decoder': emailBounceConfig,
+  'responsive-layout-analyzer': responsiveAnalyzerConfig,
   'dpi-size-conflict-explainer': dpiConflictConfig,
   'govt-rule-decoder': govtRuleDecoderConfig,
   'upload-rejection-analyzer': uploadRejectionConfig,
   'working-days-calculator': workingDaysConfig,
-  'time-zone-converter': timeZoneConverterConfig,
-  'age-difference-calculator': ageDiffConfig,
   'application-status-meaning-decoder': statusDecoderConfig,
   'wrong-format-error-translator': formatTranslatorConfig,
   
-  // Image
-  'signature-upload-fixer': signatureFixerConfig,
-  'form-image-auto-fixer': formImageFixerConfig,
-  'image-authenticity-analyzer': imageAuthenticityConfig,
-  'image-upload-failure-debugger': imageUploadFailureConfig,
-  'image-metadata-remover': imageMetadataRemoverConfig,
-  'background-remover-non-ai': backgroundRemoverNonAIConfig,
-  'image-noise-reducer': imageNoiseReducerConfig,
-  'image-color-palette-extractor': imagePaletteExtractorConfig,
-  'image-shadow-generator': imageShadowGeneratorConfig,
-  'image-blur-upload-simulator': blurSimulatorConfig,
-  'social-media-compression-preview': socialCompressionPreviewConfig,
-  'image-stretching-issue-predictor': stretchingPredictorConfig,
-  'pixel-to-kb-calculator': pixelToKbConfig,
-  'camera-vs-screenshot-quality-tool': cameraVsScreenshotConfig,
-  'photo-clarity-analyzer': photoClarityConfig,
-  'print-vs-screen-image-difference-tool': printVsScreenConfig,
-  
-  // PDF
-  'pdf-compliance-checker': pdfComplianceConfig,
-  'pdf-compare-tool': pdfCompareConfig,
-  'pdf-ocr-tool': pdfOcrConfig,
+  // Job / Resume
+  'ats-keyword-gap-finder': atsKeywordGapConfig,
+  'resume-format-checker': resumeFormatConfig,
+  'experience-dispute-resolver': experienceResolverConfig,
+  'notice-period-calculator': noticePeriodConfig,
+  'resume-filename-checker': resumeFilenameConfig,
+  'cover-letter-optimizer': coverLetterOptimizerConfig,
+  'gap-explanation-generator': gapExplanationConfig,
+  'resume-rejection-analyzer': resumeRejectionAnalyzerConfig,
 
-  // ... (maintain all others)
+  // Finance
+  'why-emi-high-explainer': emiHighExplainerConfig,
+  'hidden-charges-discovery': hiddenChargesDiscoveryConfig,
+  'actual-interest-analyzer': interestAnalyzerConfig,
+  'offer-price-truth-calculator': offerPriceTruthConfig,
+  'subscription-trap-analyzer': subscriptionTrapConfig,
+  'refund-amount-explainer': refundAmountConfig,
+  
+  // ... maintain mapping for all other slugs
   'salary-calculator': salaryCalculatorConfig,
   'job-offer-comparison': offerComparisonConfig,
   'hidden-charges-calculator': hiddenChargesConfig,
   'inflation-impact-calculator': inflationCalculatorConfig,
-  'csv-to-excel-converter': csvToExcelConfig,
-  'invoice-generator': invoiceGeneratorConfig,
-  'resume-builder': resumeBuilderConfig,
-  'json-validator': jsonValidatorConfig,
-  'roi-calculator': roiCalculatorConfig,
 };
 
 export const getToolConfig = (slug: string) => {

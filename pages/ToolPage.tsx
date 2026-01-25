@@ -27,6 +27,22 @@ import { pixelToKbCalculator } from "../tools/executors/pixelToKbCalculator";
 import { cameraVsScreenshotTool } from "../tools/executors/cameraVsScreenshotTool";
 import { photoClarityAnalyzer } from "../tools/executors/photoClarityAnalyzer";
 import { printVsScreenDifferenceTool } from "../tools/executors/printVsScreenDifferenceTool";
+import { imageDpiMythBreaker } from "../tools/executors/imageDpiMythBreaker";
+import { mobileCameraSettingAdvisor } from "../tools/executors/mobileCameraSettingAdvisor";
+import { backgroundRejectionPredictor } from "../tools/executors/backgroundRejectionPredictor";
+
+// PDF Cluster Executors (21-30)
+import { pdfOpeningChecker } from "../tools/executors/pdfOpeningChecker";
+import { pdfCompatibilityLevelAnalyzer } from "../tools/executors/pdfCompatibilityLevelAnalyzer";
+import { scannedPdfReadabilityTester } from "../tools/executors/scannedPdfReadabilityTester";
+import { pdfSizeIncreaseExplainer } from "../tools/executors/pdfSizeIncreaseExplainer";
+/* Fix: Standardized import casing to lowercase 'o' to match implementation file and resolve casing conflict error */
+import { pdfPrintCutoffPredictor } from "../tools/executors/pdfPrintCutoffPredictor";
+import { fontNotSupportedDecoder } from "../tools/executors/fontNotSupportedDecoder";
+import { pdfTextSelectable } from "../tools/executors/pdfTextSelectable";
+import { pdfUploadTimeEstimator } from "../tools/executors/pdfUploadTimeEstimator";
+import { pdfPageOrderSolver } from "../tools/executors/pdfPageOrderSolver";
+import { pdfBwPrintPreview } from "../tools/executors/pdfBwPrintPreview";
 
 interface ToolPageProps {
   slug: string;
@@ -67,28 +83,6 @@ const ToolPage: React.FC<ToolPageProps> = ({ slug, onNavigate, onToolUsed, favor
     onToolUsed?.(tool.slug);
     trackEvent('tool_executed', tool.slug);
     setTimeout(() => setSuccess(null), 3000);
-  };
-
-  // Logic Router for specialized diagnostics 2-17
-  const executeLogic = (input: any) => {
-    switch (slug) {
-      case "photo-rejection-reason-finder": return photoRejectionReasonFinder(input);
-      case "signature-upload-fix-tool": return signatureUploadFixTool(input);
-      case "govt-form-file-rule-decoder": return govtFormFileRuleDecoder(input);
-      case "size-vs-dpi-conflict-explainer": return sizeVsDpiConflictExplainer(input);
-      case "form-deadline-date-logic-checker": return formDeadlineDateLogicChecker(input);
-      case "invalid-dob-error-solver": return invalidDobErrorSolver(input);
-      case "pan-aadhaar-image-validator": return panAadhaarImageValidator(input);
-      case "application-status-meaning-decoder": return statusDecoder(input);
-      case "wrong-format-error-translator": return formatTranslator(input);
-      case "social-media-compression-preview": return socialMediaCompressionPreview(input);
-      case "image-stretching-issue-predictor": return imageStretchingIssuePredictor(input);
-      case "pixel-to-kb-calculator": return pixelToKbCalculator(input);
-      case "camera-vs-screenshot-quality-tool": return cameraVsScreenshotTool(input);
-      case "photo-clarity-analyzer": return photoClarityAnalyzer(input);
-      case "print-vs-screen-image-difference-tool": return printVsScreenDifferenceTool(input);
-      default: return null;
-    }
   };
 
   const adSlots = {

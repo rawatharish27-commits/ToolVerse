@@ -8,7 +8,8 @@ import {
   imageMetadataRemoverConfig, backgroundRemoverNonAIConfig, formImageFixerConfig,
   signatureFixerConfig, blurSimulatorConfig, socialCompressionPreviewConfig,
   stretchingPredictorConfig, pixelToKbConfig,
-  cameraVsScreenshotConfig, photoClarityConfig, printVsScreenConfig
+  cameraVsScreenshotConfig, photoClarityConfig, printVsScreenConfig,
+  dpiMythBreakerConfig, mobileCameraAdvisorConfig, backgroundPredictorConfig
 } from '../../config/imageTools';
 import { imageBlurUploadSimulator } from '../../tools/executors/imageBlurUploadSimulator';
 import { socialMediaCompressionPreview } from '../../tools/executors/socialMediaCompressionPreview';
@@ -17,6 +18,9 @@ import { pixelToKbCalculator } from '../../tools/executors/pixelToKbCalculator';
 import { cameraVsScreenshotTool } from '../../tools/executors/cameraVsScreenshotTool';
 import { photoClarityAnalyzer } from '../../tools/executors/photoClarityAnalyzer';
 import { printVsScreenDifferenceTool } from '../../tools/executors/printVsScreenDifferenceTool';
+import { imageDpiMythBreaker } from '../../tools/executors/imageDpiMythBreaker';
+import { mobileCameraSettingAdvisor } from '../../tools/executors/mobileCameraSettingAdvisor';
+import { backgroundRejectionPredictor } from '../../tools/executors/backgroundRejectionPredictor';
 
 interface ToolProps {
   slug: string;
@@ -37,7 +41,8 @@ const ImageTools: React.FC<ToolProps> = ({ slug, onSuccess, onError }) => {
     imageMetadataRemoverConfig, backgroundRemoverNonAIConfig, formImageFixerConfig,
     signatureFixerConfig, blurSimulatorConfig, socialCompressionPreviewConfig,
     stretchingPredictorConfig, pixelToKbConfig,
-    cameraVsScreenshotConfig, photoClarityConfig, printVsScreenConfig
+    cameraVsScreenshotConfig, photoClarityConfig, printVsScreenConfig,
+    dpiMythBreakerConfig, mobileCameraAdvisorConfig, backgroundPredictorConfig
   ].find(c => c.slug === slug) || imageCompressorConfig, [slug]);
 
   const [options, setOptions] = useState<Record<string, any>>(() => {
@@ -52,7 +57,10 @@ const ImageTools: React.FC<ToolProps> = ({ slug, onSuccess, onError }) => {
     'pixel-to-kb-calculator',
     'camera-vs-screenshot-quality-tool',
     'photo-clarity-analyzer',
-    'print-vs-screen-image-difference-tool'
+    'print-vs-screen-image-difference-tool',
+    'image-dpi-myth-breaker',
+    'mobile-camera-setting-advisor',
+    'background-rejection-predictor'
   ].includes(slug);
 
   const processImage = async () => {
@@ -139,6 +147,41 @@ const ImageTools: React.FC<ToolProps> = ({ slug, onSuccess, onError }) => {
         });
         setAnalysisData(result);
         onSuccess("Difference Audit Ready!");
+      }
+
+      else if (slug === 'image-dpi-myth-breaker') {
+        const result = imageDpiMythBreaker({
+          useCase: options.useCase,
+          dpi: options.dpi,
+          widthPx: options.widthPx,
+          heightPx: options.heightPx,
+          printSizeInches: options.printSizeInches
+        });
+        setAnalysisData(result);
+        onSuccess("Myths Busted!");
+      }
+
+      else if (slug === 'mobile-camera-setting-advisor') {
+        const result = mobileCameraSettingAdvisor({
+          useCase: options.useCase,
+          phoneType: options.phoneType,
+          cameraMode: options.cameraMode,
+          lighting: options.lighting,
+          movement: options.movement
+        });
+        setAnalysisData(result);
+        onSuccess("Advisor Report Dispatched!");
+      }
+
+      else if (slug === 'background-rejection-predictor') {
+        const result = backgroundRejectionPredictor({
+          useCase: options.useCase,
+          backgroundType: options.backgroundType,
+          shadowsPresent: options.shadowsPresent,
+          wrinklesOrNoise: options.wrinklesOrNoise
+        });
+        setAnalysisData(result);
+        onSuccess("Risk Assessment Ready!");
       }
       
       else {

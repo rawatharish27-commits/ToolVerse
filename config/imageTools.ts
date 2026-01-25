@@ -1,3 +1,47 @@
+export const dpiMythBreakerConfig = {
+  slug: "image-dpi-myth-breaker",
+  title: "Image DPI Myth Breaker",
+  description: "Debunk common DPI myths. Find out when DPI matters and when it's completely ignored by websites and forms.",
+  icon: "🧠",
+  colorClass: "bg-indigo-600",
+  options: [
+    { id: "useCase", type: "select", label: "Target Use Case", values: ["online", "government", "print"], default: "online" },
+    { id: "dpi", type: "number", label: "Stated DPI", default: 300 },
+    { id: "widthPx", type: "number", label: "Width (px)", default: 1000 },
+    { id: "heightPx", type: "number", label: "Height (px)", default: 1000 },
+    { id: "printSizeInches", type: "number", label: "Print Width (inches)", default: 4 }
+  ]
+};
+
+export const mobileCameraAdvisorConfig = {
+  slug: "mobile-camera-setting-advisor",
+  title: "Mobile Camera Advisor",
+  description: "Optimization guide for phone photography. Get exact settings for Android or iPhone to capture portal-perfect photos.",
+  icon: "📱",
+  colorClass: "bg-emerald-600",
+  options: [
+    { id: "useCase", type: "select", label: "Usage Context", values: ["government", "kyc", "social", "print"], default: "government" },
+    { id: "phoneType", type: "select", label: "Phone Type", values: ["android", "iphone"], default: "android" },
+    { id: "cameraMode", type: "select", label: "App Mode", values: ["auto", "pro"], default: "auto" },
+    { id: "lighting", type: "select", label: "Ambient Lighting", values: ["poor", "average", "good"], default: "average" },
+    { id: "movement", type: "select", label: "Hand Stability", values: ["static", "handheld"], default: "handheld" }
+  ]
+};
+
+export const backgroundPredictorConfig = {
+  slug: "background-rejection-predictor",
+  title: "Background Rejection Predictor",
+  description: "Will your background cause an upload error? Predict rejection risk and see how to prepare a 'safe' background.",
+  icon: "🧱",
+  colorClass: "bg-slate-700",
+  options: [
+    { id: "useCase", type: "select", label: "Portal Type", values: ["government", "kyc", "job", "social"], default: "government" },
+    { id: "backgroundType", type: "select", label: "Current Background", values: ["plain-white", "off-white", "colored", "textured", "outdoor"], default: "plain-white" },
+    { id: "shadowsPresent", type: "toggle", label: "Shadows Visible?", default: false },
+    { id: "wrinklesOrNoise", type: "toggle", label: "Wrinkles/Grain?", default: false }
+  ]
+};
+
 export const cameraVsScreenshotConfig = {
   slug: "camera-vs-screenshot-quality-tool",
   title: "Camera vs Screenshot Tool",
