@@ -1,189 +1,113 @@
-export const wordCounterConfig = {
-  slug: "word-counter",
-  title: "Advanced Word Counter",
-  description: "Comprehensive text analysis with word frequency, character counts, and time estimates. Perfect for editors, students, and copywriters.",
+export const textToDocxConfig = {
+  slug: "text-to-docx-converter",
+  title: "Text to DOCX Converter",
+  description: "Convert plain text or Markdown into professional Microsoft Word (.docx) documents with basic styling.",
   icon: "📝",
   colorClass: "bg-blue-600",
   options: [
-    {
-      id: "ignoreNumbers",
-      label: "Ignore Numbers",
-      type: "toggle",
-      default: false
-    },
-    {
-      id: "ignorePunctuation",
-      label: "Ignore Punctuation",
-      type: "toggle",
-      default: false
-    }
-  ],
+    { id: "fontSize", type: "select", label: "Body Font Size", values: [10, 11, 12, 14], default: 12 },
+    { id: "margins", type: "select", label: "Margins", values: ["Standard (1in)", "Narrow (0.5in)"], default: "Standard (1in)" }
+  ]
+};
+
+export const docxMetadataConfig = {
+  slug: "docx-metadata-viewer",
+  title: "DOCX Metadata Viewer",
+  description: "Examine hidden document properties like Author, Created Date, and Last Modified from Word files.",
+  icon: "🕵️",
+  colorClass: "bg-blue-700",
+  options: []
+};
+
+// ... existing invoiceGeneratorConfig, resumeBuilderConfig, etc.
+export const invoiceGeneratorConfig = {
+  slug: "invoice-generator",
+  title: "Professional Invoice Generator",
+  description: "Create professional business invoices via AI.",
+  icon: "🧾",
+  colorClass: "bg-slate-800",
+  options: [
+    { id: "currency", type: "select", label: "Currency", values: ["USD ($)", "INR (₹)"], default: "INR (₹)" }
+  ]
+};
+
+export const resumeBuilderConfig = {
+  slug: "resume-builder",
+  title: "AI Resume Builder",
+  description: "Build ATS-friendly professional resumes.",
+  icon: "📄",
+  colorClass: "bg-slate-900",
+  options: []
+};
+
+export const wordCounterConfig = {
+  slug: "word-counter",
+  title: "Advanced Word Counter",
+  description: "Comprehensive text analysis with word frequency.",
+  icon: "📝",
+  colorClass: "bg-blue-600",
+  options: []
 };
 
 export const characterCounterConfig = {
   slug: "character-counter",
   title: "Pro Character Counter",
-  description: "Real-time character counting with social media limit validation (Twitter, Instagram, SMS) and progress tracking.",
+  description: "Real-time character counting.",
   icon: "🔢",
   colorClass: "bg-indigo-500",
-  options: [
-    {
-      id: "showSocial",
-      label: "Show Social Limits",
-      type: "toggle",
-      default: true
-    },
-    {
-      id: "countSpaces",
-      label: "Count Spaces in Stats",
-      type: "toggle",
-      default: true
-    }
-  ],
+  options: []
 };
 
 export const textCleanerConfig = {
   slug: "text-cleaner",
   title: "Professional Text Cleaner",
-  description: "Sanitize and normalize messy text. Remove extra spaces, empty lines, HTML tags, and fix punctuation issues.",
+  description: "Sanitize and normalize messy text.",
   icon: "🧹",
   colorClass: "bg-cyan-600",
-  options: [
-    {
-      id: "collapseSpaces",
-      label: "Collapse Extra Spaces",
-      type: "toggle",
-      default: true
-    },
-    {
-      id: "removeLines",
-      label: "Remove All Line Breaks",
-      type: "toggle",
-      default: false
-    },
-    {
-      id: "removeEmptyLines",
-      label: "Remove Empty Lines",
-      type: "toggle",
-      default: true
-    },
-    {
-      id: "normalizeQuotes",
-      label: "Normalize Quotes",
-      type: "toggle",
-      default: true
-    },
-    {
-      id: "removePunctuation",
-      label: "Remove Punctuation",
-      type: "toggle",
-      default: false
-    },
-    {
-      id: "stripHtml",
-      label: "Strip HTML Tags",
-      type: "toggle",
-      default: false
-    }
-  ],
+  options: []
 };
 
 export const caseConverterConfig = {
   slug: "case-converter",
   title: "Case Converter",
-  description: "Transform text between UPPERCASE, lowercase, Title Case, and Sentence case instantly with professional rules.",
+  description: "Transform text between UPPERCASE, lowercase, and more.",
   icon: "🔡",
   colorClass: "bg-violet-600",
-  options: [
-    {
-      id: "mode",
-      label: "Transformation Mode",
-      type: "select",
-      values: ["UPPERCASE", "lowercase", "Title Case", "Sentence case", "Toggle Case"],
-      default: "UPPERCASE"
-    },
-    {
-      id: "autoCopy",
-      label: "Auto-Copy on Change",
-      type: "toggle",
-      default: false
-    }
-  ],
+  options: []
 };
 
 export const findReplaceConfig = {
   slug: "find-and-replace",
   title: "Find & Replace",
-  description: "Search for specific text or patterns using Regex and replace them instantly. Supports case sensitivity and bulk processing.",
+  description: "Search and replace text instantly.",
   icon: "🔍",
   colorClass: "bg-blue-700",
-  options: [
-    { id: "find", type: "text", label: "Find Text", default: "" },
-    { id: "replace", type: "text", label: "Replace With", default: "" },
-    { id: "caseSensitive", type: "toggle", label: "Case Sensitive", default: false },
-    { id: "wholeWord", type: "toggle", label: "Whole Word Match", default: false },
-    { id: "useRegex", type: "toggle", label: "Use Regular Expressions", default: false },
-  ],
+  options: []
 };
 
 export const duplicateRemoverConfig = {
   slug: "duplicate-line-remover",
   title: "Duplicate Line Remover",
-  description: "Clean up lists and datasets by removing duplicate lines while preserving the original sequence.",
+  description: "Clean up lists by removing duplicate lines.",
   icon: "👯",
   colorClass: "bg-indigo-600",
-  options: [
-    { id: "caseSensitive", type: "toggle", label: "Case Sensitive", default: false },
-    { id: "trimLines", type: "toggle", label: "Trim Spaces Before Compare", default: true },
-    { id: "removeEmpty", type: "toggle", label: "Ignore Empty Lines", default: true },
-    { id: "sortOutput", type: "toggle", label: "Sort Alphabetically", default: false },
-  ],
+  options: []
 };
 
 export const ttsConfig = {
   slug: "text-to-speech-reader",
   title: "AI Voice Reader (TTS)",
-  description: "Transform written text into natural human-sounding speech. Adjust pitch, rate, and select from available system voices.",
+  description: "Transform written text into natural human speech.",
   icon: "🗣️",
   colorClass: "bg-indigo-600",
-  options: [
-    {
-      id: "rate",
-      label: "Speech Rate",
-      type: "slider",
-      min: 0.5,
-      max: 2,
-      default: 1
-    },
-    {
-      id: "pitch",
-      label: "Voice Pitch",
-      type: "slider",
-      min: 0,
-      max: 2,
-      default: 1
-    }
-  ],
+  options: []
 };
 
 export const textCompareConfig = {
   slug: "text-compare",
   title: "Visual Diff Checker",
-  description: "Compare two versions of text side-by-side. Instantly highlight additions, deletions, and modifications with professional accuracy.",
+  description: "Compare two versions of text side-by-side.",
   icon: "⚖️",
   colorClass: "bg-indigo-700",
-  options: [
-    {
-      id: "caseSensitive",
-      label: "Case Sensitive",
-      type: "toggle",
-      default: false
-    },
-    {
-      id: "ignoreWhitespace",
-      label: "Ignore Whitespace",
-      type: "toggle",
-      default: true
-    }
-  ],
+  options: []
 };

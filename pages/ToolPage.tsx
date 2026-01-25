@@ -11,6 +11,23 @@ import { trackEvent } from '../utils/analytics';
 import { AD_CONFIG } from '../config/ads';
 import { getHighCTRTitle, getBreadcrumbSchema, getAutoFaqSchema } from '../utils/seo';
 
+// Import executors
+import { photoRejectionReasonFinder } from "../tools/executors/photoRejectionReasonFinder";
+import { signatureUploadFixTool } from "../tools/executors/signatureUploadFixTool";
+import { govtFormFileRuleDecoder } from "../tools/executors/govtFormFileRuleDecoder";
+import { sizeVsDpiConflictExplainer } from "../tools/executors/sizeVsDpiConflictExplainer";
+import { formDeadlineDateLogicChecker } from "../tools/executors/formDeadlineDateLogicChecker";
+import { invalidDobErrorSolver } from "../tools/executors/invalidDobErrorSolver";
+import { panAadhaarImageValidator } from "../tools/executors/panAadhaarImageValidator";
+import { statusDecoder } from "../tools/executors/statusDecoder";
+import { formatTranslator } from "../tools/executors/formatTranslator";
+import { socialMediaCompressionPreview } from "../tools/executors/socialMediaCompressionPreview";
+import { imageStretchingIssuePredictor } from "../tools/executors/imageStretchingIssuePredictor";
+import { pixelToKbCalculator } from "../tools/executors/pixelToKbCalculator";
+import { cameraVsScreenshotTool } from "../tools/executors/cameraVsScreenshotTool";
+import { photoClarityAnalyzer } from "../tools/executors/photoClarityAnalyzer";
+import { printVsScreenDifferenceTool } from "../tools/executors/printVsScreenDifferenceTool";
+
 interface ToolPageProps {
   slug: string;
   onNavigate: (page: string, params?: any) => void;
@@ -33,7 +50,6 @@ const ToolPage: React.FC<ToolPageProps> = ({ slug, onNavigate, onToolUsed, favor
     }
   }, [tool]);
 
-  // 🧠 v5.0 AUTOMATED SEO BUNDLE
   const seoData = useMemo(() => {
     if (!tool || !category) return null;
     return {
@@ -53,6 +69,28 @@ const ToolPage: React.FC<ToolPageProps> = ({ slug, onNavigate, onToolUsed, favor
     setTimeout(() => setSuccess(null), 3000);
   };
 
+  // Logic Router for specialized diagnostics 2-17
+  const executeLogic = (input: any) => {
+    switch (slug) {
+      case "photo-rejection-reason-finder": return photoRejectionReasonFinder(input);
+      case "signature-upload-fix-tool": return signatureUploadFixTool(input);
+      case "govt-form-file-rule-decoder": return govtFormFileRuleDecoder(input);
+      case "size-vs-dpi-conflict-explainer": return sizeVsDpiConflictExplainer(input);
+      case "form-deadline-date-logic-checker": return formDeadlineDateLogicChecker(input);
+      case "invalid-dob-error-solver": return invalidDobErrorSolver(input);
+      case "pan-aadhaar-image-validator": return panAadhaarImageValidator(input);
+      case "application-status-meaning-decoder": return statusDecoder(input);
+      case "wrong-format-error-translator": return formatTranslator(input);
+      case "social-media-compression-preview": return socialMediaCompressionPreview(input);
+      case "image-stretching-issue-predictor": return imageStretchingIssuePredictor(input);
+      case "pixel-to-kb-calculator": return pixelToKbCalculator(input);
+      case "camera-vs-screenshot-quality-tool": return cameraVsScreenshotTool(input);
+      case "photo-clarity-analyzer": return photoClarityAnalyzer(input);
+      case "print-vs-screen-image-difference-tool": return printVsScreenDifferenceTool(input);
+      default: return null;
+    }
+  };
+
   const adSlots = {
     header: isAdSlotEnabled(tool.category, 'header'),
     mid: isAdSlotEnabled(tool.category, 'mid_content'),
@@ -67,7 +105,7 @@ const ToolPage: React.FC<ToolPageProps> = ({ slug, onNavigate, onToolUsed, favor
         description={`Access the professional ${tool.title} on ToolVerse. 100% free, secure, and browser-native. No data uploads required.`}
         url={seoData.url}
         type="article"
-        schemas={[seoData.breadcrumb, seoData.faq]} // Automated injection
+        schemas={[seoData.breadcrumb, seoData.faq]} 
       />
 
       <div className="flex flex-col lg:flex-row gap-12">

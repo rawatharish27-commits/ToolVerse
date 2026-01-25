@@ -1,3 +1,50 @@
+export const pdfComplianceConfig = {
+  slug: "pdf-compliance-checker",
+  title: "PDF Compliance Checker",
+  description: "Check if your PDF file meets common submission standards for banking, legal, and government portals (Size, Version, Encryption).",
+  icon: "⚖️",
+  colorClass: "bg-emerald-700",
+  options: [
+    { id: "standard", type: "select", label: "Target Standard", values: ["Govt Portal (SSC/UPSC)", "Banking KYC", "Legal Filing (e-Court)"], default: "Govt Portal (SSC/UPSC)" }
+  ]
+};
+
+export const pdfCompareConfig = {
+  slug: "pdf-compare-tool",
+  title: "Visual PDF Compare",
+  description: "Compare two PDF documents side-by-side and highlight textual differences and changes.",
+  icon: "⚖️",
+  colorClass: "bg-red-700",
+  options: [
+    { id: "diffMode", type: "select", label: "Diff Mode", values: ["Textual (Precise)", "Visual (Coming Soon)"], default: "Textual (Precise)" }
+  ]
+};
+
+export const pdfOcrConfig = {
+  slug: "pdf-ocr-tool",
+  title: "Pro PDF OCR (Scan to Text)",
+  description: "Extract editable text from scanned PDF files using high-precision local OCR technology.",
+  icon: "🔍",
+  colorClass: "bg-red-800",
+  options: [
+    { id: "language", type: "select", label: "Language", values: ["eng", "spa", "fra", "deu"], default: "eng" },
+    { id: "format", type: "select", label: "Output Format", values: ["Text File", "Markdown"], default: "Text File" }
+  ]
+};
+
+export const excelToPdfConfig = {
+  slug: "excel-to-pdf-converter",
+  title: "Excel to PDF Converter",
+  description: "Convert spreadsheet workbooks (.xlsx, .csv) into professional, printable PDF documents.",
+  icon: "📊",
+  colorClass: "bg-emerald-600",
+  options: [
+    { id: "pageSize", type: "select", label: "Page Size", values: ["A4", "Letter", "Legal"], default: "A4" },
+    { id: "orientation", type: "select", label: "Orientation", values: ["Portrait", "Landscape"], default: "Landscape" }
+  ]
+};
+
+// Original ones maintained
 export const pdfCompressorConfig = {
   slug: "pdf-compressor",
   title: "Pro PDF Compressor",
@@ -193,18 +240,5 @@ export const pdfToWordConfig = {
     { id: "mode", type: "select", label: "Conversion Mode", values: ["Text Only", "Layout Preserved"], default: "Text Only" },
     { id: "normalizeSpacing", type: "toggle", label: "Normalize Spacing", default: true },
     { id: "removeEmptyLines", type: "toggle", label: "Remove Empty Lines", default: false }
-  ],
-};
-
-export const pdfOcrConfig = {
-  slug: "pdf-ocr",
-  title: "Pro PDF OCR",
-  description: "Extract text from scanned PDF documents and images using high-precision AI-powered OCR engines.",
-  icon: "🔍",
-  colorClass: "bg-red-800",
-  options: [
-    { id: "language", type: "select", label: "OCR Language", values: ["eng", "spa", "fra", "deu", "ita"], default: "eng" },
-    { id: "scanResolution", type: "select", label: "Scan Quality (DPI)", values: [150, 300, 600], default: 300 },
-    { id: "outputType", type: "select", label: "Result Format", values: ["Raw Text", "Formatted (.txt)"], default: "Formatted (.txt)" },
   ],
 };

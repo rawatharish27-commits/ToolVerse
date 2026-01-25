@@ -15,6 +15,7 @@ import UnitConverterTools from './tools/UnitConverterTools';
 import SecurityTools from './tools/SecurityTools';
 import NetworkTools from './tools/NetworkTools';
 import EducationTools from './tools/EducationTools';
+import UtilityTools from './tools/UtilityTools';
 import GeneralTools from './tools/GeneralTools';
 
 interface ToolRendererProps {
@@ -23,24 +24,15 @@ interface ToolRendererProps {
   onError: (msg: string) => void;
 }
 
-/**
- * Master Logic Dispatcher v5.2
- * Ensures all 180 slugs from the 18 locked categories are routed to 
- * their high-performance WASM or Neural nodes.
- */
 const ToolRenderer: React.FC<ToolRendererProps> = ({ slug, onSuccess, onError }) => {
   const tool = TOOLS.find(t => t.slug === slug);
   if (!tool) return <div className="p-20 text-center text-slate-400">Tool Logic Pending...</div>;
 
   const category = tool.category;
 
-  // 1. High-RPM AI-Driven Modules
-  // Fix: Move isAIImage check above general category checks to prevent "unintentional comparison" error.
-  // By checking this first, we ensure that AI-capable image tools are routed correctly before the general 'image' category return.
   const isAIImage = slug.startsWith('ai-image-') || (category === 'image' && slug.includes('ai'));
   if (isAIImage) return <AIImageTools slug={slug} onSuccess={onSuccess} onError={onError} />;
 
-  // 2. Specialized Functional Modules
   if (category === 'image') return <ImageTools slug={slug} onSuccess={onSuccess} onError={onError} />;
   if (category === 'video') return <VideoAudioTools slug={slug} onSuccess={onSuccess} onError={onError} />;
   if (category === 'audio') return <AudioTools slug={slug} onSuccess={onSuccess} onError={onError} />;
@@ -51,21 +43,18 @@ const ToolRenderer: React.FC<ToolRendererProps> = ({ slug, onSuccess, onError })
   if (category === 'unit-converters') return <UnitConverterTools slug={slug} onSuccess={onSuccess} onError={onError} />;
   if (category === 'security') return <SecurityTools slug={slug} onSuccess={onSuccess} onError={onError} />;
   if (category === 'network') return <NetworkTools slug={slug} onSuccess={onSuccess} onError={onError} />;
+  if (category === 'utility') return <UtilityTools slug={slug} onSuccess={onSuccess} onError={onError} />;
 
   const useAIOrchestrator = [
     'ai', 'social', 'office', 'education', 'business', 'seo'
   ].includes(category);
 
   if (useAIOrchestrator) {
-    // Special case for Education tools that require deeper academic logic
     if (category === 'education') return <EducationTools slug={slug} onSuccess={onSuccess} onError={onError} />;
     if (category === 'seo') return <SEOTools slug={slug} onSuccess={onSuccess} onError={onError} />;
-    
-    // Default dynamic AI orchestrator for others
     return <AITextTools slug={slug} onSuccess={onSuccess} onError={onError} />;
   }
 
-  // 3. Backend-Reliant / Generic Node Fallback
   return <GeneralTools slug={slug} onSuccess={onSuccess} onError={onError} />;
 };
 
