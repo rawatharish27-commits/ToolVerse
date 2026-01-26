@@ -27,6 +27,10 @@ const Layout: React.FC<LayoutProps> = ({ children, onNavigate, onSearch, searchQ
     syncState();
     window.addEventListener('attraction_update', syncState);
     
+    // BROWSE DIRECTORY LINKAGE
+    const openMenu = () => setIsMenuOpen(true);
+    window.addEventListener('tv_open_menu', openMenu);
+    
     const handleClickOutside = (e: MouseEvent) => {
       if (searchRef.current && !searchRef.current.contains(e.target as Node)) {
         setShowSuggestions(false);
@@ -36,6 +40,7 @@ const Layout: React.FC<LayoutProps> = ({ children, onNavigate, onSearch, searchQ
 
     return () => {
       window.removeEventListener('attraction_update', syncState);
+      window.removeEventListener('tv_open_menu', openMenu);
       document.removeEventListener('mousedown', handleClickOutside);
     };
   }, []);
@@ -162,7 +167,6 @@ const Layout: React.FC<LayoutProps> = ({ children, onNavigate, onSearch, searchQ
              </button>
 
              {CATEGORIES.map(cat => {
-               // FIX: Ensure all tools in registry for this category are shown in sidebar
                const catTools = TOOLS.filter(t => t.category === cat.id);
                return (
                  <div key={cat.id}>
@@ -179,7 +183,7 @@ const Layout: React.FC<LayoutProps> = ({ children, onNavigate, onSearch, searchQ
                    
                    {expandedCat === cat.id && (
                      <div className="ml-8 space-y-1 py-2 border-l-2 border-slate-100 pl-4 animate-in slide-in-from-left-2 duration-300">
-                       {catTools.length > 0 ? catTools.slice(0, 20).map(tool => (
+                       {catTools.length > 0 ? catTools.slice(0, 30).map(tool => (
                          <button 
                           key={tool.slug}
                           onClick={() => { onNavigate('tool', { slug: tool.slug }); setIsMenuOpen(false); }}
@@ -194,7 +198,7 @@ const Layout: React.FC<LayoutProps> = ({ children, onNavigate, onSearch, searchQ
                         onClick={() => { onNavigate('category', { id: cat.id }); setIsMenuOpen(false); }} 
                         className="w-full text-left p-2.5 text-[9px] font-black text-indigo-400 uppercase hover:underline"
                        >
-                         Explore Category Hub →
+                         Explore All in Hub →
                        </button>
                      </div>
                    )}
