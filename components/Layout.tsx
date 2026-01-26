@@ -1,8 +1,9 @@
 
-import React, { useState, useEffect, useMemo, useCallback } from 'react';
+import React, { useState, useEffect, useMemo, useCallback, useRef } from 'react';
 import { CATEGORIES } from '../data/categories';
 import { TOOLS } from '../data/tools';
 import { getAttractionState, getUserLevel } from '../utils/attraction';
+import { querySearchIndex, SearchResult } from '../utils/searchEngine';
 
 interface LayoutProps {
   children: React.ReactNode;
@@ -15,20 +16,73 @@ const Layout: React.FC<LayoutProps> = ({ children, onNavigate, onSearch, searchQ
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [expandedCat, setExpandedCat] = useState<string | null>(null);
   const [points, setPoints] = useState(0);
+  
+  // Advanced Search State
+  const [showSuggestions, setShowSuggestions] = useState(false);
+  const [selectedIndex, setSelectedIndex] = useState(-1);
+  const searchRef = useRef<HTMLDivElement>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     const syncState = () => setPoints(getAttractionState().points);
     syncState();
     window.addEventListener('attraction_update', syncState);
-    return () => window.removeEventListener('attraction_update', syncState);
+    
+    const handleClickOutside = (e: MouseEvent) => {
+      if (searchRef.current && !searchRef.current.contains(e.target as Node)) {
+        setShowSuggestions(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+
+    return () => {
+      window.removeEventListener('attraction_update', syncState);
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
   }, []);
 
   const level = useMemo(() => getUserLevel(points), [points]);
 
-  // Performance: Debounced search to prevent UI jitter
-  const handleSearchChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-    onSearch(e.target.value);
-  }, [onSearch]);
+  const suggestions = useMemo(() => querySearchIndex(searchQuery), [searchQuery]);
+
+  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const val = e.target.value;
+    onSearch(val);
+    setShowSuggestions(val.length > 0);
+    setSelectedIndex(-1);
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (!showSuggestions) return;
+
+    if (e.key === 'ArrowDown') {
+      e.preventDefault();
+      setSelectedIndex(prev => Math.min(prev + 1, suggestions.length - 1));
+    } else if (e.key === 'ArrowUp') {
+      e.preventDefault();
+      setSelectedIndex(prev => Math.max(prev - 1, 0));
+    } else if (e.key === 'Enter') {
+      if (selectedIndex >= 0) {
+        const item = suggestions[selectedIndex];
+        handleSelectSuggestion(item);
+      } else {
+        setShowSuggestions(false);
+      }
+    } else if (e.key === 'Escape') {
+      setShowSuggestions(false);
+    }
+  };
+
+  const handleSelectSuggestion = (item: SearchResult) => {
+    setShowSuggestions(false);
+    onSearch(""); // Clear for next time
+    if (item.type === 'tool') onNavigate('tool', { slug: item.id });
+    else if (item.type === 'category') onNavigate('category', { id: item.id });
+    else if (item.type === 'intent') {
+      // For intents, we find the primary tool matching that intent
+      onSearch(item.id.replace('intent-', '')); // Actually set search to the intent keywords
+    }
+  };
 
   return (
     <div className="min-h-screen flex flex-col bg-white">
@@ -50,15 +104,61 @@ const Layout: React.FC<LayoutProps> = ({ children, onNavigate, onSearch, searchQ
             </div>
           </div>
 
-          <div className="flex-grow max-w-lg relative hidden md:block">
-            <input 
-              type="text" 
-              value={searchQuery}
-              onChange={handleSearchChange}
-              placeholder="Search 500+ utilities..." 
-              className="w-full pl-11 pr-5 py-2.5 bg-slate-100 border-none rounded-2xl focus:ring-4 focus:ring-indigo-500/10 focus:bg-white transition-all font-bold text-slate-700 text-sm"
-            />
-            <svg className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" strokeWidth="3" strokeLinecap="round"/></svg>
+          {/* Advanced Search Node */}
+          <div ref={searchRef} className="flex-grow max-w-lg relative">
+            <div className="relative group">
+              <input 
+                ref={inputRef}
+                type="text" 
+                value={searchQuery}
+                onChange={handleSearchChange}
+                onKeyDown={handleKeyDown}
+                onFocus={() => searchQuery.length > 0 && setShowSuggestions(true)}
+                placeholder="Type 'fix photo' or 'pdf merge'..." 
+                className="w-full pl-11 pr-5 py-3 bg-slate-100 border-none rounded-2xl focus:ring-4 focus:ring-indigo-500/10 focus:bg-white transition-all font-bold text-slate-700 text-sm shadow-inner"
+              />
+              <svg className={`absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 transition-colors ${searchQuery ? 'text-indigo-500' : 'text-slate-300'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" strokeWidth="3" strokeLinecap="round"/></svg>
+            </div>
+
+            {/* Suggestions Dropdown */}
+            {showSuggestions && suggestions.length > 0 && (
+              <div className="absolute top-full left-0 right-0 mt-2 bg-white rounded-[2rem] shadow-3xl border border-slate-100 overflow-hidden animate-in fade-in slide-in-from-top-2 duration-300 z-[300]">
+                <div className="p-2">
+                  <div className="px-4 py-2 text-[9px] font-black text-slate-400 uppercase tracking-widest border-b border-slate-50 mb-1">
+                    Smart Suggestions
+                  </div>
+                  {suggestions.map((item, idx) => (
+                    <div 
+                      key={item.id}
+                      onClick={() => handleSelectSuggestion(item)}
+                      onMouseEnter={() => setSelectedIndex(idx)}
+                      className={`flex items-center gap-4 p-4 rounded-2xl cursor-pointer transition-all ${selectedIndex === idx ? 'bg-indigo-50 translate-x-1' : 'hover:bg-slate-50'}`}
+                    >
+                      <div className={`w-10 h-10 rounded-xl flex items-center justify-center text-lg ${item.type === 'intent' ? 'bg-amber-100 text-amber-600' : item.type === 'category' ? 'bg-indigo-600 text-white shadow-md' : 'bg-slate-100 text-slate-600'}`}>
+                        {item.icon}
+                      </div>
+                      <div className="flex-grow">
+                        <div className="text-xs font-black text-slate-900 leading-none mb-1">
+                          {item.title}
+                          {item.type === 'intent' && <span className="ml-2 text-[8px] bg-amber-500 text-white px-1.5 py-0.5 rounded uppercase">Solution</span>}
+                        </div>
+                        <div className="text-[10px] text-slate-400 font-bold uppercase tracking-tight">{item.subtitle}</div>
+                      </div>
+                      <div className="text-slate-200">
+                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M9 5l7 7-7 7" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"/></svg>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+                <div className="bg-slate-50 p-3 flex justify-between items-center text-[8px] font-black text-slate-400 uppercase tracking-widest px-6">
+                  <span>Enter to launch</span>
+                  <div className="flex gap-2">
+                    <span className="px-1.5 py-0.5 bg-white border border-slate-200 rounded">↑↓ Navigate</span>
+                    <span className="px-1.5 py-0.5 bg-white border border-slate-200 rounded">ESC Close</span>
+                  </div>
+                </div>
+              </div>
+            )}
           </div>
 
           <div className="flex items-center gap-3">
