@@ -1,49 +1,48 @@
 
 import { handleRouting } from "../core/router";
 import { success, error } from "../core/response";
-import { checkUsage } from "../core/usage";
+import { isAllowed } from "../core/ratelimit";
 import { logToolUsage } from "../core/analytics";
 
 /**
- * ToolVerse Cloudflare Edge API Handler
- * Support for standard and custom user-provided API keys.
+ * ToolVerse Universal Edge Isolate
+ * Logic orchestrator for 500+ utilities.
  */
 export const onRequestPost = async (context: { request: Request; env: any }) => {
   const { request, env } = context;
   const ip = request.headers.get("CF-Connecting-IP") || "anonymous";
+  
+  // SECURE KEY INJECTION: Priority given to user-provided keys
   const customKey = request.headers.get("X-Custom-API-Key");
 
   try {
     const payload = await request.json();
     const { toolId, category } = payload;
 
-    if (!toolId) return error("Missing toolId.");
+    if (!toolId) return error("Logic identification failed.");
 
-    // Rate limiting (Disabled for custom key users)
+    // Rate Limiting Policy: Bypass if user provides their own key
     if (!customKey) {
-      checkUsage(ip, toolId, 100);
+      if (!isAllowed(ip, 20)) return error("System cooldown active. Try again later or use your own key.", 429);
     }
     
     logToolUsage(toolId);
 
-    // Merge custom key into environment if provided
-    const executionEnv = customKey ? { ...env, API_KEY: customKey } : env;
+    // Merge custom key into execution context
+    const isolateEnv = customKey ? { ...env, API_KEY: customKey } : env;
 
-    const result = await handleRouting(toolId, category || 'general', payload, executionEnv);
+    const result = await handleRouting(toolId, category || 'general', payload, isolateEnv);
     
     if (result.success) {
       return success(result.data);
     } else {
-      return error((result as any).error || "Logic node failed.");
+      const errCode = (result as any).error?.includes("429") ? 429 : 400;
+      return error((result as any).error || "Node logic failure.", errCode);
     }
     
   } catch (err: any) {
-    console.error(`[API_EXEC_ERR]: ${err.message}`);
-    // Check if it's a quota error from Gemini
-    if (err.message?.includes("429") || err.message?.includes("quota")) {
-      return error("System AI Quota Exhausted. Use your own key.", 429);
-    }
-    return error(err.message || "Engine Error", 500);
+    console.error(`[EDGE_FAULT]: ${err.message}`);
+    return error(err.message || "Logic Isolate Error", 500);
   }
 };
 
@@ -52,7 +51,7 @@ export const onRequestOptions = async () => {
     headers: {
       "Access-Control-Allow-Origin": "*",
       "Access-Control-Allow-Methods": "POST, OPTIONS",
-      "Access-Control-Allow-Headers": "Content-Type, Authorization, X-Custom-API-Key",
+      "Access-Control-Allow-Headers": "Content-Type, X-Custom-API-Key",
     },
   });
 };

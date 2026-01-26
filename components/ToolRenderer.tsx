@@ -1,8 +1,10 @@
 
 import React, { Suspense, lazy, useState } from 'react';
 import { TOOLS } from '../data/tools';
+import { canRotateKey, incrementKeyRotation } from '../utils/apiQuota';
 
 const AITextTools = lazy(() => import('./tools/AITextTools'));
+const AIImageTools = lazy(() => import('./tools/AIImageTools'));
 const ImageTools = lazy(() => import('./tools/ImageTools'));
 const VideoAudioTools = lazy(() => import('./tools/VideoAudioTools'));
 const AudioTools = lazy(() => import('./tools/AudioTools'));
@@ -28,18 +30,25 @@ interface ToolRendererProps {
 const ToolRenderer: React.FC<ToolRendererProps> = ({ slug, onSuccess, onError }) => {
   const [showKeyInput, setShowKeyInput] = useState(false);
   const [customKey, setCustomKey] = useState("");
+  const [keyError, setKeyError] = useState("");
 
   const tool = TOOLS.find(t => t.slug === slug);
-  if (!tool) return <div className="p-20 text-center text-slate-400">Logic Node Not Found...</div>;
+  if (!tool) return <div className="p-20 text-center text-slate-400">Logic Node Disconnected...</div>;
 
   const handleKeySave = () => {
-    if (customKey.startsWith("AIza")) {
-      localStorage.setItem('tv_custom_gemini_key', customKey);
+    if (!canRotateKey()) {
+      setKeyError("Daily limit reached. You can only rotate 3 keys per day.");
+      return;
+    }
+
+    if (customKey.trim().startsWith("AIza")) {
+      localStorage.setItem('tv_custom_gemini_key', customKey.trim());
+      incrementKeyRotation();
       setShowKeyInput(false);
-      onSuccess("API Key Synchronized! Restarting tool...");
-      window.location.reload();
+      onSuccess("Neural Core Re-authenticated! Restarting...");
+      setTimeout(() => window.location.reload(), 1000);
     } else {
-      alert("Invalid Gemini API Key format. It should start with 'AIza'.");
+      setKeyError("Invalid format. Gemini keys must start with 'AIza'.");
     }
   };
 
@@ -53,36 +62,51 @@ const ToolRenderer: React.FC<ToolRendererProps> = ({ slug, onSuccess, onError })
   return (
     <div className="relative">
       {showKeyInput && (
-        <div className="absolute inset-0 z-50 bg-white/95 backdrop-blur-md flex flex-col items-center justify-center p-12 text-center rounded-[3rem] animate-in fade-in duration-300">
-           <div className="text-6xl mb-6">⚡</div>
-           <h2 className="text-3xl font-black text-slate-900 mb-4">AI Quota Reached</h2>
-           <p className="text-slate-500 mb-10 max-w-sm">Free system credits are exhausted. Insert your own Gemini API key to continue using this logic node.</p>
+        <div className="absolute inset-0 z-[100] bg-white/98 backdrop-blur-xl flex flex-col items-center justify-center p-8 md:p-12 text-center rounded-[3rem] animate-in zoom-in-95 duration-300">
+           <div className="w-20 h-20 bg-rose-50 rounded-full flex items-center justify-center text-3xl mb-8 animate-pulse">⚡</div>
+           <h2 className="text-3xl font-black text-slate-900 mb-4">Neural Quota Exhausted</h2>
+           <p className="text-slate-500 mb-10 max-w-sm font-medium">System credits for today are used up. To continue, insert your own free API key from Google AI Studio.</p>
            
-           <input 
-             type="password"
-             value={customKey}
-             onChange={e => setCustomKey(e.target.value)}
-             placeholder="Paste Gemini API Key (starts with AIza...)"
-             className="w-full max-w-md p-5 bg-slate-100 border-2 border-indigo-100 rounded-2xl mb-6 font-mono text-sm focus:border-indigo-600 outline-none transition-all"
-           />
-           
-           <div className="flex gap-4">
-             <button onClick={handleKeySave} className="px-10 py-4 bg-indigo-600 text-white rounded-2xl font-black text-xs uppercase tracking-widest shadow-xl">Activate Key</button>
-             <a href="https://aistudio.google.com/app/apikey" target="_blank" className="px-10 py-4 bg-slate-900 text-white rounded-2xl font-black text-xs uppercase tracking-widest">Get Free Key</a>
+           <div className="w-full max-w-md space-y-4">
+             <input 
+               type="password"
+               value={customKey}
+               onChange={e => { setCustomKey(e.target.value); setKeyError(""); }}
+               placeholder="Enter API Key (AIza...)"
+               className={`w-full p-6 bg-slate-50 border-2 ${keyError ? 'border-rose-500' : 'border-slate-100'} rounded-2xl font-mono text-sm focus:border-indigo-600 outline-none transition-all shadow-inner`}
+             />
+             {keyError && <p className="text-rose-600 text-[10px] font-black uppercase tracking-widest">{keyError}</p>}
            </div>
-           <p className="mt-6 text-[9px] font-black text-slate-300 uppercase tracking-widest">Your key is stored locally and never sent to our servers.</p>
+           
+           <div className="flex flex-col sm:flex-row gap-4 mt-8 w-full max-w-md">
+             <button onClick={handleKeySave} className="flex-1 py-5 bg-indigo-600 text-white rounded-2xl font-black text-xs uppercase tracking-[0.2em] shadow-2xl hover:bg-indigo-700 transition-all active:scale-95">Activate Node</button>
+             <a href="https://aistudio.google.com/app/apikey" target="_blank" rel="noopener" className="flex-1 py-5 bg-slate-900 text-white rounded-2xl font-black text-xs uppercase tracking-[0.2em] hover:bg-slate-800 transition-all flex items-center justify-center">Get Free Key</a>
+           </div>
+           
+           <p className="mt-8 text-[9px] font-black text-slate-300 uppercase tracking-[0.3em]">Keys are stored in your local browser sandbox only.</p>
         </div>
       )}
 
       <Suspense fallback={
-        <div className="flex flex-col items-center justify-center h-96 space-y-4">
-          <div className="w-10 h-10 border-4 border-indigo-600 border-t-transparent rounded-full animate-spin"></div>
-          <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Warping to Tool Core...</p>
+        <div className="flex flex-col items-center justify-center h-[500px] space-y-6">
+          <div className="relative">
+            <div className="w-16 h-16 border-4 border-indigo-100 rounded-full"></div>
+            <div className="absolute top-0 left-0 w-16 h-16 border-4 border-indigo-600 border-t-transparent rounded-full animate-spin"></div>
+          </div>
+          <div className="text-center">
+            <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.4em] mb-2">Syncing Logic Hub</p>
+            <p className="text-xs text-slate-300 font-bold">Warping to category-specific isolate...</p>
+          </div>
         </div>
       }>
         {(() => {
           const category = tool.category;
           const props = { slug, onSuccess, onError: augmentedOnError };
+          
+          if (category === 'ai') {
+            if (slug.includes('image')) return <AIImageTools {...props} />;
+            return <AITextTools {...props} />;
+          }
           if (category === 'image') return <ImageTools {...props} />;
           if (category === 'video') return <VideoAudioTools {...props} />;
           if (category === 'audio') return <AudioTools {...props} />;
@@ -97,7 +121,8 @@ const ToolRenderer: React.FC<ToolRendererProps> = ({ slug, onSuccess, onError })
           if (category === 'education') return <EducationTools {...props} />;
           if (category === 'seo') return <SEOTools {...props} />;
           if (category === 'office') return <OfficeTools {...props} />;
-          if (['ai', 'social', 'business'].includes(category)) return <AITextTools {...props} />;
+          if (['social', 'business'].includes(category)) return <AITextTools {...props} />;
+          
           return <GeneralTools {...props} />;
         })()}
       </Suspense>

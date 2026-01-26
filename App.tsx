@@ -29,13 +29,20 @@ const App: React.FC = () => {
   });
 
   const handlePathChange = () => {
-    // Robust path detection for deep links on refresh
+    // RESOLUTION: Deep-path detection for refresh stability
     const path = window.location.pathname;
     trackPageView(path);
 
     startTransition(() => {
-      if (path === '/' || path === '' || path.includes('index.html')) {
+      // 1. Master Route Map
+      if (path === '/' || path === '' || path.endsWith('index.html')) {
         setNav({ page: 'home' });
+      } else if (path.match(/^\/category\/[a-z-]+/)) {
+        const id = path.split('/').pop() as CategorySlug;
+        setNav({ page: 'category', params: { id } });
+      } else if (path.match(/^\/tools\/[a-z-]+/)) {
+        const slug = path.split('/').pop() || '';
+        setNav({ page: 'tool', params: { slug } });
       } else if (path === '/about') {
         setNav({ page: 'about' });
       } else if (path === '/privacy') {
@@ -44,16 +51,8 @@ const App: React.FC = () => {
         setNav({ page: 'terms' });
       } else if (path === '/contact') {
         setNav({ page: 'contact' });
-      } else if (path.includes('/category/')) {
-        const parts = path.split('/');
-        const id = parts[parts.indexOf('category') + 1] as CategorySlug;
-        setNav({ page: 'category', params: { id } });
-      } else if (path.includes('/tools/')) {
-        const parts = path.split('/');
-        const slug = parts[parts.indexOf('tools') + 1];
-        setNav({ page: 'tool', params: { slug } });
       } else {
-        // Safe fallback to home if path is unrecognized
+        // Fallback for unrecognized paths
         setNav({ page: 'home' });
       }
     });
@@ -63,10 +62,10 @@ const App: React.FC = () => {
     window.addEventListener('popstate', handlePathChange);
     handlePathChange();
 
-    // Check for first-time user tour
-    const hasSeenTour = localStorage.getItem('tv_tour_completed');
+    const hasSeenTour = localStorage.getItem('tv_tour_v3_completed');
     if (!hasSeenTour) {
-      setTimeout(() => setShowTour(true), 1500);
+      const timer = setTimeout(() => setShowTour(true), 2000);
+      return () => clearTimeout(timer);
     }
 
     return () => window.removeEventListener('popstate', handlePathChange);
@@ -77,7 +76,6 @@ const App: React.FC = () => {
     if (page === 'category') newPath = `/category/${params.id}`;
     else if (page === 'tool') newPath = `/tools/${params.slug}`;
     else if (['about', 'privacy', 'terms', 'contact'].includes(page)) newPath = `/${page}`;
-    else if (page === 'home') newPath = `/`;
 
     window.history.pushState({}, '', newPath);
     handlePathChange();
@@ -94,12 +92,9 @@ const App: React.FC = () => {
 
   const renderContent = () => {
     switch (nav.page) {
-      case 'home':
-        return <Home onNavigate={navigate} searchQuery={searchQuery} favorites={favorites} onToggleFavorite={toggleFavorite} recent={[]} />;
-      case 'category':
-        return <CategoryPage categoryId={nav.params.id} onNavigate={navigate} favorites={favorites} onToggleFavorite={toggleFavorite} />;
-      case 'tool':
-        return <ToolPage slug={nav.params.slug} onNavigate={navigate} favorites={favorites} onToggleFavorite={toggleFavorite} />;
+      case 'home': return <Home onNavigate={navigate} searchQuery={searchQuery} favorites={favorites} onToggleFavorite={toggleFavorite} recent={[]} />;
+      case 'category': return <CategoryPage categoryId={nav.params.id} onNavigate={navigate} favorites={favorites} onToggleFavorite={toggleFavorite} />;
+      case 'tool': return <ToolPage slug={nav.params.slug} onNavigate={navigate} favorites={favorites} onToggleFavorite={toggleFavorite} />;
       case 'about': return <About />;
       case 'privacy': return <PrivacyPolicy />;
       case 'terms': return <Terms />;
@@ -115,10 +110,11 @@ const App: React.FC = () => {
       onSearch={setSearchQuery}
     >
       <AddonLayer />
-      {showTour && <TourOverlay onClose={() => setShowTour(false)} />}
+      {showTour && <TourOverlay onClose={() => { setShowTour(false); localStorage.setItem('tv_tour_v3_completed', 'true'); }} />}
+      
       <Suspense fallback={
-        <div className="flex items-center justify-center min-h-[70vh]">
-          <div className="w-12 h-12 border-4 border-indigo-600 border-t-transparent rounded-full animate-spin"></div>
+        <div className="flex items-center justify-center min-h-[60vh]">
+          <div className="w-10 h-10 border-4 border-indigo-600 border-t-transparent rounded-full animate-spin"></div>
         </div>
       }>
         {renderContent()}
