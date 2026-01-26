@@ -20,6 +20,8 @@ const EducationTools = lazy(() => import('./tools/EducationTools'));
 const UtilityTools = lazy(() => import('./tools/UtilityTools'));
 const GeneralTools = lazy(() => import('./tools/GeneralTools'));
 const OfficeTools = lazy(() => import('./tools/OfficeTools'));
+const SocialTools = lazy(() => import('./tools/SocialTools'));
+const FileTools = lazy(() => import('./tools/FileTools'));
 
 interface ToolRendererProps {
   slug: string;
@@ -107,7 +109,9 @@ const ToolRenderer: React.FC<ToolRendererProps> = ({ slug, onSuccess, onError })
           if (cat === 'education') return <EducationTools {...props} />;
           if (cat === 'seo') return <SEOTools {...props} />;
           if (cat === 'office') return <OfficeTools {...props} />;
-          if (['social', 'business'].includes(cat)) return <AITextTools {...props} />;
+          if (cat === 'social') return <SocialTools {...props} />;
+          if (cat === 'file') return <FileTools {...props} />;
+          if (cat === 'business') return <AITextTools {...props} />; // Business plans use AI Text
           return <GeneralTools {...props} />;
         })()}
       </Suspense>

@@ -59,11 +59,8 @@ const Layout: React.FC<LayoutProps> = ({ children, onNavigate, onSearch, searchQ
       e.preventDefault();
       setSelectedIndex(prev => Math.max(prev - 1, 0));
     } else if (e.key === 'Enter') {
-      if (selectedIndex >= 0) {
-        handleSelectSuggestion(suggestions[selectedIndex]);
-      } else {
-        setShowSuggestions(false);
-      }
+      if (selectedIndex >= 0) handleSelectSuggestion(suggestions[selectedIndex]);
+      else setShowSuggestions(false);
     } else if (e.key === 'Escape') {
       setShowSuggestions(false);
     }
@@ -74,9 +71,7 @@ const Layout: React.FC<LayoutProps> = ({ children, onNavigate, onSearch, searchQ
     onSearch(""); 
     if (item.type === 'tool') onNavigate('tool', { slug: item.id });
     else if (item.type === 'category') onNavigate('category', { id: item.id });
-    else if (item.type === 'intent') {
-      onSearch(item.id.replace('intent-', '')); 
-    }
+    else if (item.type === 'intent') onSearch(item.id.replace('intent-', '')); 
   };
 
   return (
@@ -167,6 +162,7 @@ const Layout: React.FC<LayoutProps> = ({ children, onNavigate, onSearch, searchQ
              </button>
 
              {CATEGORIES.map(cat => {
+               // FIX: Ensure all tools in registry for this category are shown in sidebar
                const catTools = TOOLS.filter(t => t.category === cat.id);
                return (
                  <div key={cat.id}>
@@ -183,7 +179,7 @@ const Layout: React.FC<LayoutProps> = ({ children, onNavigate, onSearch, searchQ
                    
                    {expandedCat === cat.id && (
                      <div className="ml-8 space-y-1 py-2 border-l-2 border-slate-100 pl-4 animate-in slide-in-from-left-2 duration-300">
-                       {catTools.length > 0 ? catTools.map(tool => (
+                       {catTools.length > 0 ? catTools.slice(0, 20).map(tool => (
                          <button 
                           key={tool.slug}
                           onClick={() => { onNavigate('tool', { slug: tool.slug }); setIsMenuOpen(false); }}
@@ -198,7 +194,7 @@ const Layout: React.FC<LayoutProps> = ({ children, onNavigate, onSearch, searchQ
                         onClick={() => { onNavigate('category', { id: cat.id }); setIsMenuOpen(false); }} 
                         className="w-full text-left p-2.5 text-[9px] font-black text-indigo-400 uppercase hover:underline"
                        >
-                         View Hub Hub →
+                         Explore Category Hub →
                        </button>
                      </div>
                    )}
