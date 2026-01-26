@@ -30,14 +30,14 @@ interface ToolRendererProps {
 const ToolRenderer: React.FC<ToolRendererProps> = ({ slug, onSuccess, onError }) => {
   const [showKeyInput, setShowKeyInput] = useState(false);
   const [customKey, setCustomKey] = useState("");
-  const [keyError, setKeyError] = useState("");
+  const [vaultError, setVaultError] = useState("");
 
   const tool = TOOLS.find(t => t.slug === slug);
-  if (!tool) return <div className="p-20 text-center text-slate-400">Logic Node Disconnected...</div>;
+  if (!tool) return <div className="p-20 text-center text-slate-400">Logic Cluster Unavailable.</div>;
 
   const handleKeySave = () => {
     if (!canRotateKey()) {
-      setKeyError("Daily limit reached. You can only rotate 3 keys per day.");
+      setVaultError("Security Limit: 3 Keys per day maximum reached.");
       return;
     }
 
@@ -45,58 +45,55 @@ const ToolRenderer: React.FC<ToolRendererProps> = ({ slug, onSuccess, onError })
       localStorage.setItem('tv_custom_gemini_key', customKey.trim());
       incrementKeyRotation();
       setShowKeyInput(false);
-      onSuccess("Neural Core Re-authenticated! Restarting...");
-      setTimeout(() => window.location.reload(), 1000);
+      onSuccess("Neural Core Authorized! Synchronizing...");
+      setTimeout(() => window.location.reload(), 800);
     } else {
-      setKeyError("Invalid format. Gemini keys must start with 'AIza'.");
+      setVaultError("Malformed API Key. Format: AIza...");
     }
   };
 
   const augmentedOnError = (msg: string, needsKey?: boolean) => {
-    if (needsKey) {
-      setShowKeyInput(true);
-    }
+    if (needsKey) setShowKeyInput(true);
     onError(msg);
   };
 
   return (
     <div className="relative">
+      {/* Neural Vault: AI Key Entry */}
       {showKeyInput && (
-        <div className="absolute inset-0 z-[100] bg-white/98 backdrop-blur-xl flex flex-col items-center justify-center p-8 md:p-12 text-center rounded-[3rem] animate-in zoom-in-95 duration-300">
-           <div className="w-20 h-20 bg-rose-50 rounded-full flex items-center justify-center text-3xl mb-8 animate-pulse">⚡</div>
-           <h2 className="text-3xl font-black text-slate-900 mb-4">Neural Quota Exhausted</h2>
-           <p className="text-slate-500 mb-10 max-w-sm font-medium">System credits for today are used up. To continue, insert your own free API key from Google AI Studio.</p>
+        <div className="absolute inset-0 z-[100] bg-white/98 backdrop-blur-2xl flex flex-col items-center justify-center p-8 md:p-12 text-center rounded-[4rem] animate-in zoom-in-95 duration-500 shadow-2xl">
+           <div className="w-20 h-20 bg-indigo-50 rounded-full flex items-center justify-center text-4xl mb-8 animate-pulse">🔒</div>
+           <h2 className="text-4xl font-black text-slate-900 mb-4 tracking-tighter">System Credits Exhausted</h2>
+           <p className="text-slate-500 mb-10 max-w-sm font-medium">Free system pool is depleted for the hour. Securely insert your own free Gemini API key to continue processing.</p>
            
            <div className="w-full max-w-md space-y-4">
              <input 
                type="password"
                value={customKey}
-               onChange={e => { setCustomKey(e.target.value); setKeyError(""); }}
-               placeholder="Enter API Key (AIza...)"
-               className={`w-full p-6 bg-slate-50 border-2 ${keyError ? 'border-rose-500' : 'border-slate-100'} rounded-2xl font-mono text-sm focus:border-indigo-600 outline-none transition-all shadow-inner`}
+               onChange={e => { setCustomKey(e.target.value); setVaultError(""); }}
+               placeholder="Enter Gemini API Key (AIza...)"
+               className={`w-full p-6 bg-slate-50 border-2 ${vaultError ? 'border-rose-500' : 'border-slate-100'} rounded-2xl font-mono text-sm focus:border-indigo-600 outline-none transition-all shadow-inner`}
              />
-             {keyError && <p className="text-rose-600 text-[10px] font-black uppercase tracking-widest">{keyError}</p>}
+             {vaultError && <p className="text-rose-600 text-[10px] font-black uppercase tracking-widest">{vaultError}</p>}
            </div>
            
-           <div className="flex flex-col sm:flex-row gap-4 mt-8 w-full max-w-md">
-             <button onClick={handleKeySave} className="flex-1 py-5 bg-indigo-600 text-white rounded-2xl font-black text-xs uppercase tracking-[0.2em] shadow-2xl hover:bg-indigo-700 transition-all active:scale-95">Activate Node</button>
-             <a href="https://aistudio.google.com/app/apikey" target="_blank" rel="noopener" className="flex-1 py-5 bg-slate-900 text-white rounded-2xl font-black text-xs uppercase tracking-[0.2em] hover:bg-slate-800 transition-all flex items-center justify-center">Get Free Key</a>
+           <div className="flex flex-col sm:flex-row gap-4 mt-10 w-full max-w-md">
+             <button onClick={handleKeySave} className="flex-1 py-5 bg-indigo-600 text-white rounded-2xl font-black text-xs uppercase tracking-[0.2em] shadow-xl hover:bg-indigo-700 transition-all active:scale-95">Verify & Activate</button>
+             <a href="https://aistudio.google.com/app/apikey" target="_blank" rel="noopener" className="flex-1 py-5 bg-slate-900 text-white rounded-2xl font-black text-xs uppercase tracking-[0.2em] flex items-center justify-center gap-2">
+               Get Free Key <span>↗</span>
+             </a>
            </div>
-           
-           <p className="mt-8 text-[9px] font-black text-slate-300 uppercase tracking-[0.3em]">Keys are stored in your local browser sandbox only.</p>
+           <p className="mt-8 text-[9px] font-black text-slate-300 uppercase tracking-[0.4em]">Keys are stored locally. Zero cloud transmission.</p>
         </div>
       )}
 
       <Suspense fallback={
-        <div className="flex flex-col items-center justify-center h-[500px] space-y-6">
+        <div className="flex flex-col items-center justify-center h-[500px] gap-6">
           <div className="relative">
-            <div className="w-16 h-16 border-4 border-indigo-100 rounded-full"></div>
+            <div className="w-16 h-16 border-4 border-indigo-50 rounded-full"></div>
             <div className="absolute top-0 left-0 w-16 h-16 border-4 border-indigo-600 border-t-transparent rounded-full animate-spin"></div>
           </div>
-          <div className="text-center">
-            <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.4em] mb-2">Syncing Logic Hub</p>
-            <p className="text-xs text-slate-300 font-bold">Warping to category-specific isolate...</p>
-          </div>
+          <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Orchestrating Logic Environment...</p>
         </div>
       }>
         {(() => {

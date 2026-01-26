@@ -1,5 +1,5 @@
 
-import React, { useState, useEffect, Suspense, startTransition } from 'react';
+import React, { useState, useEffect, Suspense, startTransition, useMemo } from 'react';
 import Layout from './components/Layout';
 import Home from './pages/Home';
 import CategoryPage from './pages/CategoryPage';
@@ -29,31 +29,26 @@ const App: React.FC = () => {
   });
 
   const handlePathChange = () => {
-    // RESOLUTION: Deep-path detection for refresh stability
     const path = window.location.pathname;
     trackPageView(path);
 
     startTransition(() => {
-      // 1. Master Route Map
+      // Robust Regex-based Route Matching for Refresh Persistence
       if (path === '/' || path === '' || path.endsWith('index.html')) {
         setNav({ page: 'home' });
-      } else if (path.match(/^\/category\/[a-z-]+/)) {
-        const id = path.split('/').pop() as CategorySlug;
+      } else if (path.match(/^\/category\/([a-z-]+)/)) {
+        const id = path.split('/').filter(Boolean).pop() as CategorySlug;
         setNav({ page: 'category', params: { id } });
-      } else if (path.match(/^\/tools\/[a-z-]+/)) {
-        const slug = path.split('/').pop() || '';
+      } else if (path.match(/^\/tools\/([a-z-]+)/)) {
+        const slug = path.split('/').filter(Boolean).pop() || '';
         setNav({ page: 'tool', params: { slug } });
-      } else if (path === '/about') {
-        setNav({ page: 'about' });
-      } else if (path === '/privacy') {
-        setNav({ page: 'privacy' });
-      } else if (path === '/terms') {
-        setNav({ page: 'terms' });
-      } else if (path === '/contact') {
-        setNav({ page: 'contact' });
+      } else if (['/about', '/privacy', '/terms', '/contact'].includes(path)) {
+        const page = path.substring(1) as any;
+        setNav({ page });
       } else {
-        // Fallback for unrecognized paths
+        // Safe 404 Fallback
         setNav({ page: 'home' });
+        if (path !== '/') window.history.replaceState({}, '', '/');
       }
     });
   };
@@ -62,9 +57,9 @@ const App: React.FC = () => {
     window.addEventListener('popstate', handlePathChange);
     handlePathChange();
 
-    const hasSeenTour = localStorage.getItem('tv_tour_v3_completed');
+    const hasSeenTour = localStorage.getItem('tv_onboarding_v5');
     if (!hasSeenTour) {
-      const timer = setTimeout(() => setShowTour(true), 2000);
+      const timer = setTimeout(() => setShowTour(true), 1200);
       return () => clearTimeout(timer);
     }
 
@@ -90,7 +85,7 @@ const App: React.FC = () => {
     });
   };
 
-  const renderContent = () => {
+  const activeContent = useMemo(() => {
     switch (nav.page) {
       case 'home': return <Home onNavigate={navigate} searchQuery={searchQuery} favorites={favorites} onToggleFavorite={toggleFavorite} recent={[]} />;
       case 'category': return <CategoryPage categoryId={nav.params.id} onNavigate={navigate} favorites={favorites} onToggleFavorite={toggleFavorite} />;
@@ -101,7 +96,7 @@ const App: React.FC = () => {
       case 'contact': return <Contact />;
       default: return <Home onNavigate={navigate} searchQuery="" favorites={[]} onToggleFavorite={()=>{}} recent={[]} />;
     }
-  };
+  }, [nav, searchQuery, favorites]);
 
   return (
     <Layout 
@@ -110,14 +105,15 @@ const App: React.FC = () => {
       onSearch={setSearchQuery}
     >
       <AddonLayer />
-      {showTour && <TourOverlay onClose={() => { setShowTour(false); localStorage.setItem('tv_tour_v3_completed', 'true'); }} />}
+      {showTour && <TourOverlay onClose={() => { setShowTour(false); localStorage.setItem('tv_onboarding_v5', 'true'); }} />}
       
       <Suspense fallback={
-        <div className="flex items-center justify-center min-h-[60vh]">
+        <div className="flex flex-col items-center justify-center min-h-[60vh] gap-4">
           <div className="w-10 h-10 border-4 border-indigo-600 border-t-transparent rounded-full animate-spin"></div>
+          <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Warping to Node...</p>
         </div>
       }>
-        {renderContent()}
+        {activeContent}
       </Suspense>
     </Layout>
   );

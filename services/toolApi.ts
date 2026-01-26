@@ -6,11 +6,11 @@ export interface ToolResponse<T = any> {
   needsKey?: boolean;
 }
 
-const AI_CACHE_KEY = 'tv_ai_cache_v2';
+const AI_CACHE_KEY = 'tv_intelligence_cache_v3';
 
 /**
- * ToolVerse Intelligence Caching System
- * Prevents redundant API calls to save free credits.
+ * Intelligent Caching Layer
+ * Hashes inputs to serve common requests instantly and save credits.
  */
 const getCache = () => {
   const data = localStorage.getItem(AI_CACHE_KEY);
@@ -21,32 +21,29 @@ const setCache = (key: string, val: any) => {
   const cache = getCache();
   cache[key] = { 
     val, 
-    expiry: Date.now() + (1000 * 60 * 60 * 24 * 7), // 7 Day TTL
-    timestamp: new Date().toISOString()
+    expiry: Date.now() + (1000 * 60 * 60 * 24 * 7) // 7-day credit protection
   };
   localStorage.setItem(AI_CACHE_KEY, JSON.stringify(cache));
 };
 
-// Generates a simple hash for input strings to use as cache keys
-const generateHash = (str: string) => {
+const fastHash = (str: string) => {
   let hash = 0;
   for (let i = 0; i < str.length; i++) {
-    const char = str.charCodeAt(i);
-    hash = ((hash << 5) - hash) + char;
-    hash = hash & hash;
+    hash = ((hash << 5) - hash) + str.charCodeAt(i);
+    hash |= 0;
   }
   return hash.toString(36);
 };
 
 export const executeOnEdge = async (toolId: string, category: string, input: any): Promise<ToolResponse> => {
   const inputStr = typeof input === 'string' ? input : JSON.stringify(input);
-  const cacheKey = `${toolId}:${generateHash(inputStr)}`;
+  const cacheKey = `${toolId}:${fastHash(inputStr)}`;
 
-  // 1. Check Intelligence Cache
+  // 1. Credit Saver: Check Cache first
   if (category === 'ai' || toolId.startsWith('ai-')) {
     const cache = getCache();
     if (cache[cacheKey] && cache[cacheKey].expiry > Date.now()) {
-      console.debug("[Intelligence Core] Serving from local edge cache...");
+      console.debug("[Cache Hit] Serving from Intelligence Cache...");
       return { success: true, data: cache[cacheKey].val };
     }
   }
@@ -60,12 +57,7 @@ export const executeOnEdge = async (toolId: string, category: string, input: any
         "Content-Type": "application/json",
         ...(customKey ? { "X-Custom-API-Key": customKey } : {})
       },
-      body: JSON.stringify({
-        toolId,
-        category,
-        input,
-        timestamp: Date.now()
-      }),
+      body: JSON.stringify({ toolId, category, input, timestamp: Date.now() }),
     });
 
     const result = await response.json();
@@ -74,13 +66,13 @@ export const executeOnEdge = async (toolId: string, category: string, input: any
       setCache(cacheKey, result.data);
     }
 
-    // 2. Dynamic Quota Handling
+    // Handle system quota exhaustion
     if (response.status === 429 || result.error?.includes("quota") || result.error?.includes("exhausted")) {
-      return { success: false, error: "System AI Quota Reached.", needsKey: true };
+      return { success: false, error: "System AI Quota Exhausted.", needsKey: true };
     }
 
     return result.success ? { success: true, data: result.data } : { success: false, error: result.error };
   } catch {
-    return { success: false, error: "Edge Gateway Communication Error." };
+    return { success: false, error: "Network Protocol Error." };
   }
 };
