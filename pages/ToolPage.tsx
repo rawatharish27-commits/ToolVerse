@@ -7,6 +7,7 @@ import SEOHead from '../components/SEOHead';
 import ToolSEOContent from '../components/ToolSEOContent';
 import RelatedTools from '../components/RelatedTools';
 import AdSlot from '../components/AdSlot';
+import PostTaskOrchestrator from '../components/PostTaskOrchestrator';
 import { AD_CONFIG } from '../config/ads';
 import { getHighCTRTitle, getBreadcrumbSchema, getAutoFaqSchema } from '../utils/seo';
 
@@ -22,10 +23,12 @@ const ToolPage: React.FC<ToolPageProps> = ({ slug, onNavigate, favorites, onTogg
   const category = CATEGORIES.find(c => c.id === tool?.category);
 
   const [success, setSuccess] = useState<string | null>(null);
+  const [showPostTask, setShowPostTask] = useState(false);
 
   useEffect(() => {
     if (tool) {
       window.scrollTo({ top: 0, behavior: 'smooth' });
+      setShowPostTask(false); // Reset on tool switch
     }
   }, [tool]);
 
@@ -49,12 +52,18 @@ const ToolPage: React.FC<ToolPageProps> = ({ slug, onNavigate, favorites, onTogg
 
   const handleSuccess = (msg: string) => {
     setSuccess(msg);
-    setTimeout(() => setSuccess(null), 3000);
+    // After a delay, trigger suggestions/rating
+    setTimeout(() => {
+      setSuccess(null);
+      setShowPostTask(true);
+    }, 2000);
   };
 
   return (
     <div className="max-w-[1600px] mx-auto px-6 py-12">
       <SEOHead title={seoData.title} description={tool.description} url={seoData.url} type="article" schemas={[seoData.breadcrumb, seoData.faq]} />
+      
+      {showPostTask && <PostTaskOrchestrator tool={tool} onNavigate={onNavigate} onClose={() => setShowPostTask(false)} />}
 
       {/* PERSISTENT BACK CONTROLS */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-16">
@@ -84,14 +93,12 @@ const ToolPage: React.FC<ToolPageProps> = ({ slug, onNavigate, favorites, onTogg
 
       <div className="flex flex-col lg:flex-row gap-20">
         <div className="flex-grow w-full max-w-5xl">
-          
           <h1 className="text-5xl md:text-8xl font-black text-slate-900 mb-12 tracking-tighter leading-[0.9]">
             {tool.title}
           </h1>
 
           <AdSlot id={AD_CONFIG.slots.header} className="mb-16" />
 
-          {/* MAIN WORKSPACE - LAZY LOADED VIA ToolRenderer */}
           <div className="bg-white rounded-[4rem] p-8 md:p-20 shadow-2xl border border-slate-100 min-h-[600px] relative overflow-hidden">
             <div className="absolute top-0 right-0 p-10 opacity-[0.03] pointer-events-none">
                <div className="text-[15rem] font-black italic">{category.icon}</div>
@@ -100,11 +107,8 @@ const ToolPage: React.FC<ToolPageProps> = ({ slug, onNavigate, favorites, onTogg
           </div>
 
           <AdSlot id={AD_CONFIG.slots.mid_content} variant="result-based" className="my-24" />
-
           <ToolSEOContent tool={tool} />
-          
           <AdSlot id={AD_CONFIG.slots.footer} className="my-24" />
-
           <RelatedTools currentSlug={tool.slug} category={tool.category} onNavigate={onNavigate} />
         </div>
 

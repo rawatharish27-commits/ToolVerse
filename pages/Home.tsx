@@ -1,5 +1,5 @@
 
-import React, { useMemo, useDeferredValue } from 'react';
+import React, { useMemo, useDeferredValue, useState, useEffect } from 'react';
 import { CATEGORIES } from '../data/categories';
 import { TOOLS } from '../data/tools';
 import ToolCard from '../components/ToolCard';
@@ -21,7 +21,6 @@ const Home: React.FC<HomeProps> = ({ onNavigate, searchQuery = '', favorites, on
   const deferredSearch = useDeferredValue(searchQuery);
 
   const topTools = useMemo(() => {
-    // Only show top 24 tools initially to prevent hanging
     return TOOLS.sort((a,b) => (b.priority || 0) - (a.priority || 0)).slice(0, 24);
   }, []);
 
@@ -44,54 +43,48 @@ const Home: React.FC<HomeProps> = ({ onNavigate, searchQuery = '', favorites, on
       <SEOHead title="ToolVerse | Global Utility Command Center" description="Access the world's most powerful collection of browser-native professional tools. Private, instant, and high-performance." url="https://toolverse-4gr.pages.dev/" />
 
       {/* ENHANCED HERO */}
-      <section className="relative min-h-[90vh] flex flex-col items-center justify-center bg-slate-50 border-b border-slate-100 overflow-hidden px-6">
-        <div className="absolute inset-0 z-0 pointer-events-none opacity-40">
-           <div className="absolute top-1/4 left-1/4 w-[50vw] h-[50vw] bg-indigo-200/50 rounded-full blur-[120px] animate-pulse"></div>
-           <div className="absolute bottom-1/4 right-1/4 w-[40vw] h-[40vw] bg-emerald-200/50 rounded-full blur-[100px] animate-pulse delay-700"></div>
+      <section className="relative min-h-[95vh] flex flex-col items-center justify-center bg-slate-950 overflow-hidden px-6">
+        <div className="absolute inset-0 z-0 pointer-events-none">
+           <div className="absolute top-1/4 left-1/4 w-[60vw] h-[60vw] bg-indigo-600/20 rounded-full blur-[150px] animate-pulse"></div>
+           <div className="absolute bottom-1/4 right-1/4 w-[50vw] h-[50vw] bg-emerald-600/10 rounded-full blur-[130px] animate-pulse delay-700"></div>
         </div>
 
         <div className="max-w-7xl mx-auto text-center relative z-10">
-          <div className="inline-flex items-center px-5 py-2 rounded-full bg-white border border-slate-200 text-indigo-600 text-[11px] font-black uppercase tracking-[0.3em] mb-12 shadow-sm animate-in fade-in slide-in-from-bottom-4 duration-700">
-             <span className="w-2 h-2 bg-indigo-600 rounded-full mr-3 animate-ping"></span>
-             Unified Logic Ecosystem Active
+          <div className="inline-flex items-center px-6 py-3 rounded-full bg-white/5 border border-white/10 text-indigo-400 text-[11px] font-black uppercase tracking-[0.3em] mb-12 shadow-2xl backdrop-blur-xl animate-in fade-in slide-in-from-bottom-4 duration-700">
+             <span className="w-2.5 h-2.5 bg-indigo-500 rounded-full mr-3 animate-ping shadow-[0_0_10px_#6366f1]"></span>
+             Neural Node Network Active
           </div>
           
-          <h1 className="text-7xl md:text-[10rem] font-black text-slate-900 tracking-tighter mb-12 leading-[0.85] animate-in fade-in slide-in-from-bottom-6 duration-1000">
-            Pure Force. <br /><span className="text-indigo-600 italic">No Latency.</span>
+          <h1 className="text-7xl md:text-[11rem] font-black text-white tracking-tighter mb-12 leading-[0.8] animate-in fade-in slide-in-from-bottom-6 duration-1000">
+            Digital <br /><span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 to-emerald-400 italic">Omnipotence.</span>
           </h1>
           
-          <p className="text-xl md:text-3xl text-slate-500 font-medium max-w-3xl mx-auto mb-20 animate-in fade-in slide-in-from-bottom-8 duration-1000 delay-200 leading-relaxed">
-            Architect your digital workflow with 500+ logic nodes. <br className="hidden md:block" /> 
-            100% private. 100% browser-native.
+          <p className="text-xl md:text-3xl text-slate-400 font-medium max-w-4xl mx-auto mb-20 animate-in fade-in slide-in-from-bottom-8 duration-1000 delay-200 leading-relaxed">
+            Orchestrate over 500 logical nodes with zero latency. <br className="hidden md:block" /> 
+            100% Private Processing. 100% Browser Native.
           </p>
           
           <div className="flex flex-col sm:flex-row items-center justify-center gap-6 mb-24 animate-in fade-in slide-in-from-bottom-10 duration-1000 delay-300">
              <button 
               onClick={scrollToContent}
-              className="px-12 py-6 bg-slate-900 text-white rounded-[2rem] font-black text-xl shadow-2xl hover:bg-indigo-600 hover:-translate-y-2 transition-all group flex items-center gap-4"
+              className="px-14 py-7 bg-indigo-600 text-white rounded-[2.5rem] font-black text-xl shadow-[0_30px_60px_-15px_rgba(99,102,241,0.5)] hover:bg-indigo-700 hover:-translate-y-2 transition-all group flex items-center gap-4"
              >
-               Launch Workspace
+               Launch Core Workspace
                <span className="group-hover:translate-x-2 transition-transform">→</span>
              </button>
              <button 
               onClick={() => window.dispatchEvent(new Event('tv_open_menu'))}
-              className="px-12 py-6 bg-white text-slate-900 border-2 border-slate-100 rounded-[2rem] font-black text-xl shadow-xl hover:border-indigo-100 hover:-translate-y-2 transition-all"
+              className="px-14 py-7 bg-white/5 text-white border border-white/10 rounded-[2.5rem] font-black text-xl shadow-xl hover:bg-white/10 hover:-translate-y-2 transition-all backdrop-blur-sm"
              >
                Browse Directory
              </button>
           </div>
         </div>
 
-        {/* SCROLL INDICATOR */}
-        <button 
-          onClick={scrollToContent}
-          className="absolute bottom-12 left-1/2 -translate-x-1/2 flex flex-col items-center gap-4 opacity-50 hover:opacity-100 transition-opacity animate-bounce"
-        >
-          <span className="text-[10px] font-black text-slate-400 uppercase tracking-[0.4em]">Scroll to Discover</span>
-          <div className="w-6 h-10 border-2 border-slate-300 rounded-full flex justify-center pt-2">
-            <div className="w-1 h-2 bg-indigo-500 rounded-full"></div>
-          </div>
-        </button>
+        {/* LIVE STATUS BAR INTEGRATED INTO HERO */}
+        <div className="w-full absolute bottom-0 left-0">
+          <SiteStatus />
+        </div>
       </section>
 
       <div id="main-content" className="max-w-[1600px] mx-auto px-6 py-32">
@@ -102,8 +95,8 @@ const Home: React.FC<HomeProps> = ({ onNavigate, searchQuery = '', favorites, on
             <section className="animate-in fade-in slide-in-from-bottom-10 duration-700">
               <div className="flex items-center gap-6 mb-16">
                 <div className="w-2 h-10 bg-indigo-600 rounded-full"></div>
-                <h2 className="text-5xl font-black text-slate-900 tracking-tight">Active Search Results</h2>
-                <div className="px-4 py-2 bg-slate-100 rounded-xl text-[10px] font-black text-slate-400 uppercase tracking-widest">{searchResults.length} Matches</div>
+                <h2 className="text-5xl font-black text-slate-900 tracking-tight">Search Query Matched</h2>
+                <div className="px-4 py-2 bg-slate-100 rounded-xl text-[10px] font-black text-slate-400 uppercase tracking-widest">{searchResults.length} Logic Nodes Found</div>
               </div>
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-10">
                 {searchResults.map(tool => (
@@ -118,8 +111,8 @@ const Home: React.FC<HomeProps> = ({ onNavigate, searchQuery = '', favorites, on
             <section className="animate-in fade-in duration-1000">
               <div className="flex flex-col md:flex-row md:items-end justify-between mb-20 border-b border-slate-100 pb-12 gap-8">
                  <div className="space-y-3">
-                    <h2 className="text-5xl md:text-7xl font-black text-slate-900 tracking-tighter">Elite Performance Nodes.</h2>
-                    <p className="text-xl text-slate-400 font-medium max-w-xl leading-relaxed">Highly optimized, low-latency tools synchronized for professional workflows.</p>
+                    <h2 className="text-5xl md:text-7xl font-black text-slate-900 tracking-tighter leading-none">Elite Logistics.</h2>
+                    <p className="text-xl text-slate-400 font-medium max-w-xl leading-relaxed">The primary utility nodes for high-impact professional output.</p>
                  </div>
               </div>
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-10">
@@ -140,8 +133,8 @@ const Home: React.FC<HomeProps> = ({ onNavigate, searchQuery = '', favorites, on
           {!deferredSearch && (
             <section className="animate-in fade-in duration-1000 delay-200">
                <div className="text-center mb-24">
-                  <h2 className="text-5xl md:text-7xl font-black text-slate-900 tracking-tighter mb-6">Intelligence Clusters</h2>
-                  <p className="text-lg text-slate-400 font-bold uppercase tracking-widest">Warp between domain-specific workspaces</p>
+                  <h2 className="text-5xl md:text-7xl font-black text-slate-900 tracking-tighter mb-6 leading-none">Cluster Gateways</h2>
+                  <p className="text-lg text-slate-400 font-bold uppercase tracking-widest">Instant warp to domain-specific environments</p>
                </div>
                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-8">
                  {CATEGORIES.map(cat => (
@@ -165,7 +158,6 @@ const Home: React.FC<HomeProps> = ({ onNavigate, searchQuery = '', favorites, on
           <InternalLinking onNavigate={onNavigate} />
         </div>
       </div>
-      <SiteStatus />
     </div>
   );
 };
