@@ -79,8 +79,7 @@ const Layout: React.FC<LayoutProps> = ({ children, onNavigate, onSearch, searchQ
     if (item.type === 'tool') onNavigate('tool', { slug: item.id });
     else if (item.type === 'category') onNavigate('category', { id: item.id });
     else if (item.type === 'intent') {
-      // For intents, we find the primary tool matching that intent
-      onSearch(item.id.replace('intent-', '')); // Actually set search to the intent keywords
+      onSearch(item.id.replace('intent-', '')); 
     }
   };
 
@@ -114,7 +113,7 @@ const Layout: React.FC<LayoutProps> = ({ children, onNavigate, onSearch, searchQ
                 onChange={handleSearchChange}
                 onKeyDown={handleKeyDown}
                 onFocus={() => searchQuery.length > 0 && setShowSuggestions(true)}
-                placeholder="Type 'fix photo' or 'pdf merge'..." 
+                placeholder="Search 500+ logic nodes..." 
                 className="w-full pl-11 pr-5 py-3 bg-slate-100 border-none rounded-2xl focus:ring-4 focus:ring-indigo-500/10 focus:bg-white transition-all font-bold text-slate-700 text-sm shadow-inner"
               />
               <svg className={`absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 transition-colors ${searchQuery ? 'text-indigo-500' : 'text-slate-300'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" strokeWidth="3" strokeLinecap="round"/></svg>
@@ -125,7 +124,7 @@ const Layout: React.FC<LayoutProps> = ({ children, onNavigate, onSearch, searchQ
               <div className="absolute top-full left-0 right-0 mt-2 bg-white rounded-[2rem] shadow-3xl border border-slate-100 overflow-hidden animate-in fade-in slide-in-from-top-2 duration-300 z-[300]">
                 <div className="p-2">
                   <div className="px-4 py-2 text-[9px] font-black text-slate-400 uppercase tracking-widest border-b border-slate-50 mb-1">
-                    Smart Suggestions
+                    Direct Navigation
                   </div>
                   {suggestions.map((item, idx) => (
                     <div 
@@ -140,22 +139,11 @@ const Layout: React.FC<LayoutProps> = ({ children, onNavigate, onSearch, searchQ
                       <div className="flex-grow">
                         <div className="text-xs font-black text-slate-900 leading-none mb-1">
                           {item.title}
-                          {item.type === 'intent' && <span className="ml-2 text-[8px] bg-amber-500 text-white px-1.5 py-0.5 rounded uppercase">Solution</span>}
                         </div>
                         <div className="text-[10px] text-slate-400 font-bold uppercase tracking-tight">{item.subtitle}</div>
                       </div>
-                      <div className="text-slate-200">
-                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M9 5l7 7-7 7" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"/></svg>
-                      </div>
                     </div>
                   ))}
-                </div>
-                <div className="bg-slate-50 p-3 flex justify-between items-center text-[8px] font-black text-slate-400 uppercase tracking-widest px-6">
-                  <span>Enter to launch</span>
-                  <div className="flex gap-2">
-                    <span className="px-1.5 py-0.5 bg-white border border-slate-200 rounded">↑↓ Navigate</span>
-                    <span className="px-1.5 py-0.5 bg-white border border-slate-200 rounded">ESC Close</span>
-                  </div>
                 </div>
               </div>
             )}
@@ -163,8 +151,8 @@ const Layout: React.FC<LayoutProps> = ({ children, onNavigate, onSearch, searchQ
 
           <div className="flex items-center gap-3">
              <div className="flex flex-col items-end mr-1">
-                <span className="text-[6px] font-black text-indigo-400 uppercase tracking-widest leading-none mb-1">XP POOL</span>
-                <span className="text-[10px] font-bold tracking-tight text-slate-900">{points} PTS</span>
+                <span className="text-[6px] font-black text-indigo-400 uppercase tracking-widest leading-none mb-1">NETWORK NODE</span>
+                <span className="text-[10px] font-bold tracking-tight text-slate-900">{points} XP</span>
              </div>
              <div className="w-8 h-8 bg-slate-900 rounded-lg flex items-center justify-center text-[10px] font-black text-white italic">L{level}</div>
           </div>
@@ -176,40 +164,53 @@ const Layout: React.FC<LayoutProps> = ({ children, onNavigate, onSearch, searchQ
         <div className="absolute inset-0 bg-slate-950/20 backdrop-blur-sm" onClick={() => setIsMenuOpen(false)}></div>
         <aside className={`absolute top-0 left-0 h-full w-full max-w-xs bg-white shadow-3xl transition-transform duration-400 transform ${isMenuOpen ? 'translate-x-0' : '-translate-x-full'} flex flex-col`}>
           <div className="p-6 border-b border-slate-50 flex justify-between items-center bg-slate-50/50">
-             <span className="font-black text-xs text-slate-400 uppercase tracking-[0.3em]">System Directory</span>
+             <span className="font-black text-xs text-slate-400 uppercase tracking-[0.3em]">Command Center</span>
              <button onClick={() => setIsMenuOpen(false)} className="w-8 h-8 flex items-center justify-center text-slate-300 hover:text-rose-500 font-black">✕</button>
           </div>
 
           <nav className="flex-grow overflow-y-auto no-scrollbar p-4 space-y-1">
-             {CATEGORIES.map(cat => (
-               <div key={cat.id}>
-                 <button 
-                  onClick={() => setExpandedCat(expandedCat === cat.id ? null : cat.id)}
-                  className={`w-full p-4 flex items-center justify-between rounded-2xl transition-all ${expandedCat === cat.id ? 'bg-indigo-600 text-white shadow-xl shadow-indigo-600/20' : 'hover:bg-slate-50 text-slate-600'}`}
-                 >
-                   <div className="flex items-center gap-4">
-                     <span className="text-lg">{cat.icon}</span>
-                     <span className="text-[11px] font-black uppercase tracking-widest">{cat.name}</span>
-                   </div>
-                   <span className={`text-[8px] transition-transform duration-300 ${expandedCat === cat.id ? 'rotate-180' : ''}`}>▼</span>
-                 </button>
-                 
-                 {expandedCat === cat.id && (
-                   <div className="ml-8 space-y-1 py-2 border-l-2 border-slate-100 pl-4 animate-in slide-in-from-left-2 duration-300">
-                     {TOOLS.filter(t => t.category === cat.id).slice(0, 15).map(tool => (
-                       <button 
-                        key={tool.slug}
-                        onClick={() => { onNavigate('tool', { slug: tool.slug }); setIsMenuOpen(false); }}
-                        className="w-full text-left p-2.5 text-[11px] font-bold text-slate-400 hover:text-indigo-600 transition-colors truncate"
-                       >
-                         {tool.title}
-                       </button>
-                     ))}
-                     <button onClick={() => { onNavigate('category', { id: cat.id }); setIsMenuOpen(false); }} className="w-full text-left p-2.5 text-[9px] font-black text-indigo-400 uppercase hover:underline">Explore All Cluster Tools →</button>
-                   </div>
-                 )}
-               </div>
-             ))}
+             <button 
+              onClick={() => { onNavigate('home'); setIsMenuOpen(false); }}
+              className="w-full p-4 flex items-center gap-4 rounded-2xl hover:bg-slate-50 text-slate-600 mb-2 transition-all"
+             >
+                <span className="text-lg">🏠</span>
+                <span className="text-[11px] font-black uppercase tracking-widest">Master Core</span>
+             </button>
+
+             {CATEGORIES.map(cat => {
+               const catTools = TOOLS.filter(t => t.category === cat.id);
+               return (
+                 <div key={cat.id}>
+                   <button 
+                    onClick={() => setExpandedCat(expandedCat === cat.id ? null : cat.id)}
+                    className={`w-full p-4 flex items-center justify-between rounded-2xl transition-all ${expandedCat === cat.id ? 'bg-indigo-600 text-white shadow-xl shadow-indigo-600/20' : 'hover:bg-slate-50 text-slate-600'}`}
+                   >
+                     <div className="flex items-center gap-4">
+                       <span className="text-lg">{cat.icon}</span>
+                       <span className="text-[11px] font-black uppercase tracking-widest">{cat.name}</span>
+                     </div>
+                     <span className={`text-[8px] transition-transform duration-300 ${expandedCat === cat.id ? 'rotate-180' : ''}`}>▼</span>
+                   </button>
+                   
+                   {expandedCat === cat.id && (
+                     <div className="ml-8 space-y-1 py-2 border-l-2 border-slate-100 pl-4 animate-in slide-in-from-left-2 duration-300">
+                       {catTools.length > 0 ? catTools.slice(0, 20).map(tool => (
+                         <button 
+                          key={tool.slug}
+                          onClick={() => { onNavigate('tool', { slug: tool.slug }); setIsMenuOpen(false); }}
+                          className="w-full text-left p-2.5 text-[11px] font-bold text-slate-400 hover:text-indigo-600 transition-colors truncate"
+                         >
+                           {tool.title}
+                         </button>
+                       )) : (
+                         <span className="block p-2 text-[10px] text-slate-300 italic">Syncing nodes...</span>
+                       )}
+                       <button onClick={() => { onNavigate('category', { id: cat.id }); setIsMenuOpen(false); }} className="w-full text-left p-2.5 text-[9px] font-black text-indigo-400 uppercase hover:underline">Explore Category Hub →</button>
+                     </div>
+                   )}
+                 </div>
+               );
+             })}
           </nav>
         </aside>
       </div>

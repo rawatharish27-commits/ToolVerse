@@ -2,208 +2,86 @@
 import { Tool } from '../types';
 
 /**
- * TOOLVERSE MASTER LOGIC REGISTRY
- * All tool implementations reside here for a single source of truth.
- * High-performance browser-native logic using WASM, WebCrypto, and Heuristic Engines.
+ * TOOLVERSE MASTER LOGIC REGISTRY v5.0
+ * Populated to cover all 18 categories defined in the ecosystem.
  */
 export const TOOLS: Tool[] = [
-  // ==========================================
-  // GOVERNMENT / FORM PAIN CLUSTER (1-10)
-  // ==========================================
-  {
-    slug: 'why-upload-rejected-analyzer',
-    title: 'Why My Upload Is Rejected? Analyzer',
-    category: 'utility',
-    description: 'Stop the rejection loop. Analyze your file against 15+ common portal rules to find hidden errors.',
-    keywords: ['rejected', 'error', 'upload', 'government', 'ssc'],
-    toolType: 'client',
-    priority: 100,
-    execute: async (file: File, options: any) => {
-      const { govtCluster } = await import('../tools/executors/govtCluster');
-      return govtCluster.analyzeRejection(file, options);
-    }
-  },
-  {
-    slug: 'govt-form-rule-decoder',
-    title: 'Govt Form File Rule Decoder',
-    category: 'utility',
-    description: 'Get exact technical specs for UPSC, SSC, Banking, and State portals in plain English.',
-    keywords: ['rules', 'decoder', 'portal', 'dimensions'],
-    toolType: 'client',
-    priority: 95,
-    execute: async (options: any) => {
-      const { govtCluster } = await import('../tools/executors/govtCluster');
-      return govtCluster.decodeRules(options);
-    }
-  },
-  {
-    slug: 'signature-upload-fix-tool',
-    title: 'Signature Upload Fix Tool',
-    category: 'image',
-    description: 'Auto-adjust contrast and crop signatures to meet strict government portal guidelines.',
-    keywords: ['signature', 'fix', 'crop', 'ink'],
-    toolType: 'client',
-    priority: 98,
-    execute: async (file: File) => {
-      const { govtCluster } = await import('../tools/executors/govtCluster');
-      return govtCluster.fixSignature(file);
-    }
-  },
+  // AI TOOLS
+  { slug: 'ai-article-generator', title: 'AI Article Writer Pro', category: 'ai', description: 'Generate 1500+ word SEO-optimized articles instantly.', keywords: ['writer', 'blog', 'seo'], toolType: 'ai', priority: 100 },
+  { slug: 'ai-code-debugger', title: 'AI Smart Code Debugger', category: 'ai', description: 'Fix complex logic bugs in 20+ programming languages.', keywords: ['debug', 'fix', 'code'], toolType: 'ai', priority: 95 },
+  { slug: 'ai-image-generator', title: 'AI Text-to-Image Studio', category: 'ai', description: 'Create cinematic visuals from text prompts.', keywords: ['image', 'art', 'gen'], toolType: 'ai', priority: 98 },
 
-  // ==========================================
-  // IMAGE / MEDIA VIRAL PROBLEMS (11-20)
-  // ==========================================
-  {
-    slug: 'blurry-after-upload-simulator',
-    title: 'Why Image Looks Blurry After Upload? Simulator',
-    category: 'image',
-    description: 'See how Instagram or WhatsApp compression will affect your photo before you hit send.',
-    keywords: ['blurry', 'compression', 'simulator', 'whatsapp', 'instagram'],
-    toolType: 'client',
-    priority: 92,
-    execute: async (file: File, options: any) => {
-      const { mediaAdvancedCluster } = await import('../tools/executors/mediaAdvancedCluster');
-      return mediaAdvancedCluster.simulateBlur(file, options);
-    }
-  },
-  {
-    slug: 'image-stretching-predictor',
-    title: 'Image Stretching Issue Predictor',
-    category: 'image',
-    description: 'Predict if your photo will look "squashed" or "stretched" on a portal based on aspect ratios.',
-    keywords: ['stretch', 'aspect ratio', 'distortion'],
-    toolType: 'client',
-    execute: async (options: any) => {
-      const { mediaAdvancedCluster } = await import('../tools/executors/mediaAdvancedCluster');
-      return mediaAdvancedCluster.predictStretch(options);
-    }
-  },
+  // IMAGE TOOLS
+  { slug: 'image-compressor', title: 'Pro Image Compressor', category: 'image', description: 'Reduce image size by 90% without quality loss.', keywords: ['compress', 'kb', 'resize'], toolType: 'client', priority: 99 },
+  { slug: 'passport-size-photo-maker', title: 'Passport Photo Studio', category: 'image', description: 'Create official passport photos for Indian & US standards.', keywords: ['passport', 'photo', 'govt'], toolType: 'client', priority: 97 },
+  { slug: 'image-to-webp', title: 'High-Speed WebP Converter', category: 'image', description: 'Convert images to next-gen formats for web performance.', keywords: ['webp', 'convert', 'format'], toolType: 'client' },
 
-  // ==========================================
-  // PDF / DOCUMENT PAIN CLUSTER (21-30)
-  // ==========================================
-  {
-    slug: 'pdf-not-opening-checker',
-    title: 'Why PDF Is Not Opening on Portal? Checker',
-    category: 'pdf',
-    description: 'Diagnose structural errors, version mismatch, or encryption locks in PDF files.',
-    keywords: ['pdf', 'not opening', 'error', 'portal'],
-    toolType: 'client',
-    execute: async (file: File) => {
-      const { pdfAdvancedCluster } = await import('../tools/executors/pdfAdvancedCluster');
-      return pdfAdvancedCluster.checkOpening(file);
-    }
-  },
-  {
-    slug: 'pdf-print-cutoff-predictor',
-    title: 'PDF Print Cut-Off Predictor',
-    category: 'pdf',
-    description: 'Will your header or footer get sliced? Predict printer behavior based on margins.',
-    keywords: ['print', 'cutoff', 'margins', 'pdf'],
-    toolType: 'client',
-    execute: async (options: any) => {
-      const { pdfAdvancedCluster } = await import('../tools/executors/pdfAdvancedCluster');
-      return pdfAdvancedCluster.predictCutoff(options);
-    }
-  },
+  // VIDEO TOOLS
+  { slug: 'video-compressor', title: 'Professional Video Compressor', category: 'video', description: 'Compress MP4/MOV files locally in your browser.', keywords: ['video', 'mp4', 'compress'], toolType: 'client', priority: 90 },
+  { slug: 'video-to-gif-high-res', title: 'Video to High-Res GIF', category: 'video', description: 'Transform clips into cinematic animated GIFs.', keywords: ['gif', 'maker', 'video'], toolType: 'client' },
 
-  // ==========================================
-  // JOB / CAREER PAIN CLUSTER (31-40)
-  // ==========================================
-  {
-    slug: 'resume-rejection-analyzer',
-    title: 'Resume Rejection Reason Analyzer',
-    category: 'office',
-    description: 'Identify ATS gaps, formatting risks, and keyword misses that get resumes rejected.',
-    keywords: ['resume', 'rejection', 'ats', 'job', 'hiring'],
-    toolType: 'client',
-    priority: 99,
-    execute: async (options: any) => {
-      const { careerAdvancedCluster } = await import('../tools/executors/careerAdvancedCluster');
-      return careerAdvancedCluster.analyzeResume(options);
-    }
-  },
-  {
-    slug: 'ats-keyword-gap-finder',
-    title: 'ATS Keyword Gap Finder',
-    category: 'office',
-    description: 'Find missing skills in your resume compared to a Job Description.',
-    keywords: ['ats', 'keywords', 'resume', 'skills'],
-    toolType: 'client',
-    execute: async (input: string) => {
-      const { careerAdvancedCluster } = await import('../tools/executors/careerAdvancedCluster');
-      return careerAdvancedCluster.findKeywordGap(input);
-    }
-  },
+  // AUDIO TOOLS
+  { slug: 'audio-converter', title: 'Pro Audio Converter', category: 'audio', description: 'Transcode between MP3, WAV, AAC, and OGG.', keywords: ['audio', 'mp3', 'wav'], toolType: 'client' },
+  { slug: 'audio-noise-remover', title: 'AI Audio Denoiser', category: 'audio', description: 'Remove background hiss and hum from recordings.', keywords: ['audio', 'noise', 'clean'], toolType: 'ai' },
 
-  // ==========================================
-  // FINANCE CONFUSION CLUSTER (41-50)
-  // ==========================================
-  {
-    slug: 'why-emi-high-explainer',
-    title: 'Why EMI So High? Explainer Tool',
-    category: 'calculators',
-    description: 'Uncover the math of front-loaded interest and loan tenures.',
-    keywords: ['emi', 'loan', 'interest', 'high emi'],
-    toolType: 'client',
-    priority: 88,
-    execute: async (options: any) => {
-      const { financeAdvancedCluster } = await import('../tools/executors/financeAdvancedCluster');
-      return financeAdvancedCluster.explainEmi(options);
-    }
-  },
-  {
-    slug: 'no-cost-emi-reality-checker',
-    title: '“No Cost EMI” Reality Checker',
-    category: 'calculators',
-    description: 'Expose hidden processing fees and pre-discount traps in "Zero Interest" deals.',
-    keywords: ['no cost emi', 'hidden cost', 'emi reality'],
-    toolType: 'client',
-    execute: async (options: any) => {
-      const { financeAdvancedCluster } = await import('../tools/executors/financeAdvancedCluster');
-      return financeAdvancedCluster.checkNoCostEmi(options);
-    }
-  },
+  // PDF TOOLS
+  { slug: 'pdf-merger', title: 'Advanced PDF Merger', category: 'pdf', description: 'Combine multiple PDF documents into one.', keywords: ['pdf', 'merge', 'join'], toolType: 'client', priority: 94 },
+  { slug: 'pdf-compressor', title: 'Structural PDF Reducer', category: 'pdf', description: 'Reduce PDF size for strict portal uploads.', keywords: ['pdf', 'compress', 'size'], toolType: 'client', priority: 92 },
+  { slug: 'pdf-to-jpg-converter', title: 'PDF to JPG (Batch)', category: 'pdf', description: 'Convert all PDF pages into separate images.', keywords: ['pdf', 'image', 'jpg'], toolType: 'client' },
 
-  // ==========================================
-  // DAILY LIFE CLUSTER (51-60)
-  // ==========================================
-  {
-    slug: 'internet-slow-analyzer',
-    title: 'Why Internet Slow Despite High Speed? Analyzer',
-    category: 'network',
-    description: 'Diagnose DNS latency, ISP throttling, and hardware bottlenecks.',
-    keywords: ['slow internet', 'wifi', 'dns', 'buffer'],
-    toolType: 'client',
-    execute: async (options: any) => {
-      const { dailyLifeAdvancedCluster } = await import('../tools/executors/dailyLifeAdvancedCluster');
-      return dailyLifeAdvancedCluster.analyzeInternet(options);
-    }
-  },
-  {
-    slug: 'otp-not-coming-flow-analyzer',
-    title: 'Why OTP Not Coming? Flow Analyzer',
-    category: 'network',
-    description: 'Trace potential blocks like DND, carrier filters, or signal latency.',
-    keywords: ['otp', 'sms', 'not coming', 'dnd'],
-    toolType: 'client',
-    execute: async () => {
-      const { dailyLifeAdvancedCluster } = await import('../tools/executors/dailyLifeAdvancedCluster');
-      return dailyLifeAdvancedCluster.analyzeOtpFlow();
-    }
-  },
+  // DEV TOOLS
+  { slug: 'json-formatter', title: 'JSON Logic Formatter', category: 'dev', description: 'Clean, format, and validate JSON structures.', keywords: ['json', 'dev', 'format'], toolType: 'client', priority: 85 },
+  { slug: 'jwt-decoder', title: 'JWT Debugger & Inspector', category: 'dev', description: 'Inspect JWT headers and payloads instantly.', keywords: ['jwt', 'auth', 'dev'], toolType: 'client' },
 
-  // Maintain core legacy tools
-  { 
-    slug: 'salary-calculator', 
-    title: 'Salary Calculator (CTC to In-Hand)', 
-    category: 'calculators', 
-    description: 'India-specific tax breakdown FY 24-25.', 
-    keywords: ['salary', 'tax', 'in-hand'], 
-    toolType: 'client',
-    execute: async (options: any) => {
-      const { financeAdvancedCluster } = await import('../tools/executors/financeAdvancedCluster');
-      return financeAdvancedCluster.calcSalary(options);
-    }
-  }
+  // SEO TOOLS
+  { slug: 'xml-sitemap-generator', title: 'Pro XML Sitemap Generator', category: 'seo', description: 'Create search-engine ready sitemaps for your site.', keywords: ['seo', 'sitemap', 'google'], toolType: 'client' },
+  { slug: 'seo-title-length-checker', title: 'SERP Title Optimizer', category: 'seo', description: 'Check title truncation for Google Search.', keywords: ['seo', 'title', 'meta'], toolType: 'client' },
+
+  // CALCULATORS
+  { slug: 'salary-calculator', title: 'Salary Tax Calculator (India)', category: 'calculators', description: 'In-hand salary breakdown for FY 2024-25.', keywords: ['salary', 'tax', 'calculator'], toolType: 'client', priority: 96 },
+  { slug: 'emi-calculator', title: 'Home/Car EMI Calculator', category: 'calculators', description: 'Calculate monthly loan installments with amortization.', keywords: ['emi', 'loan', 'bank'], toolType: 'client', priority: 88 },
+
+  // UNIT CONVERTERS
+  { slug: 'length-converter', title: 'Precision Length Converter', category: 'unit-converters', description: 'Convert meters, feet, and inches with high accuracy.', keywords: ['length', 'unit', 'math'], toolType: 'client' },
+  { slug: 'weight-converter', title: 'Metric Weight Converter', category: 'unit-converters', description: 'Convert KG, LBS, and Ounces instantly.', keywords: ['weight', 'unit', 'kg'], toolType: 'client' },
+
+  // UTILITY
+  { slug: 'qr-code-generator', title: 'QR Code Architect', category: 'utility', description: 'Create offline high-res QR codes for any text or URL.', keywords: ['qr', 'utility', 'generate'], toolType: 'client', priority: 80 },
+  { slug: 'password-generator', title: 'Secure Password Isolate', category: 'utility', description: 'Generate cryptographically strong passwords.', keywords: ['password', 'secure', 'utility'], toolType: 'client' },
+
+  // SECURITY
+  { slug: 'hash-generator', title: 'SHA-256/MD5 Hash Tool', category: 'security', description: 'Generate secure digital fingerprints for any text.', keywords: ['hash', 'sha256', 'security'], toolType: 'client' },
+  { slug: 'security-encryptor', title: 'AES-256 Text Encryptor', category: 'security', description: 'Securely encrypt messages locally in your browser.', keywords: ['encrypt', 'aes', 'secure'], toolType: 'client' },
+
+  // NETWORK
+  { slug: 'ip-to-location', title: 'IP Geo-Location Lookup', category: 'network', description: 'Find ISP and location data for any IP address.', keywords: ['ip', 'network', 'geo'], toolType: 'client' },
+  { slug: 'internet-speed-test', title: 'Real-Time Bandwidth Test', category: 'network', description: 'Test your upload and download speed accurately.', keywords: ['network', 'speed', 'test'], toolType: 'client' },
+
+  // OFFICE TOOLS
+  { slug: 'resume-builder', title: 'ATS-Friendly Resume Builder', category: 'office', description: 'Create professional resumes that pass AI filters.', keywords: ['resume', 'job', 'office'], toolType: 'ai', priority: 93 },
+  { slug: 'text-to-docx-converter', title: 'Markdown to Word (.docx)', category: 'office', description: 'Convert text documents to standard Word format.', keywords: ['word', 'docx', 'office'], toolType: 'client' },
+
+  // EDUCATION
+  { slug: 'edu-study-planner', title: 'AI Exam Study Planner', category: 'education', description: 'Generate custom study schedules based on your goals.', keywords: ['study', 'exam', 'edu'], toolType: 'ai' },
+  { slug: 'edu-quiz-generator', title: 'AI Quiz Architect', category: 'education', description: 'Turn any text into an interactive educational quiz.', keywords: ['quiz', 'edu', 'learn'], toolType: 'ai' },
+
+  // FILE TOOLS
+  { slug: 'zip-file-creator', title: 'Pro ZIP Archive Creator', category: 'file', description: 'Bundle multiple files into a single ZIP locally.', keywords: ['zip', 'file', 'archive'], toolType: 'client' },
+  { slug: 'zip-file-extractor', title: 'ZIP File Extractor', category: 'file', description: 'Unpack ZIP archives instantly without uploading.', keywords: ['zip', 'file', 'unzip'], toolType: 'client' },
+
+  // DATA TOOLS
+  { slug: 'csv-to-excel-converter', title: 'CSV to Excel (.xlsx)', category: 'data', description: 'Transform large CSV datasets into Excel workbooks.', keywords: ['csv', 'excel', 'data'], toolType: 'client' },
+  { slug: 'data-deduplication-tool', title: 'Data De-duplicator', category: 'data', description: 'Remove duplicate rows from your datasets.', keywords: ['data', 'clean', 'csv'], toolType: 'client' },
+
+  // SOCIAL MEDIA
+  { slug: 'reel-hook-generator', title: 'Viral Reel Hook Generator', category: 'social', description: 'Generate high-engagement hooks for social videos.', keywords: ['social', 'hook', 'video'], toolType: 'ai', priority: 85 },
+  { slug: 'instagram-hashtag-analyzer', title: 'Instagram Hashtag Strategist', category: 'social', description: 'Find viral tags for your niche and goal.', keywords: ['instagram', 'tag', 'seo'], toolType: 'ai' },
+
+  // BUSINESS
+  { slug: 'invoice-generator', title: 'Professional Invoice Studio', category: 'business', description: 'Generate clean business invoices instantly.', keywords: ['invoice', 'business', 'money'], toolType: 'client', priority: 82 },
+  { slug: 'swot-analysis-architect', title: 'AI SWOT Analysis Tool', category: 'business', description: 'Strategize your project using AI-guided SWOT models.', keywords: ['business', 'swot', 'strategy'], toolType: 'ai' },
+  
+  // LOGIC NODES FOR REJECTION ANALYZER (GOVT)
+  { slug: 'why-upload-rejected-analyzer', title: 'Govt Form Rejection Analyzer', category: 'utility', description: 'Find why your file was rejected by portal rules.', keywords: ['govt', 'ssc', 'upsc'], toolType: 'client', priority: 100 },
+  { slug: 'resume-rejection-analyzer', title: 'Resume Rejection Analyzer', category: 'office', description: 'Identify ATS gaps in your resume.', keywords: ['job', 'resume', 'ats'], toolType: 'client', priority: 99 },
 ];

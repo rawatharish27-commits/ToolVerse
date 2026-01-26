@@ -16,6 +16,8 @@ interface CategoryPageProps {
 
 const CategoryPage: React.FC<CategoryPageProps> = ({ categoryId, onNavigate, favorites, onToggleFavorite }) => {
   const category = useMemo(() => CATEGORIES.find(c => c.id === categoryId), [categoryId]);
+  
+  // FIX: Ensure all tools in the registry belonging to this ID are shown
   const categoryTools = useMemo(() => 
     TOOLS.filter(t => t.category === categoryId).sort((a,b) => (b.priority || 0) - (a.priority || 0)), 
   [categoryId]);
@@ -36,13 +38,12 @@ const CategoryPage: React.FC<CategoryPageProps> = ({ categoryId, onNavigate, fav
         url={`https://toolverse-4gr.pages.dev/category/${category.id}`}
       />
 
-      {/* DYNAMIC CATEGORY HERO */}
-      <section className="relative h-[60vh] md:h-[70vh] flex items-center overflow-hidden bg-slate-900">
+      <section className="relative h-[50vh] md:h-[60vh] flex items-center overflow-hidden bg-slate-900">
         <div className="absolute inset-0 z-0">
            <img 
             src={category.images[0]} 
             alt={category.name}
-            className="w-full h-full object-cover opacity-30 scale-105 animate-slow-zoom"
+            className="w-full h-full object-cover opacity-30 scale-105"
            />
            <div className="absolute inset-0 bg-gradient-to-t from-white via-white/5 to-transparent"></div>
            <div className="absolute inset-0 bg-gradient-to-r from-slate-950 via-slate-950/40 to-transparent"></div>
@@ -52,18 +53,18 @@ const CategoryPage: React.FC<CategoryPageProps> = ({ categoryId, onNavigate, fav
            <nav className="flex mb-12 text-[10px] font-black uppercase tracking-[0.3em]">
             <button onClick={() => onNavigate('home')} className="text-white/40 hover:text-white transition-colors">Master Hub</button>
             <span className="mx-4 text-white/10">/</span>
-            <span className="text-indigo-400">{category.name} Space</span>
+            <span className="text-indigo-400">{category.name} Hub</span>
           </nav>
 
-          <div className="flex flex-col md:flex-row md:items-end gap-12">
-            <div className={`w-32 h-32 md:w-48 md:h-48 ${category.color} text-white rounded-[3rem] md:rounded-[4rem] flex items-center justify-center text-6xl md:text-8xl shadow-2xl shadow-black/50 border-[6px] border-white/10 animate-in zoom-in-95 duration-700`}>
+          <div className="flex flex-col md:flex-row md:items-end gap-10">
+            <div className={`w-24 h-24 md:w-40 md:h-40 ${category.color} text-white rounded-[2.5rem] md:rounded-[3.5rem] flex items-center justify-center text-5xl md:text-7xl shadow-2xl border-[4px] border-white/10 animate-in zoom-in-95 duration-700`}>
               {category.icon}
             </div>
-            <div className="space-y-6 max-w-3xl animate-in slide-in-from-left-8 duration-1000">
-              <h1 className="text-6xl md:text-[8rem] font-black text-white tracking-tighter leading-[0.8] drop-shadow-2xl">
+            <div className="space-y-4 max-w-3xl animate-in slide-in-from-left-8 duration-1000">
+              <h1 className="text-5xl md:text-8xl font-black text-white tracking-tighter leading-[0.8]">
                 {category.name}.
               </h1>
-              <p className="text-xl md:text-3xl text-slate-300 font-medium leading-relaxed">
+              <p className="text-lg md:text-2xl text-slate-300 font-medium leading-relaxed max-w-2xl">
                 {category.description}
               </p>
             </div>
@@ -71,19 +72,19 @@ const CategoryPage: React.FC<CategoryPageProps> = ({ categoryId, onNavigate, fav
         </div>
       </section>
 
-      <div className="max-w-[1600px] mx-auto px-8 -mt-24 relative z-20">
+      <div className="max-w-[1600px] mx-auto px-8 -mt-20 relative z-20">
         <div className="flex flex-col lg:flex-row gap-16">
           <div className="lg:flex-grow">
-            <div className="flex items-center justify-between mb-16 bg-white/80 backdrop-blur-xl p-8 rounded-[3rem] border border-slate-100 shadow-xl">
+            <div className="flex items-center justify-between mb-12 bg-white/90 backdrop-blur-xl p-8 rounded-[2.5rem] border border-slate-100 shadow-xl">
                <h2 className="text-xs font-black text-slate-400 uppercase tracking-[0.4em] flex items-center">
                  <span className="w-12 h-1 bg-indigo-600 rounded-full mr-6"></span>
-                 Available Logic Nodes ({categoryTools.length})
+                 Authorized Logic Nodes ({categoryTools.length})
                </h2>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-10 animate-in fade-in slide-in-from-bottom-8 duration-700">
-              {categoryTools.map((tool, idx) => (
-                <div key={tool.slug} style={{ animationDelay: `${idx * 20}ms` }} className="animate-in fade-in">
+            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8 animate-in fade-in slide-in-from-bottom-8 duration-700">
+              {categoryTools.length > 0 ? categoryTools.map((tool, idx) => (
+                <div key={tool.slug} style={{ animationDelay: `${idx * 15}ms` }} className="animate-in fade-in">
                   <ToolCard 
                     tool={tool} 
                     onClick={() => onNavigate('tool', { slug: tool.slug })} 
@@ -91,25 +92,30 @@ const CategoryPage: React.FC<CategoryPageProps> = ({ categoryId, onNavigate, fav
                     onToggleFavorite={onToggleFavorite}
                   />
                 </div>
-              ))}
+              )) : (
+                <div className="col-span-full py-20 text-center bg-slate-50 rounded-[3rem] border border-dashed border-slate-200">
+                   <div className="text-4xl mb-4">🔄</div>
+                   <p className="text-slate-400 font-bold uppercase tracking-widest text-[10px]">Syncing category logic from Edge...</p>
+                </div>
+              )}
             </div>
             
             <AdPlaceholder type="inline" />
           </div>
 
-          <aside className="lg:w-96 flex-shrink-0 space-y-12">
-            <div className="bg-slate-900 p-12 rounded-[4rem] text-white shadow-2xl relative overflow-hidden group">
+          <aside className="lg:w-80 flex-shrink-0 space-y-10">
+            <div className="bg-slate-900 p-10 rounded-[3.5rem] text-white shadow-2xl relative overflow-hidden group">
               <div className="relative z-10">
-                <h3 className="font-black text-indigo-400 mb-10 uppercase text-[10px] tracking-[0.3em] border-b border-white/5 pb-6">Parallel Hubs</h3>
-                <div className="space-y-4">
-                  {CATEGORIES.filter(c => c.id !== categoryId).slice(0, 8).map(cat => (
+                <h3 className="font-black text-indigo-400 mb-8 uppercase text-[9px] tracking-[0.3em] border-b border-white/5 pb-4">Other Hubs</h3>
+                <div className="space-y-3">
+                  {CATEGORIES.filter(c => c.id !== categoryId).slice(0, 10).map(cat => (
                     <button 
                       key={cat.id}
                       onClick={() => onNavigate('category', { id: cat.id })}
-                      className="flex items-center w-full px-6 py-4 rounded-2xl bg-white/5 border border-white/5 hover:bg-indigo-600 text-slate-300 hover:text-white transition-all hover:translate-x-3"
+                      className="flex items-center w-full px-5 py-3.5 rounded-2xl bg-white/5 border border-white/5 hover:bg-indigo-600 text-slate-400 hover:text-white transition-all"
                     >
-                      <span className="mr-6 text-2xl">{cat.icon}</span>
-                      <span className="text-[11px] font-black uppercase tracking-widest">{cat.name}</span>
+                      <span className="mr-5 text-xl">{cat.icon}</span>
+                      <span className="text-[10px] font-black uppercase tracking-widest">{cat.name}</span>
                     </button>
                   ))}
                 </div>
