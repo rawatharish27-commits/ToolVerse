@@ -29,26 +29,24 @@ const App: React.FC = () => {
   });
 
   const handlePathChange = () => {
+    // RESOLUTION 1: Robust Path Detection for Refresh Stability
     const path = window.location.pathname;
     trackPageView(path);
 
     startTransition(() => {
-      // Robust Regex-based Route Matching for Refresh Persistence
       if (path === '/' || path === '' || path.endsWith('index.html')) {
         setNav({ page: 'home' });
-      } else if (path.match(/^\/category\/([a-z-]+)/)) {
-        const id = path.split('/').filter(Boolean).pop() as CategorySlug;
+      } else if (path.startsWith('/category/')) {
+        const id = path.split('/')[2] as CategorySlug;
         setNav({ page: 'category', params: { id } });
-      } else if (path.match(/^\/tools\/([a-z-]+)/)) {
-        const slug = path.split('/').filter(Boolean).pop() || '';
+      } else if (path.startsWith('/tools/')) {
+        const slug = path.split('/')[2] || '';
         setNav({ page: 'tool', params: { slug } });
       } else if (['/about', '/privacy', '/terms', '/contact'].includes(path)) {
         const page = path.substring(1) as any;
         setNav({ page });
       } else {
-        // Safe 404 Fallback
         setNav({ page: 'home' });
-        if (path !== '/') window.history.replaceState({}, '', '/');
       }
     });
   };
@@ -57,9 +55,10 @@ const App: React.FC = () => {
     window.addEventListener('popstate', handlePathChange);
     handlePathChange();
 
-    const hasSeenTour = localStorage.getItem('tv_onboarding_v5');
+    // PERFORMANCE: Onboarding Tour delay to allow primary assets to load
+    const hasSeenTour = localStorage.getItem('tv_onboarding_v6');
     if (!hasSeenTour) {
-      const timer = setTimeout(() => setShowTour(true), 1200);
+      const timer = setTimeout(() => setShowTour(true), 1500);
       return () => clearTimeout(timer);
     }
 
@@ -85,7 +84,8 @@ const App: React.FC = () => {
     });
   };
 
-  const activeContent = useMemo(() => {
+  // PERFORMANCE: Memoized Content Rendering to prevent unnecessary tree re-evaluations
+  const activeView = useMemo(() => {
     switch (nav.page) {
       case 'home': return <Home onNavigate={navigate} searchQuery={searchQuery} favorites={favorites} onToggleFavorite={toggleFavorite} recent={[]} />;
       case 'category': return <CategoryPage categoryId={nav.params.id} onNavigate={navigate} favorites={favorites} onToggleFavorite={toggleFavorite} />;
@@ -105,15 +105,15 @@ const App: React.FC = () => {
       onSearch={setSearchQuery}
     >
       <AddonLayer />
-      {showTour && <TourOverlay onClose={() => { setShowTour(false); localStorage.setItem('tv_onboarding_v5', 'true'); }} />}
+      {showTour && <TourOverlay onClose={() => { setShowTour(false); localStorage.setItem('tv_onboarding_v6', 'true'); }} />}
       
       <Suspense fallback={
-        <div className="flex flex-col items-center justify-center min-h-[60vh] gap-4">
-          <div className="w-10 h-10 border-4 border-indigo-600 border-t-transparent rounded-full animate-spin"></div>
-          <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Warping to Node...</p>
+        <div className="flex flex-col items-center justify-center min-h-[60vh] gap-6">
+          <div className="w-12 h-12 border-4 border-indigo-600 border-t-transparent rounded-full animate-spin"></div>
+          <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.4em]">Optimizing Workspace...</p>
         </div>
       }>
-        {activeContent}
+        {activeView}
       </Suspense>
     </Layout>
   );
