@@ -1,37 +1,57 @@
 
-import React, { useEffect, useState, useMemo } from 'react';
+import React, { useEffect, useState, useMemo, useCallback } from 'react';
 import { getAttractionState, updateAttractionState, trackToolClick, getUserLevel, getToolOfDay } from '../utils/attraction';
 import { TOOLS } from '../data/tools';
+import { debounce } from '../utils/performance';
 
-/**
- * ToolVerse User Attraction Addon (The Orchestrator)
- * A pure "Extension-Style" layer that sits on top of the React app.
- */
 const AddonLayer: React.FC = () => {
   const [state, setState] = useState(getAttractionState());
   const [lastReward, setLastReward] = useState<number | null>(null);
   const [showMoodPicker, setShowMoodPicker] = useState(false);
 
+  // OPTIMIZATION: Debounced Badge Injection to prevent Layout Thrash
+  const injectBadges = useCallback(debounce(() => {
+    const trending = Object.entries(state.clicks)
+      .sort((a, b) => (b[1] as number) - (a[1] as number))
+      .slice(0, 3)
+      .map(i => i[0]);
+    
+    const tod = getToolOfDay(TOOLS).slug;
+    const cards = document.querySelectorAll('[data-addon-tool]');
+    
+    cards.forEach(el => {
+      const slug = el.getAttribute('data-addon-tool');
+      const hasBadges = el.querySelector('.ua-badge-injected');
+      if (hasBadges) return; // Prevent re-injecting and causing mutations
+
+      if (slug === tod) {
+        el.insertAdjacentHTML('afterbegin', `
+          <div class="ua-badge-injected ua-badge-tod absolute top-4 left-4 z-30 bg-emerald-500 text-white text-[8px] font-black uppercase px-2 py-1 rounded-lg shadow-xl animate-pulse">
+            🛠️ Tool of Day
+          </div>
+        `);
+      } else if (trending.includes(slug || '')) {
+        el.insertAdjacentHTML('afterbegin', `
+          <div class="ua-badge-injected ua-badge-trending absolute top-4 left-4 z-30 bg-orange-600 text-white text-[8px] font-black uppercase px-2 py-1 rounded-lg shadow-xl">
+            🔥 Trending
+          </div>
+        `);
+      }
+    });
+  }, 150), [state.clicks]);
+
   useEffect(() => {
-    // 1. Sync React state with Local Storage updates
     const sync = () => setState(getAttractionState());
     window.addEventListener('ua_update', sync);
 
-    // 2. Initial Mood Check (Step 4)
     if (!getAttractionState().mood) {
       const timer = setTimeout(() => setShowMoodPicker(true), 2500);
       return () => clearTimeout(timer);
     }
 
-    // 3. Smart Shuffle (Step 10)
-    const shuffleCards = () => {
-      document.querySelectorAll('[data-addon-tool]').forEach(el => {
-        (el as HTMLElement).style.order = Math.floor(Math.random() * 50).toString();
-      });
-    };
-    shuffleCards();
+    // Initialize badges
+    injectBadges();
 
-    // 4. Global Event Interceptor (Step 3)
     const handleClick = (e: MouseEvent) => {
       const target = e.target as HTMLElement;
       const card = target.closest('[data-addon-tool]');
@@ -44,34 +64,11 @@ const AddonLayer: React.FC = () => {
       }
     };
 
-    // 5. Visual Badge Injector (Step 2, 6)
-    // Uses MutationObserver to handle dynamically rendered cards (Search/Tabs)
-    const observer = new MutationObserver(() => {
-      const trending = Object.entries(state.clicks)
-        .sort((a, b) => (b[1] as number) - (a[1] as number))
-        .slice(0, 3)
-        .map(i => i[0]);
-      
-      const tod = getToolOfDay(TOOLS).slug;
-
-      document.querySelectorAll('[data-addon-tool]').forEach(el => {
-        const slug = el.getAttribute('data-addon-tool');
-        el.querySelectorAll('.ua-badge-injected').forEach(n => n.remove());
-
-        if (slug === tod) {
-          el.insertAdjacentHTML('afterbegin', `
-            <div class="ua-badge-injected ua-badge-tod absolute top-4 left-4 z-30 bg-emerald-500 text-white text-[8px] font-black uppercase px-2 py-1 rounded-lg shadow-xl animate-pulse">
-              🛠️ Tool of Day
-            </div>
-          `);
-        } else if (trending.includes(slug || '')) {
-          el.insertAdjacentHTML('afterbegin', `
-            <div class="ua-badge-injected ua-badge-trending absolute top-4 left-4 z-30 bg-orange-600 text-white text-[8px] font-black uppercase px-2 py-1 rounded-lg shadow-xl">
-              🔥 Trending
-            </div>
-          `);
-        }
-      });
+    // OPTIMIZATION: Throttled MutationObserver
+    const observer = new MutationObserver((mutations) => {
+      // Only re-process if non-badge nodes were added
+      const relevant = mutations.some(m => Array.from(m.addedNodes).some(n => !(n as HTMLElement).classList?.contains('ua-badge-injected')));
+      if (relevant) injectBadges();
     });
 
     window.addEventListener('click', handleClick);
@@ -82,7 +79,7 @@ const AddonLayer: React.FC = () => {
       window.removeEventListener('click', handleClick);
       observer.disconnect();
     };
-  }, [state.clicks, state.mood]);
+  }, [state.clicks, state.mood, injectBadges]);
 
   const level = getUserLevel(state.points);
   const topCats = useMemo(() => {
@@ -99,14 +96,12 @@ const AddonLayer: React.FC = () => {
 
   return (
     <>
-      {/* STEP 8: Social Proof Marquee */}
       <div className="bg-slate-950 text-white py-2 px-4 text-center text-[9px] font-black uppercase tracking-[0.4em] border-b border-white/5 overflow-hidden whitespace-nowrap z-[100] relative">
          <div className="inline-block animate-marquee-text">
             TRUSTED ECOSYSTEM • 128M+ GLOBAL USERS • REAL-TIME WASM PROCESSING • ZERO DATA UPLOADS • VERIFIED PRO TOOLS • 
          </div>
       </div>
 
-      {/* STEP 1: For You Recommendation Bar */}
       {topCats.length > 0 && (
         <div className="bg-indigo-900 text-white py-3 px-6 text-center text-[10px] font-black uppercase tracking-[0.3em] shadow-2xl animate-in slide-in-from-top duration-1000 z-[90] relative">
           <span className="text-emerald-400 mr-3">Recommended:</span>
@@ -114,7 +109,6 @@ const AddonLayer: React.FC = () => {
         </div>
       )}
 
-      {/* STEP 3: XP Reward Toast */}
       {lastReward && (
         <div className="fixed top-28 right-8 z-[200] bg-white border border-indigo-100 px-6 py-4 rounded-[2rem] shadow-[0_20px_50px_rgba(79,70,229,0.3)] animate-bounce flex items-center gap-4">
           <div className="w-10 h-10 bg-indigo-600 rounded-full flex items-center justify-center text-white text-sm font-black">+{lastReward}</div>
@@ -122,7 +116,6 @@ const AddonLayer: React.FC = () => {
         </div>
       )}
 
-      {/* STEP 4: Choose Your Mood Modal */}
       {showMoodPicker && (
         <div className="fixed inset-0 z-[300] flex items-center justify-center bg-slate-950/80 backdrop-blur-xl p-6 animate-in fade-in duration-500">
            <div className="bg-white rounded-[4rem] p-12 max-w-lg w-full text-center shadow-2xl border border-white/20">
@@ -145,9 +138,7 @@ const AddonLayer: React.FC = () => {
         </div>
       )}
 
-      {/* STEP 9: Progress Hub (Floating HUD) */}
       <div className="fixed bottom-10 right-10 z-[150] flex flex-col items-end gap-4 pointer-events-none">
-         {/* STEP 5: Unfinished Business Reminder */}
          {Object.keys(state.clicks).length >= 2 && (
             <div className="bg-emerald-600 text-white px-6 py-3 rounded-2xl text-[10px] font-black uppercase tracking-widest shadow-2xl animate-in slide-in-from-right duration-700 pointer-events-auto flex items-center gap-3">
               <span className="w-2 h-2 bg-white rounded-full animate-ping"></span>
