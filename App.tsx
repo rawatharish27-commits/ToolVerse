@@ -28,9 +28,10 @@ const App: React.FC = () => {
     return saved ? JSON.parse(saved) : [];
   });
 
+  // RESOLUTION: Deep Link & Refresh Persistence Engine
   const handlePathChange = () => {
-    // RESOLUTION 1: Robust Path Detection for Refresh Stability
     const path = window.location.pathname;
+    const searchParams = new URLSearchParams(window.location.search);
     trackPageView(path);
 
     startTransition(() => {
@@ -46,6 +47,7 @@ const App: React.FC = () => {
         const page = path.substring(1) as any;
         setNav({ page });
       } else {
+        // Fallback for unknown paths
         setNav({ page: 'home' });
       }
     });
@@ -53,12 +55,12 @@ const App: React.FC = () => {
 
   useEffect(() => {
     window.addEventListener('popstate', handlePathChange);
+    // Initial check on load
     handlePathChange();
 
-    // PERFORMANCE: Onboarding Tour delay to allow primary assets to load
-    const hasSeenTour = localStorage.getItem('tv_onboarding_v6');
+    const hasSeenTour = localStorage.getItem('tv_onboarding_v7');
     if (!hasSeenTour) {
-      const timer = setTimeout(() => setShowTour(true), 1500);
+      const timer = setTimeout(() => setShowTour(true), 2000);
       return () => clearTimeout(timer);
     }
 
@@ -71,8 +73,10 @@ const App: React.FC = () => {
     else if (page === 'tool') newPath = `/tools/${params.slug}`;
     else if (['about', 'privacy', 'terms', 'contact'].includes(page)) newPath = `/${page}`;
 
-    window.history.pushState({}, '', newPath);
-    handlePathChange();
+    if (window.location.pathname !== newPath) {
+      window.history.pushState({}, '', newPath);
+      handlePathChange();
+    }
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
@@ -84,7 +88,6 @@ const App: React.FC = () => {
     });
   };
 
-  // PERFORMANCE: Memoized Content Rendering to prevent unnecessary tree re-evaluations
   const activeView = useMemo(() => {
     switch (nav.page) {
       case 'home': return <Home onNavigate={navigate} searchQuery={searchQuery} favorites={favorites} onToggleFavorite={toggleFavorite} recent={[]} />;
@@ -105,12 +108,12 @@ const App: React.FC = () => {
       onSearch={setSearchQuery}
     >
       <AddonLayer />
-      {showTour && <TourOverlay onClose={() => { setShowTour(false); localStorage.setItem('tv_onboarding_v6', 'true'); }} />}
+      {showTour && <TourOverlay onClose={() => { setShowTour(false); localStorage.setItem('tv_onboarding_v7', 'true'); }} />}
       
       <Suspense fallback={
         <div className="flex flex-col items-center justify-center min-h-[60vh] gap-6">
           <div className="w-12 h-12 border-4 border-indigo-600 border-t-transparent rounded-full animate-spin"></div>
-          <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.4em]">Optimizing Workspace...</p>
+          <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.4em]">Initializing Logic Core...</p>
         </div>
       }>
         {activeView}
