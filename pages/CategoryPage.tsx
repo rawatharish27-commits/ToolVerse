@@ -17,7 +17,7 @@ interface CategoryPageProps {
 const CategoryPage: React.FC<CategoryPageProps> = ({ categoryId, onNavigate, favorites, onToggleFavorite }) => {
   const category = useMemo(() => CATEGORIES.find(c => c.id === categoryId), [categoryId]);
   
-  // FIX: Ensure all tools in the registry belonging to this ID are shown
+  // FIX: Explicitly filter and sort all tools in the registry for this category
   const categoryTools = useMemo(() => 
     TOOLS.filter(t => t.category === categoryId).sort((a,b) => (b.priority || 0) - (a.priority || 0)), 
   [categoryId]);
@@ -33,8 +33,8 @@ const CategoryPage: React.FC<CategoryPageProps> = ({ categoryId, onNavigate, fav
   return (
     <div className="pb-32 bg-white">
       <SEOHead 
-        title={`${category.name} | Professional Logic Node Cluster`}
-        description={category.description + ". Secure, browser-native tool collection."}
+        title={`${category.name} | Professional Logic Node Hub`}
+        description={category.description + ". 100% browser-native tool collection."}
         url={`https://toolverse-4gr.pages.dev/category/${category.id}`}
       />
 
@@ -51,9 +51,9 @@ const CategoryPage: React.FC<CategoryPageProps> = ({ categoryId, onNavigate, fav
         
         <div className="max-w-[1600px] mx-auto px-8 relative z-10 w-full">
            <nav className="flex mb-12 text-[10px] font-black uppercase tracking-[0.3em]">
-            <button onClick={() => onNavigate('home')} className="text-white/40 hover:text-white transition-colors">Master Hub</button>
+            <button onClick={() => onNavigate('home')} className="text-white/40 hover:text-white transition-colors">Core Hub</button>
             <span className="mx-4 text-white/10">/</span>
-            <span className="text-indigo-400">{category.name} Hub</span>
+            <span className="text-indigo-400">{category.name} Cluster</span>
           </nav>
 
           <div className="flex flex-col md:flex-row md:items-end gap-10">
@@ -78,7 +78,7 @@ const CategoryPage: React.FC<CategoryPageProps> = ({ categoryId, onNavigate, fav
             <div className="flex items-center justify-between mb-12 bg-white/90 backdrop-blur-xl p-8 rounded-[2.5rem] border border-slate-100 shadow-xl">
                <h2 className="text-xs font-black text-slate-400 uppercase tracking-[0.4em] flex items-center">
                  <span className="w-12 h-1 bg-indigo-600 rounded-full mr-6"></span>
-                 Authorized Logic Nodes ({categoryTools.length})
+                 Available Logic Nodes ({categoryTools.length})
                </h2>
             </div>
 
@@ -94,21 +94,23 @@ const CategoryPage: React.FC<CategoryPageProps> = ({ categoryId, onNavigate, fav
                 </div>
               )) : (
                 <div className="col-span-full py-20 text-center bg-slate-50 rounded-[3rem] border border-dashed border-slate-200">
-                   <div className="text-4xl mb-4">🔄</div>
-                   <p className="text-slate-400 font-bold uppercase tracking-widest text-[10px]">Syncing category logic from Edge...</p>
+                   <div className="text-4xl mb-4">🌀</div>
+                   <p className="text-slate-400 font-bold uppercase tracking-widest text-[10px]">Registry sync in progress...</p>
                 </div>
               )}
             </div>
             
-            <AdPlaceholder type="inline" />
+            <div className="mt-20">
+              <AdPlaceholder type="inline" />
+            </div>
           </div>
 
           <aside className="lg:w-80 flex-shrink-0 space-y-10">
             <div className="bg-slate-900 p-10 rounded-[3.5rem] text-white shadow-2xl relative overflow-hidden group">
               <div className="relative z-10">
-                <h3 className="font-black text-indigo-400 mb-8 uppercase text-[9px] tracking-[0.3em] border-b border-white/5 pb-4">Other Hubs</h3>
+                <h3 className="font-black text-indigo-400 mb-8 uppercase text-[9px] tracking-[0.3em] border-b border-white/5 pb-4">Other Gateways</h3>
                 <div className="space-y-3">
-                  {CATEGORIES.filter(c => c.id !== categoryId).slice(0, 10).map(cat => (
+                  {CATEGORIES.filter(c => c.id !== categoryId).slice(0, 12).map(cat => (
                     <button 
                       key={cat.id}
                       onClick={() => onNavigate('category', { id: cat.id })}
