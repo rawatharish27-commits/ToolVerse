@@ -1,3 +1,4 @@
+
 export type CategorySlug = 
   | 'ai' 
   | 'image' 
@@ -49,7 +50,9 @@ export interface Tool {
   howTo?: string[];
   features?: string[];
   faqs?: ToolFAQ[];
-  priority?: number; // Higher number = higher visibility (High CPM priority)
+  priority?: number; // Higher number = higher visibility
+  // CENTRALIZED EXECUTION ENGINE
+  execute?: (input: any, options?: any) => Promise<any>;
 }
 
 export interface Breadcrumb {

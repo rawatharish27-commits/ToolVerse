@@ -1,60 +1,52 @@
 
-// ... existing imports
 import { 
-  ageCalculatorConfig, percentageCalculatorConfig, discountCalculatorConfig, 
-  simpleInterestConfig, emiCalculatorConfig, bmiCalculatorConfig, 
-  gstCalculatorConfig, compoundInterestConfig, profitLossConfig, 
-  loanCalculatorConfig, roiCalculatorConfig, durationCalculatorConfig, 
-  salaryCalculatorConfig, inflationCalculatorConfig, emiHighExplainerConfig
+  salaryCalculatorConfig, roiCalculatorConfig, inflationCalculatorConfig,
+  ageCalculatorConfig, emiCalculatorConfig, emiHighExplainerConfig,
+  interestAnalyzerConfig, hiddenChargesDiscoveryConfig
 } from '../config/calculatorTools';
-import { 
-  jsonFormatterConfig, htmlCssFormatterConfig, jsMinifierConfig, 
-  base64Config, regexTesterConfig
-} from '../config/devTools';
 
 export const TOOL_CONFIG_REGISTRY: Record<string, any> = {
-  // Existing ...
-  'salary-calculator': salaryCalculatorConfig,
-  'roi-calculator': roiCalculatorConfig,
-  'json-formatter': jsonFormatterConfig,
-  'html-minifier': {
-    slug: 'html-minifier',
-    title: 'HTML Minifier',
-    description: 'Compress HTML for production use.',
-    icon: '📦',
-    colorClass: 'bg-amber-600',
-    options: []
+  'why-upload-rejected-analyzer': {
+    slug: 'why-upload-rejected-analyzer',
+    title: 'Upload Rejection Analyzer',
+    description: 'Deep audit of file compliance.',
+    icon: '🔍',
+    colorClass: 'bg-rose-600',
+    options: [
+      { id: 'portalType', type: 'select', label: 'Target Portal', values: ['Govt/SSC', 'UPSC', 'Job/ATS', 'Bank'], default: 'Govt/SSC' }
+    ]
   },
-  'css-beautifier': {
-    slug: 'css-beautifier',
-    title: 'CSS Beautifier',
-    description: 'Format CSS into readable blocks.',
-    icon: '🌈',
-    colorClass: 'bg-blue-500',
-    options: []
-  },
-  'time-zone-converter': {
-    slug: 'time-zone-converter',
-    title: 'Global Time Zone Converter',
-    description: 'Real-time city clock conversion.',
-    icon: '🌍',
-    colorClass: 'bg-cyan-600',
-    options: []
-  },
-  'password-generator': {
-    slug: 'password-generator',
-    title: 'Secure Password Generator',
-    description: 'Generate entropy-rich passwords.',
-    icon: '🔑',
+  'resume-rejection-analyzer': {
+    slug: 'resume-rejection-analyzer',
+    title: 'Resume Rejection Analyzer',
+    description: 'Analyze keywords and ATS compatibility.',
+    icon: '🚫',
     colorClass: 'bg-indigo-600',
-    options: []
-  }
+    options: [
+      { id: 'targetRole', type: 'text', label: 'Target Role', default: 'Software Engineer' },
+      { id: 'exp', type: 'number', label: 'Years of Experience', default: 2 }
+    ]
+  },
+  'why-emi-high-explainer': emiHighExplainerConfig,
+  'no-cost-emi-reality-checker': {
+    slug: 'no-cost-emi-reality-checker',
+    title: 'No-Cost EMI Reality Checker',
+    description: 'Find hidden interest traps.',
+    icon: '🕵️',
+    colorClass: 'bg-rose-500',
+    options: [
+      { id: 'price', type: 'number', label: 'MRP', default: 50000 },
+      { id: 'emi', type: 'number', label: 'Monthly EMI', default: 4500 }
+    ]
+  },
+  'salary-calculator': salaryCalculatorConfig,
 };
 
 export const getToolConfig = (slug: string) => {
   return TOOL_CONFIG_REGISTRY[slug] || {
     title: slug.replace(/-/g, ' '),
     icon: "🛠️",
+    description: "Diagnostic logic node.",
     colorClass: "bg-indigo-600",
     options: []
   };

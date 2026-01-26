@@ -1,6 +1,8 @@
 export interface WebpConverterOptions {
   quality?: number; // 0 to 100
   lossless?: boolean;
+  // Added preserveMetadata to satisfy options in ImageTools.tsx
+  preserveMetadata?: boolean;
 }
 
 export interface WebpConverterResult {

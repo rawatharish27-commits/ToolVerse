@@ -1,4 +1,62 @@
 
+export const imageSizeReducerKbSelectorConfig = {
+  slug: "image-size-reducer-kb-selector",
+  title: "Image Size Reducer (KB selector)",
+  description: "Target a specific file size (e.g. 20KB for govt forms). Our engine uses binary-search quality optimization to hit your goal.",
+  icon: "📉",
+  colorClass: "bg-emerald-500",
+  options: [
+    { id: "targetKb", type: "number", label: "Target Size (KB)", default: 50 },
+    { id: "format", type: "select", label: "Output Format", values: ["JPG", "WEBP"], default: "JPG" },
+    { id: "precision", type: "select", label: "Logic Precision", values: ["Standard", "High", "Ultra"], default: "High" }
+  ]
+};
+
+export const imageDpiCheckerNewConfig = {
+  slug: "image-dpi-checker-new",
+  title: "Image DPI Checker",
+  description: "Inspect and modify DPI headers losslessly for print and portal compliance.",
+  icon: "🖨️",
+  colorClass: "bg-indigo-600",
+  options: [
+    { id: "targetDpi", type: "select", label: "Set New DPI", values: [72, 96, 150, 300, 600], default: 300 }
+  ]
+};
+
+export const imageCompressorQcConfig = {
+  slug: "image-compressor-qc",
+  title: "Image Compressor (quality control)",
+  description: "Advanced lossy compression with interactive bit-depth and sub-sampling control.",
+  icon: "🖼️",
+  colorClass: "bg-emerald-600",
+  options: [
+    { id: "quality", type: "slider", label: "Precision Quality (%)", min: 1, max: 100, default: 75 },
+    { id: "sampling", type: "select", label: "Chroma Sub-sampling", values: ["4:4:4", "4:2:2", "4:2:0"], default: "4:2:0" }
+  ]
+};
+
+export const imageFormatNewConfig = {
+  slug: "image-format-new",
+  title: "Image Format Converter",
+  description: "Professional transcoding between JPG, PNG, WEBP, HEIC, and TIFF.",
+  icon: "🔄",
+  colorClass: "bg-emerald-700",
+  options: [
+    { id: "targetFormat", type: "select", label: "Convert To", values: ["JPG", "PNG", "WebP", "GIF", "ICO"], default: "PNG" }
+  ]
+};
+
+export const imageMetadataViewerNewConfig = {
+  slug: "image-metadata-viewer-new",
+  title: "Image Metadata Viewer",
+  description: "Deep byte-level inspection of Exif, IPTC, and XMP data segments.",
+  icon: "🕵️",
+  colorClass: "bg-emerald-800",
+  options: [
+    { id: "deepScan", type: "toggle", label: "Scan Hidden Tags", default: true }
+  ]
+};
+
 export const imageKbReducerConfig = {
   slug: "image-kb-reducer",
   title: "Image Size Reducer (Exact KB)",
@@ -18,7 +76,8 @@ export const passportPhotoConfig = {
   icon: "🛂",
   colorClass: "bg-indigo-600",
   options: [
-    { id: "preset", type: "select", label: "Select Standard", values: ["Indian Passport (35x45mm)", "US Passport (2x2in)", "Custom (A4 Sheet)"], default: "Indian Passport (35x45mm)" }
+    { id: "preset", type: "select", label: "Select Standard", values: ["Indian Passport (35x45mm)", "US Passport (2x2in)", "Custom (A4 Sheet)"], default: "Indian Passport (35x45mm)" },
+    { id: "layout", type: "select", label: "Sheet Layout", values: ["Single Photo", "6 Photos (4x6)", "12 Photos (A4)", "32 Photos (A4)"], default: "Single Photo" }
   ]
 };
 
@@ -29,7 +88,9 @@ export const imageToWebpConfig = {
   icon: "🕸️",
   colorClass: "bg-emerald-600",
   options: [
-    { id: "quality", type: "slider", label: "Compression Quality", min: 10, max: 100, default: 80 }
+    { id: "quality", type: "slider", label: "Compression Quality", min: 10, max: 100, default: 80 },
+    { id: "lossless", type: "toggle", label: "Lossless Mode", default: false },
+    { id: "preserveMetadata", type: "toggle", label: "Preserve Metadata", default: true }
   ]
 };
 
@@ -73,7 +134,6 @@ export const imageMetadataViewerConfig = {
   options: []
 };
 
-// ... keep existing diagnostic configs
 export const dpiMythBreakerConfig = {
   slug: "image-dpi-myth-breaker",
   title: "Image DPI Myth Breaker",

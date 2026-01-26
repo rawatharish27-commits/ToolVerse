@@ -5,6 +5,8 @@ export interface PassportOptions {
   dpi: number;
   backgroundColor: string;
   format: 'image/jpeg' | 'image/png';
+  // Added layout to satisfy options in ImageTools.tsx
+  layout?: string;
 }
 
 export interface PassportResult {

@@ -1,8 +1,9 @@
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import ToolLayout from '../ToolLayout';
 import OptionsPanel from '../OptionsPanel';
-import { getToolConfig } from '../../utils/configRegistry';
+import { TOOLS } from '../../data/tools';
+import { salaryCalculatorConfig, roiCalculatorConfig, emiCalculatorConfig } from '../../config/calculatorTools';
 
 interface ToolProps {
   slug: string;
@@ -15,50 +16,30 @@ const FinanceTools: React.FC<ToolProps> = ({ slug, onSuccess, onError }) => {
   const [mathResult, setMathResult] = useState<any>(null);
   const [loading, setLoading] = useState(false);
 
-  const activeConfig = getToolConfig(slug);
+  const toolNode = useMemo(() => TOOLS.find(t => t.slug === slug), [slug]);
+  const activeConfig = useMemo(() => [
+    salaryCalculatorConfig, roiCalculatorConfig, emiCalculatorConfig
+  ].find(c => c.slug === slug) || salaryCalculatorConfig, [slug]);
 
   useEffect(() => {
     const initial: Record<string, any> = {};
-    if (activeConfig.options) {
-      activeConfig.options.forEach((opt: any) => initial[opt.id] = opt.default);
-    }
+    activeConfig.options.forEach((opt: any) => initial[opt.id] = opt.default);
     setOptions(initial);
     setMathResult(null);
   }, [slug, activeConfig]);
 
-  const calculate = () => {
+  const calculate = async () => {
+    if (!toolNode?.execute) return;
     setLoading(true);
-    setTimeout(() => {
-      try {
-        let res: any = null;
-        if (slug === 'salary-calculator') {
-          const ctc = options.ctc || 1200000;
-          const monthly = ctc / 12;
-          const tax = ctc > 700000 ? (ctc * 0.15) / 12 : 0; // Simple India New Regime logic
-          res = {
-            "Gross Monthly": `₹${Math.round(monthly).toLocaleString()}`,
-            "Monthly Tax (Est)": `₹${Math.round(tax).toLocaleString()}`,
-            "Take-Home Pay": `₹${Math.round(monthly - tax - 1800).toLocaleString()}`,
-            "Note": "Includes PF and basic tax estimates for FY 24-25."
-          };
-        } else if (slug === 'roi-calculator') {
-          const gain = options.amountReturned - options.amountInvested;
-          const roi = (gain / options.amountInvested) * 100;
-          res = {
-            "Total Gain/Loss": `₹${gain.toLocaleString()}`,
-            "Total ROI": `${roi.toFixed(2)}%`,
-            "Annualized ROI": `${(roi / options.tenureYears).toFixed(2)}%`,
-            "Verdict": roi > 0 ? "Profitable Investment" : "Loss-making Investment"
-          };
-        }
-        setMathResult(res);
-        onSuccess("Calculation Complete!");
-      } catch (e) {
-        onError("Math engine fault.");
-      } finally {
-        setLoading(false);
-      }
-    }, 400);
+    try {
+      const res = await toolNode.execute(options);
+      setMathResult(res);
+      onSuccess("Logic Resolved");
+    } catch (e) {
+      onError("Calculation fault.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -68,19 +49,22 @@ const FinanceTools: React.FC<ToolProps> = ({ slug, onSuccess, onError }) => {
       icon={activeConfig.icon}
       colorClass={activeConfig.colorClass}
       input={
-        <div className="py-12 bg-slate-50 rounded-[3rem] border border-dashed border-slate-200 text-center">
-          <div className="text-8xl mb-4">{activeConfig.icon}</div>
-          <p className="text-slate-400 font-black text-[10px] uppercase tracking-widest italic">PRO FINANCIAL ISOLATE ACTIVE</p>
+        <div className="py-12 bg-slate-50 rounded-[3rem] border border-dashed border-slate-200 text-center flex flex-col items-center">
+          <div className="text-8xl mb-6">{activeConfig.icon}</div>
+          <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest italic">PRO FINANCIAL ISOLATE ACTIVE</p>
+          <div className="mt-8 px-6 py-2 bg-emerald-50 text-emerald-600 rounded-full text-[9px] font-black uppercase tracking-widest border border-emerald-100">
+            Node: Precision Verified
+          </div>
         </div>
       }
       options={<OptionsPanel options={activeConfig.options as any} values={options} onChange={(id, val) => setOptions(p => ({...p, [id]: val}))} />}
-      actions={<button onClick={calculate} disabled={loading} className={`w-full py-6 ${activeConfig.colorClass} text-white rounded-2xl font-black text-xl shadow-2xl`}>Execute Financial Logic</button>}
+      actions={<button onClick={calculate} disabled={loading} className={`w-full py-8 ${activeConfig.colorClass} text-white rounded-[2.5rem] font-black text-2xl shadow-2xl transition-all active:scale-95`}>{loading ? "Synchronizing Indices..." : "Execute Financial Logic"}</button>}
       result={mathResult && (
-        <div className="grid grid-cols-1 gap-4 animate-in zoom-in-95">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 animate-in zoom-in-95">
            {Object.entries(mathResult).map(([k, v]) => (
-             <div key={k} className="bg-slate-50 p-6 rounded-2xl border border-slate-100 flex flex-col md:flex-row justify-between items-center gap-2">
-                <span className="text-[9px] font-black text-slate-400 uppercase tracking-widest">{k}</span>
-                <span className="text-sm font-black text-indigo-600">{(v as string)}</span>
+             <div key={k} className="bg-slate-50 p-8 rounded-[2rem] border border-slate-100 flex flex-col justify-between items-start gap-4">
+                <span className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">{k}</span>
+                <span className="text-2xl font-black text-indigo-600">{(v as string)}</span>
              </div>
            ))}
         </div>

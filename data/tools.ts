@@ -1,245 +1,209 @@
 
 import { Tool } from '../types';
 
+/**
+ * TOOLVERSE MASTER LOGIC REGISTRY
+ * All tool implementations reside here for a single source of truth.
+ * High-performance browser-native logic using WASM, WebCrypto, and Heuristic Engines.
+ */
 export const TOOLS: Tool[] = [
-  { slug: 'actual-interest-analyzer', title: 'Bank vs Actual Rate Analyzer', category: 'calculators', description: 'Calculates the real interest rate for flat-rate loans, exposing the high effective cost.', keywords: ['bank', 'interest', 'flat rate'], toolType: 'server' },
-  { slug: 'age-calculator', title: 'Age Calculator Pro', category: 'calculators', description: 'Calculate exact age in years, months, and days with birthday countdowns.', keywords: ['age', 'dob', 'birthday'], toolType: 'server' },
-  { slug: 'ai-article-generator', title: 'AI Article Writer Pro', category: 'ai', description: 'Generate high-value, SEO-optimized 1500+ word articles.', keywords: ['writer', 'seo', 'blog'], toolType: 'ai' },
-  { slug: 'ai-article-rewriter', title: 'Smart Content Rewriter', category: 'ai', description: 'Paraphrase and restructure content to make it unique and professional.', keywords: ['rewrite', 'paraphrase'], toolType: 'ai' },
-  { slug: 'ai-background-remover', title: 'AI Background Architect', category: 'ai', description: 'Generate precision instructions for AI-powered background removal.', keywords: ['remove bg', 'mask'], toolType: 'ai' },
-  { slug: 'ai-email-generator', title: 'AI Email Assistant', category: 'ai', description: 'Craft high-response emails for sales, networking, or support.', keywords: ['email', 'writing'], toolType: 'ai' },
-  { slug: 'ai-face-retouch', title: 'AI Face Retouch Architect', category: 'ai', description: 'Professional portrait retouching instructions for natural skin and lighting.', keywords: ['retouch', 'portrait'], toolType: 'ai' },
-  { slug: 'ai-grammar-fixer', title: 'Professional Proofreader', category: 'ai', description: 'Advanced syntax and spelling correction with academic mode.', keywords: ['grammar', 'edit'], toolType: 'ai' },
-  { slug: 'ai-image-caption-generator', title: 'AI Image Caption Master', category: 'ai', description: 'Generate platform-optimized captions for social media growth.', keywords: ['caption', 'insta', 'fb'], toolType: 'ai' },
-  { slug: 'ai-image-enhancer', title: 'AI Image Enhancer Architect', category: 'ai', description: 'Generate instructions to fix blur, noise, and lighting via AI.', keywords: ['upscale', 'fix photo'], toolType: 'ai' },
-  { slug: 'ai-image-generator', title: 'AI Image Studio', category: 'ai', description: 'Architect high-fidelity prompts for cinematic AI image generation.', keywords: ['generate', 'midjourney', 'dall-e'], toolType: 'ai' },
-  { slug: 'ai-image-recolor', title: 'AI Image Recolor Architect', category: 'ai', description: 'Instructions for changing subject colors with realistic lighting.', keywords: ['recolor', 'edit'], toolType: 'ai' },
-  { slug: 'ai-image-style-transfer', title: 'AI Style Transfer Architect', category: 'ai', description: 'Apply artistic styles to images while maintaining structural integrity.', keywords: ['style', 'art'], toolType: 'ai' },
-  { slug: 'ai-image-upscaler', title: 'AI Image Upscaler Architect', category: 'ai', description: 'Super-resolution instructions for high-fidelity upscaling.', keywords: ['upscale', '4k'], toolType: 'ai' },
-  { slug: 'ai-meme-generator', title: 'AI Meme Architect', category: 'ai', description: 'Generate viral meme concepts and punchlines based on trends.', keywords: ['meme', 'viral'], toolType: 'ai' },
-  { slug: 'ai-product-description', title: 'Commerce Copywriter', category: 'ai', description: 'Persuasive product descriptions focusing on benefits over features.', keywords: ['ecommerce', 'sales'], toolType: 'ai' },
-  { slug: 'ai-resume-writer', title: 'Resume Optimizer', category: 'ai', description: 'Turn task lists into accomplishment-driven bullet points.', keywords: ['jobs', 'resume'], toolType: 'ai' },
-  { slug: 'ai-seo-optimizer', title: 'SEO Enhancer', category: 'ai', description: 'Optimize title tags and keyword placement for specific search intent.', keywords: ['seo', 'google'], toolType: 'ai' },
-  { slug: 'ai-story-generator', title: 'Creative Story Studio', category: 'ai', description: 'Build worlds and narratives with neural collaboration.', keywords: ['story', 'fiction'], toolType: 'ai' },
-  { slug: 'ai-thumbnail-generator', title: 'AI Thumbnail Architect', category: 'ai', description: 'High-CTR thumbnail concepts and layout guides.', keywords: ['youtube', 'ctr'], toolType: 'ai' },
-  { slug: 'ai-youtube-script', title: 'Script Architect', category: 'ai', description: 'Structured video scripts with engagement hooks and cues.', keywords: ['youtube', 'video'], toolType: 'ai' },
-  { slug: 'api-response-viewer', title: 'API Response Viewer', category: 'dev', description: 'Inspect API endpoints and response performance.', keywords: ['api', 'debug'], toolType: 'server' },
-  { slug: 'app-install-checker', title: 'App Install Compatibility', category: 'utility', description: 'Check APK requirements against modern device specs.', keywords: ['apk', 'android'], toolType: 'server' },
-  { slug: 'application-status-meaning-decoder', title: 'Status Decoder Pro', category: 'utility', description: 'Human steps for portal status messages (Scrutiny, Objection).', keywords: ['portal', 'status'], toolType: 'server' },
-  { slug: 'area-converter', title: 'Precision Area Converter', category: 'unit-converters', description: 'Convert between sqm, sqft, acres, and hectares.', keywords: ['area', 'land'], toolType: 'server' },
-  { slug: 'ats-keyword-gap-finder', title: 'ATS Keyword Gap Finder', category: 'office', description: 'Identify missing skills by comparing resume against JD.', keywords: ['ats', 'gap'], toolType: 'ai' },
-  { slug: 'audio-compressor', title: 'Smart Audio Compressor', category: 'audio', description: 'Reduce audio file size with advanced bitrate reduction.', keywords: ['compress', 'mp3'], toolType: 'client' },
-  { slug: 'audio-converter', title: 'Pro Audio Converter', category: 'audio', description: 'Convert between MP3, WAV, AAC, and OGG formats.', keywords: ['convert', 'audio'], toolType: 'client' },
-  { slug: 'audio-cutter', title: 'Precision Audio Cutter', category: 'audio', description: 'Cut and trim audio segments with millisecond accuracy.', keywords: ['cut', 'trim'], toolType: 'client' },
-  { slug: 'audio-merger', title: 'Pro Audio Merger', category: 'audio', description: 'Join multiple audio clips into a single seamless track.', keywords: ['merge', 'join'], toolType: 'client' },
-  { slug: 'audio-noise-remover', title: 'AI Audio Denoiser', category: 'audio', description: 'Remove background hiss and hum using spectral filters.', keywords: ['noise', 'clean'], toolType: 'client' },
-  { slug: 'audio-speed-pitch-control', title: 'Audio Tempo & Pitch Master', category: 'audio', description: 'Adjust playback speed and shift pitch independently.', keywords: ['tempo', 'pitch'], toolType: 'client' },
-  { slug: 'background-blur-tool', title: 'Background Blur Utility', category: 'image', description: 'Apply localized blur filters to image backgrounds.', keywords: ['blur', 'focus'], toolType: 'client' },
-  { slug: 'background-rejection-predictor', title: 'Background Rejection Predictor', category: 'image', description: 'Predict portal rejection risk based on background quality.', keywords: ['rejection', 'background'], toolType: 'server' },
-  { slug: 'background-remover-non-ai', title: 'BG Remover (Smart Mask)', category: 'image', description: 'Fast, non-AI solid background removal via thresholding.', keywords: ['remove bg', 'mask'], toolType: 'client' },
-  { slug: 'base64-encoder-decoder', title: 'Base64 Transcoder', category: 'dev', description: 'Securely encode or decode text and binary data.', keywords: ['base64', 'dev'], toolType: 'server' },
-  { slug: 'bmi-calculator', title: 'Health & BMI Analyzer', category: 'calculators', description: 'Calculate BMI and get WHO health categories.', keywords: ['health', 'bmi'], toolType: 'server' },
-  { slug: 'breadcrumb-schema-generator', title: 'Breadcrumb Schema Maker', category: 'seo', description: 'Create structured data for site hierarchy in SERPs.', keywords: ['seo', 'schema'], toolType: 'server' },
-  { slug: 'camera-vs-screenshot-quality-tool', title: 'Camera vs Screenshot Tool', category: 'image', description: 'Identify why screenshots get rejected in official portals.', keywords: ['screenshot', 'kyc'], toolType: 'server' },
-  { slug: 'case-converter', title: 'Pro Case Converter', category: 'office', description: 'Transform between UPPER, lower, camelCase, and Title Case.', keywords: ['text', 'case'], toolType: 'server' },
-  { slug: 'character-counter', title: 'Pro Character Counter', category: 'office', description: 'Real-time character counting with whitespace analysis.', keywords: ['counter', 'words'], toolType: 'server' },
-  { slug: 'chart-generator', title: 'Smart Chart Generator', category: 'data', description: 'Create beautiful visualizations from datasets instantly.', keywords: ['chart', 'viz'], toolType: 'server' },
-  { slug: 'comment-reply-generator', title: 'AI Comment Responder', category: 'social', description: 'Generate smart, thoughtful replies to maintain engagement.', keywords: ['social', 'reply'], toolType: 'ai' },
-  { slug: 'compound-interest-calc', title: 'Compound Interest Architect', category: 'calculators', description: 'Visualize future value with periodic contributions.', keywords: ['finance', 'compound'], toolType: 'server' },
-  { slug: 'cover-letter-optimizer', title: 'Cover Letter Optimizer', category: 'office', description: 'Perfect your pitch length and tone for ATS readiness.', keywords: ['jobs', 'letter'], toolType: 'ai' },
-  { slug: 'css-beautifier', title: 'CSS Beautifier', category: 'dev', description: 'Format messy CSS into readable blocks.', keywords: ['css', 'pretty'], toolType: 'server' },
-  { slug: 'csv-to-excel-converter', title: 'CSV to Excel Converter', category: 'data', description: 'Convert large CSV files into styled Excel workbooks.', keywords: ['csv', 'excel'], toolType: 'client' },
-  { slug: 'csv-to-json', title: 'CSV to JSON Converter', category: 'data', description: 'Convert CSV data into structured JSON objects.', keywords: ['csv', 'json'], toolType: 'client' },
-  { slug: 'csv-viewer', title: 'Professional CSV Viewer', category: 'data', description: 'Upload and view CSV files in a paginated table format.', keywords: ['csv', 'view'], toolType: 'client' },
-  { slug: 'data-cleaner', title: 'Pro Data Cleaner', category: 'data', description: 'Normalize and sanitize messy CSV or text datasets.', keywords: ['clean', 'data'], toolType: 'server' },
-  { slug: 'data-deduplication-tool', title: 'Data Deduplication', category: 'data', description: 'Remove duplicate records with column-level precision.', keywords: ['dedupe', 'cleanup'], toolType: 'server' },
-  { slug: 'data-masking-tool', title: 'PII Data Masking', category: 'network', description: 'Securely mask sensitive data for safe sharing.', keywords: ['privacy', 'mask'], toolType: 'server' },
-  { slug: 'data-size-converter', title: 'Data Size Converter', category: 'unit-converters', description: 'Convert between Bytes, KB, MB, GB, and TB.', keywords: ['size', 'storage'], toolType: 'server' },
-  { slug: 'date-difference-calculator', title: 'Date Duration Finder', category: 'utility', description: 'Calculate exact duration between two dates.', keywords: ['date', 'diff'], toolType: 'server' },
-  { slug: 'deadline-checker', title: 'Exam Deadline Logic Checker', category: 'utility', description: 'Check if you are within official submission windows.', keywords: ['date', 'form'], toolType: 'server' },
-  { slug: 'device-compatibility-checker', title: 'Device Compatibility Audit', category: 'utility', description: 'Audit browser capabilities and device hardware support.', keywords: ['compat', 'browser'], toolType: 'server' },
-  { slug: 'discount-calculator', title: 'Smart Discount Calc', category: 'calculators', description: 'Calculate final price after multiple discounts and tax.', keywords: ['sales', 'price'], toolType: 'server' },
-  { slug: 'dns-lookup', title: 'Pro DNS Lookup', category: 'network', description: 'Query global DNS records including A, MX, and TXT.', keywords: ['dns', 'network'], toolType: 'server' },
-  { slug: 'docx-metadata-viewer', title: 'DOCX Metadata Viewer', category: 'office', description: 'Examine hidden properties from Word documents.', keywords: ['docx', 'meta'], toolType: 'client' },
-  { slug: 'dpi-size-conflict-explainer', title: 'DPI vs Size Conflict', category: 'utility', description: 'Explain math feasibility of tight upload specs.', keywords: ['dpi', 'limit'], toolType: 'server' },
-  { slug: 'duplicate-line-remover', title: 'Duplicate Line Remover', category: 'office', description: 'Clean up lists by removing repetitive lines.', keywords: ['cleanup', 'text'], toolType: 'server' },
-  { slug: 'edu-assignment-formatter', title: 'AI Assignment Formatter', category: 'education', description: 'Transform notes into submission-ready assignments.', keywords: ['study', 'format'], toolType: 'ai' },
-  { slug: 'edu-citation-architect', title: 'AI Citation Maker', category: 'education', description: 'Generate perfect APA, MLA, or Chicago citations.', keywords: ['citation', 'academic'], toolType: 'ai' },
-  { slug: 'edu-coding-tutor', title: 'AI Coding Logic Tutor', category: 'education', description: 'Mental model builder for programming and syntax.', keywords: ['code', 'learn'], toolType: 'ai' },
-  { slug: 'edu-concept-explainer', title: 'AI Concept Master (ELI5)', category: 'education', description: 'Simplification engine for complex theories and laws.', keywords: ['explain', 'learn'], toolType: 'ai' },
-  { slug: 'edu-equation-solver', title: 'AI Equation Solver', category: 'education', description: 'Step-by-step solving for quadratic and systems.', keywords: ['math', 'solver'], toolType: 'ai' },
-  { slug: 'edu-essay-grader', title: 'AI Essay Auditor', category: 'education', description: 'Academic audit for grammar and logical consistency.', keywords: ['essay', 'grade'], toolType: 'ai' },
-  { slug: 'edu-flashcard-generator', title: 'AI Flashcard Maker', category: 'education', description: 'Convert notes into recall-optimized study cards.', keywords: ['memo', 'study'], toolType: 'ai' },
-  { slug: 'edu-formula-generator', title: 'AI Formula Generator', category: 'education', description: 'Generate chapter-wise formula lists with explanations.', keywords: ['formula', 'science'], toolType: 'ai' },
-  { slug: 'edu-language-tutor', title: 'AI Language Coach', category: 'education', description: 'Linguistic coaching with scenario-based practice.', keywords: ['lang', 'learn'], toolType: 'ai' },
-  { slug: 'edu-math-solver', title: 'AI Math Logic Solver', category: 'education', description: 'Step-by-step logic for complex word problems.', keywords: ['math', 'logic'], toolType: 'ai' },
-  { slug: 'edu-quiz-generator', title: 'AI Quiz Architect', category: 'education', description: 'Generate MCQs and assessments with keys.', keywords: ['quiz', 'test'], toolType: 'ai' },
-  { slug: 'edu-research-assistant', title: 'AI Research Architect', category: 'education', description: 'Strategize topics and map academic sources.', keywords: ['research', 'thesis'], toolType: 'ai' },
-  { slug: 'edu-study-planner', title: 'AI Study Planner', category: 'education', description: 'Architect exam schedules with milestone nodes.', keywords: ['study', 'plan'], toolType: 'ai' },
-  { slug: 'edu-summary-generator', title: 'AI Notes Summarizer', category: 'education', description: 'Synthesize long notes into exam-ready summaries.', keywords: ['notes', 'short'], toolType: 'ai' },
-  { slug: 'edu-unit-practice', title: 'Unit Practice Generator', category: 'education', description: 'Generate topic-wise questions for self-test.', keywords: ['practice', 'study'], toolType: 'ai' },
-  { slug: 'email-bounce-decoder', title: 'Email Bounce Decoder', category: 'utility', description: 'Translate SMTP errors into plain English fixes.', keywords: ['email', 'error'], toolType: 'server' },
-  { slug: 'email-header-analyzer', title: 'Email Header Analyzer', category: 'utility', description: 'Track origins and verify SPF/DKIM authentication.', keywords: ['email', 'trace'], toolType: 'server' },
-  { slug: 'emi-calculator', title: 'Standard EMI Calc', category: 'calculators', description: 'Bank-grade loan installment math for India.', keywords: ['loan', 'emi'], toolType: 'server' },
-  { slug: 'event-countdown-timer', title: 'Event Countdown', category: 'utility', description: 'Generate timer links for upcoming deadlines.', keywords: ['timer', 'date'], toolType: 'server' },
-  { slug: 'excel-data-cleaner', title: 'Excel Data Cleaner', category: 'data', description: 'Scrub empty rows and normalize date formats.', keywords: ['excel', 'clean'], toolType: 'client' },
-  { slug: 'excel-to-pdf-converter', title: 'Excel to PDF Converter', category: 'pdf', description: 'Convert workbooks into printable PDF documents.', keywords: ['excel', 'pdf'], toolType: 'client' },
-  { slug: 'excel-viewer', title: 'Professional Excel Viewer', category: 'data', description: 'View XLSX files in-browser without software.', keywords: ['view', 'xlsx'], toolType: 'client' },
-  { slug: 'experience-dispute-resolver', title: 'HR Experience Resolver', category: 'office', description: 'Calculate relevant years after breaks and overlaps.', keywords: ['jobs', 'hr'], toolType: 'server' },
-  { slug: 'faq-schema-generator', title: 'FAQ Schema Pro', category: 'seo', description: 'Generate JSON-LD FAQ schema for rich results.', keywords: ['seo', 'schema'], toolType: 'server' },
-  { slug: 'file-compressor', title: 'Pro File Compressor', category: 'file', description: 'Create or extract ZIP archives instantly.', keywords: ['zip', 'compress'], toolType: 'client' },
-  { slug: 'file-converter', title: 'Professional File Converter', category: 'file', description: 'Switch between JSON, CSV, and Text formats.', keywords: ['convert', 'data'], toolType: 'server' },
-  { slug: 'file-corruption-predictor', title: 'File Corruption Risk', category: 'utility', description: 'checksum stability model based on method.', keywords: ['file', 'error'], toolType: 'server' },
-  { slug: 'file-format-converter', title: 'Format Converter Pro', category: 'file', description: 'Switch between JSON, XML, YAML, and CSV.', keywords: ['convert', 'file'], toolType: 'server' },
-  { slug: 'file-hash-generator', title: 'File Hash Generator', category: 'file', description: 'Verify integrity with MD5 and SHA-256.', keywords: ['hash', 'verify'], toolType: 'client' },
-  { slug: 'file-merger', title: 'Seamless File Merger', category: 'file', description: 'Recombine binary parts into original form.', keywords: ['merge', 'join'], toolType: 'client' },
-  { slug: 'file-size-converter', title: 'File Size Transcoder', category: 'utility', description: 'Convert between Bytes, KB, MB, and TB.', keywords: ['size', 'mb'], toolType: 'server' },
-  { slug: 'file-splitter', title: 'Precision File Splitter', category: 'file', description: 'Split large files into manageable binary chunks.', keywords: ['split', 'cut'], toolType: 'client' },
-  { slug: 'file-type-identifier', title: 'Binary File Identifier', category: 'utility', description: 'Detect format via hex magic numbers.', keywords: ['detect', 'file'], toolType: 'server' },
-  { slug: 'find-and-replace', title: 'Text Find & Replace', category: 'office', description: 'Search and replace patterns instantly.', keywords: ['text', 'edit'], toolType: 'server' },
-  { slug: 'font-not-supported-decoder', title: 'Font Support Decoder', category: 'pdf', description: 'Decipher portal errors like CIDFontType2.', keywords: ['font', 'error'], toolType: 'server' },
-  { slug: 'form-deadline-date-logic-checker', title: 'Deadline Logic Checker', category: 'utility', description: 'Verification of submission windows.', keywords: ['govt', 'form'], toolType: 'server' },
-  { slug: 'form-image-auto-fixer', title: 'Form Image Auto-Fixer', category: 'image', description: 'Auto-adjust contrast for portal readiness.', keywords: ['fix', 'photo'], toolType: 'client' },
-  { slug: 'format-translator', title: 'Hidden Format Translator', category: 'utility', description: 'Detect if a file was just renamed incorrectly.', keywords: ['mime', 'error'], toolType: 'server' },
-  { slug: 'gap-explanation-generator', title: 'Career Gap Explainer', category: 'office', description: 'Professional logic for employment breaks.', keywords: ['jobs', 'hr'], toolType: 'ai' },
-  { slug: 'govt-form-file-rule-decoder', title: 'Govt Form Rule Decoder', category: 'utility', description: 'Exact technical upload specs for official portals.', keywords: ['ssc', 'upsc'], toolType: 'server' },
-  { slug: 'gst-calculator', title: 'Advanced GST Calc', category: 'calculators', description: 'Inclusive and exclusive GST breakup (India).', keywords: ['gst', 'tax'], toolType: 'server' },
-  { slug: 'hash-generator', title: 'Pro Hash Generator', category: 'security', description: 'Generate SHA-256 and MD5 hashes for text.', keywords: ['security', 'hash'], toolType: 'server' },
-  { slug: 'hash-identifier', title: 'Hash Type Identifier', category: 'security', description: 'Identify probable algorithm from hash strings.', keywords: ['security', 'detect'], toolType: 'server' },
-  { slug: 'hashtag-generator', title: 'AI Hashtag Architect', category: 'social', description: 'Universal tags for any visual platform.', keywords: ['social', 'tags'], toolType: 'ai' },
-  { slug: 'hidden-charges-calculator', title: 'Hidden Charges Finder', category: 'calculators', description: 'Find real cost of EMIs and personal loans.', keywords: ['emi', 'finance'], toolType: 'server' },
-  { slug: 'html-css-formatter', title: 'HTML / CSS Formatter', category: 'dev', description: 'Professionally beautify markup and styles.', keywords: ['html', 'css'], toolType: 'server' },
-  { slug: 'html-minifier', title: 'HTML Minifier', category: 'dev', description: 'Compress markup for production speed.', keywords: ['minify', 'seo'], toolType: 'server' },
-  { slug: 'http-header-checker', title: 'HTTP Header Inspector', category: 'network', description: 'Analyze server responses for compliance.', keywords: ['http', 'headers'], toolType: 'server' },
-  { slug: 'id-validator', title: 'ID Document Validator', category: 'utility', description: 'Verify PAN/Aadhaar scan compliance.', keywords: ['kyc', 'id'], toolType: 'server' },
-  { slug: 'image-authenticity-analyzer', title: 'Authenticity Analyzer', category: 'image', description: 'Detect if image was edited in Canva/PS.', keywords: ['fake', 'meta'], toolType: 'server' },
-  { slug: 'image-blur-upload-simulator', title: 'Upload Blur Simulator', category: 'image', description: 'Visualize why quality drops after upload.', keywords: ['blur', 'social'], toolType: 'server' },
-  { slug: 'image-color-palette-extractor', title: 'Color Palette Extractor', category: 'image', description: 'Get professional hex codes from any photo.', keywords: ['color', 'art'], toolType: 'client' },
-  { slug: 'image-compressor', title: 'Smart Image Compressor', category: 'image', description: 'Visual fidelity controlled optimization.', keywords: ['compress', 'jpg'], toolType: 'client' },
-  { slug: 'image-dpi-checker', title: 'Image DPI Checker & Fixer', category: 'image', description: 'Check and modify DPI for print compliance.', keywords: ['dpi', '300dpi'], toolType: 'client' },
-  { slug: 'image-dpi-myth-breaker', title: 'DPI Myth Breaker', category: 'image', description: 'Debunk DPI vs Resolution misconceptions.', keywords: ['dpi', 'pixels'], toolType: 'server' },
-  { slug: 'image-format-converter', title: 'Universal Format Converter', category: 'image', description: 'Convert between JPG, PNG, and WebP.', keywords: ['convert', 'transcode'], toolType: 'client' },
-  { slug: 'image-kb-reducer', title: 'Size Reducer (Exact KB)', category: 'image', description: 'Hit target limits (20KB/50KB) for forms.', keywords: ['kb', 'ssc'], toolType: 'client' },
-  { slug: 'image-metadata-remover', title: 'Image Privacy Scrubber', category: 'image', description: 'Strip EXIF and GPS data for safe sharing.', keywords: ['privacy', 'gps'], toolType: 'client' },
-  { slug: 'image-metadata-viewer', title: 'Deep Metadata Inspector', category: 'image', description: 'Extract EXIF tags and camera details.', keywords: ['metadata', 'exif'], toolType: 'client' },
-  { slug: 'image-perspective-corrector', title: 'Perspective Corrector', category: 'image', description: 'Fix keystone distortion in doc photos.', keywords: ['warp', 'fix'], toolType: 'client' },
-  { slug: 'image-print-size-calculator', title: 'Print Size Calculator', category: 'image', description: 'Dimension limits based on pixels and DPI.', keywords: ['print', 'size'], toolType: 'server' },
-  { slug: 'image-shadow-generator', title: 'Image Shadow Architect', category: 'image', description: 'Apply realistic 2D/3D shadows locally.', keywords: ['shadow', 'art'], toolType: 'client' },
-  { slug: 'image-stretching-issue-predictor', title: 'Stretching Predictor', category: 'image', description: 'Predict aspect ratio distortion errors.', keywords: ['stretch', 'ar'], toolType: 'server' },
-  { slug: 'image-to-webp', title: 'Image to WebP Converter', category: 'image', description: 'Convert to next-gen WebP for faster loading.', keywords: ['webp', 'convert'], toolType: 'client' },
-  { slug: 'inflation-impact-calculator', title: 'Inflation Impact Engine', category: 'calculators', description: 'Visualize future purchasing power of money.', keywords: ['finance', 'inflation'], toolType: 'server' },
-  { slug: 'instagram-caption-generator', title: 'Insta Caption Master', category: 'social', description: 'Trendy and high-engagement social captions.', keywords: ['social', 'writer'], toolType: 'ai' },
-  { slug: 'instagram-hashtag-analyzer', title: 'Hashtag Analyzer', category: 'social', description: 'Analyze tag efficacy and competition.', keywords: ['social', 'tags'], toolType: 'ai' },
-  { slug: 'internal-link-generator', title: 'Internal Link Architect', category: 'seo', description: 'Natural linking suggestions for keyword hubs.', keywords: ['seo', 'links'], toolType: 'server' },
-  { slug: 'internet-slow-analyzer', title: 'Slow Internet Analyzer', category: 'utility', description: 'Diagnose why high-speed lines feel slow.', keywords: ['internet', 'speed'], toolType: 'server' },
-  { slug: 'internet-speed-test', title: 'Bandwidth Analyzer', category: 'network', description: 'Evaluate latency and throughput stats.', keywords: ['speed', 'test'], toolType: 'server' },
-  { slug: 'invalid-dob-error-solver', title: 'Invalid DOB Fixer', category: 'utility', description: 'Resolve birth date rejection errors.', keywords: ['age', 'dob'], toolType: 'server' },
-  { slug: 'invoice-generator', title: 'Invoice Generator', category: 'office', description: 'Professional multi-currency business billing.', keywords: ['billing', 'invoice'], toolType: 'ai' },
-  { slug: 'ip-info-tool', title: 'IP Address Info', category: 'utility', description: 'Identify IP version and subnet class offline.', keywords: ['ip', 'network'], toolType: 'server' },
-  { slug: 'ip-to-location', title: 'IP to Location Lookup', category: 'network', description: 'Identify ISP and geographical metadata.', keywords: ['ip', 'trace'], toolType: 'server' },
-  { slug: 'job-offer-comparison', title: 'Offer Comparison Engine', category: 'calculators', description: 'Compare LPA, Stocks, and Bonuses side-by-side.', keywords: ['jobs', 'salary'], toolType: 'server' },
-  { slug: 'jpg-to-pdf-converter', title: 'JPG to PDF Pro', category: 'pdf', description: 'Merge multiple images into a single professional PDF.', keywords: ['jpg', 'pdf'], toolType: 'client' },
-  { slug: 'js-minifier', title: 'JavaScript Minifier', category: 'dev', description: 'Compress and optimize JS code for prod.', keywords: ['js', 'minify'], toolType: 'server' },
-  { slug: 'json-formatter', title: 'JSON Formatter', category: 'dev', description: 'Beautify and validate JSON data structures.', keywords: ['json', 'pretty'], toolType: 'server' },
-  { slug: 'json-to-csv', title: 'JSON to CSV Converter', category: 'data', description: 'Transform JSON arrays into clean CSV files.', keywords: ['json', 'csv'], toolType: 'server' },
-  { slug: 'json-validator', title: 'Strict JSON Validator', category: 'dev', description: 'RFC-compliant syntax error detection.', keywords: ['json', 'check'], toolType: 'server' },
-  { slug: 'jwt-decoder', title: 'JWT Decoder', category: 'dev', description: 'Instantly inspect JWT headers and payload.', keywords: ['jwt', 'auth'], toolType: 'server' },
-  { slug: 'keyword-density-checker', title: 'Keyword Density Analyzer', category: 'seo', description: 'Avoid over-optimization and student stuffing.', keywords: ['seo', 'density'], toolType: 'server' },
-  { slug: 'keyword-difficulty-checker', title: 'Keyword Difficulty Explorer', category: 'seo', description: 'Analyze rank effort for target terms.', keywords: ['seo', 'rank'], toolType: 'server' },
-  { slug: 'length-converter', title: 'Precision Length Converter', category: 'unit-converters', description: 'Convert between meter, km, inch, and feet.', keywords: ['length', 'size'], toolType: 'server' },
-  { slug: 'loan-calculator', title: 'Loan Cost Evaluator', category: 'calculators', description: 'Evaluate total borrowing cost and strategy.', keywords: ['loan', 'bank'], toolType: 'server' },
-  { slug: 'meta-description-length-checker', title: 'Meta Desc Checker', category: 'seo', description: 'Validate snippet visibility in SERPs.', keywords: ['seo', 'meta'], toolType: 'server' },
-  { slug: 'mobile-camera-setting-advisor', title: 'Camera Setting Advisor', category: 'image', description: 'Optimization guide for phone photography.', keywords: ['photo', 'tips'], toolType: 'server' },
-  { slug: 'notice-period-calculator', title: 'Notice Period Eligibility', category: 'office', description: 'Calculate last day and buyout eligibility.', keywords: ['jobs', 'hr'], toolType: 'server' },
-  { slug: 'offer-price-truth-calculator', title: 'Effective Price Calc', category: 'calculators', description: 'Real cost after GST and hidden fees.', keywords: ['price', 'deals'], toolType: 'server' },
-  { slug: 'otp-not-coming-analyzer', title: 'OTP Delivery Trace', category: 'utility', description: 'Find out if filters are blocking OTPs.', keywords: ['otp', 'sms'], toolType: 'server' },
-  { slug: 'pan-aadhaar-image-validator', title: 'KYC ID Validator', category: 'utility', description: 'Verify ID scan compliance for portals.', keywords: ['id', 'kyc'], toolType: 'server' },
-  { slug: 'passport-size-photo-maker', title: 'Passport Photo Maker', category: 'image', description: 'Official Indian and US standard generator.', keywords: ['passport', 'visa'], toolType: 'client' },
-  { slug: 'password-generator', title: 'Secure Password Gen', category: 'utility', description: 'Entropy-rich credential generation.', keywords: ['passwords', 'security'], toolType: 'server' },
-  { slug: 'password-strength-checker', title: 'Strength Auditor', category: 'security', description: 'Audit security entropy of credentials.', keywords: ['security', 'password'], toolType: 'server' },
-  { slug: 'pdf-bw-print-preview', title: 'B&W Print Predictor', category: 'pdf', description: 'Preview gray-level contrast for printing.', keywords: ['print', 'bw'], toolType: 'client' },
-  { slug: 'pdf-compare-tool', title: 'Visual PDF Compare', category: 'pdf', description: 'Highlight text differences between files.', keywords: ['compare', 'diff'], toolType: 'client' },
-  { slug: 'pdf-compatibility-analyzer', title: 'Version & Standard Analyzer', category: 'pdf', description: 'Check PDF version for portal readiness.', keywords: ['pdf', 'compat'], toolType: 'server' },
-  { slug: 'pdf-compliance-checker', title: 'Govt PDF Compliance', category: 'pdf', description: 'Check if PDF meets SSC/UPSC standards.', keywords: ['ssc', 'upsc'], toolType: 'server' },
-  { slug: 'pdf-compressor', title: 'Pro PDF Compressor', category: 'pdf', description: 'Reduce file size while maintaining integrity.', keywords: ['shrink', 'size'], toolType: 'client' },
-  { slug: 'pdf-font-error-decoder', title: 'Font Error Decoder', category: 'pdf', description: 'Resolve missing font or CIDFontType2 errors.', keywords: ['pdf', 'font'], toolType: 'server' },
-  { slug: 'pdf-merger', title: 'Professional PDF Merger', category: 'pdf', description: 'Combine multiple PDFs with range control.', keywords: ['merge', 'join'], toolType: 'client' },
-  { slug: 'pdf-metadata-viewer', title: 'PDF Metadata Inspector', category: 'pdf', description: 'Examine hidden Author and Creator tags.', keywords: ['metadata', 'pdf'], toolType: 'client' },
-  { slug: 'pdf-ocr-tool', title: 'Pro PDF OCR', category: 'pdf', description: 'Extract text from scanned PDF images locally.', keywords: ['ocr', 'scanned'], toolType: 'client' },
-  { slug: 'pdf-opening-checker', title: 'Portal Opening Checker', category: 'pdf', description: 'Diagnose why portals refuse to open a PDF.', keywords: ['error', 'load'], toolType: 'server' },
-  { slug: 'pdf-page-order-solver', title: 'Page Order Genius', category: 'pdf', description: 'Fix duplex and manual scan reordering.', keywords: ['order', 'duplex'], toolType: 'client' },
-  { slug: 'pdf-password-protect', title: 'Advanced PDF Protector', category: 'pdf', description: 'Secure PDF with AES-256 bit encryption.', keywords: ['lock', 'pdf'], toolType: 'client' },
-  { slug: 'pdf-password-remover', title: 'PDF Password Remover', category: 'pdf', description: 'Remove passwords and restrictions instantly.', keywords: ['unlock', 'pdf'], toolType: 'client' },
-  { slug: 'pdf-print-cutoff-predictor', title: 'Print Cut-Off Predictor', category: 'pdf', description: 'Predict border loss on A4 vs Letter.', keywords: ['print', 'margin'], toolType: 'server' },
-  { slug: 'pdf-size-increase-explainer', title: 'Compression Explainer', category: 'pdf', description: 'Why PDF got larger after compression.', keywords: ['error', 'size'], toolType: 'server' },
-  { slug: 'pdf-splitter', title: 'Professional PDF Splitter', category: 'pdf', description: 'Extract specific page ranges easily.', keywords: ['split', 'cut'], toolType: 'client' },
-  { slug: 'pdf-text-selectable-checker', title: 'Searchability Checker', category: 'pdf', description: 'Check if doc is Flat Image or Text.', keywords: ['search', 'ocr'], toolType: 'server' },
-  { slug: 'pdf-to-jpg-converter', title: 'PDF to JPG Converter', category: 'pdf', description: 'Extract pages as high-res images.', keywords: ['extract', 'jpg'], toolType: 'client' },
-  { slug: 'pdf-upload-time-estimator', title: 'Upload Speed Estimator', category: 'pdf', description: 'Calculate upload time and timeout risk.', keywords: ['speed', 'upload'], toolType: 'server' },
-  { slug: 'pdf-watermark-tool', title: 'PDF Watermark Tool', category: 'pdf', description: 'Secure docs with custom text overlays.', keywords: ['secure', 'watermark'], toolType: 'client' },
-  { slug: 'percentage-calculator', title: 'Percentage Master', category: 'calculators', description: 'Solve growth, decrease, and ratio problems.', keywords: ['math', 'percent'], toolType: 'server' },
-  { slug: 'photo-clarity-analyzer', title: 'Photo Clarity Analyzer', category: 'image', description: 'Diagnose grain and noise root causes.', keywords: ['clarity', 'fix'], toolType: 'server' },
-  { slug: 'photo-rejection-reason-finder', title: 'Photo Rejection Analyzer', category: 'image', description: 'Identify causes of passport photo rejection.', keywords: ['photo', 'fix'], toolType: 'server' },
-  { slug: 'pixel-to-kb-calculator', title: 'Pixel → KB Calculator', category: 'image', description: 'Relationship between resolution and size.', keywords: ['math', 'kb'], toolType: 'server' },
-  { slug: 'port-checker', title: 'Remote Port Scanner', category: 'network', description: 'Check for open network ports on public IPs.', keywords: ['port', 'scan'], toolType: 'server' },
-  { slug: 'print-vs-screen-image-difference-tool', title: 'Print vs Screen Difference', category: 'image', description: 'Solve the why it looks different mystery.', keywords: ['print', 'color'], toolType: 'server' },
-  { slug: 'profit-loss-calculator', title: 'Profit & Loss Analyzer', category: 'calculators', description: 'Analyze business performance and margins.', keywords: ['business', 'finance'], toolType: 'server' },
-  { slug: 'qr-code-generator', title: 'QR Code Architect', category: 'utility', description: 'Generate high-res offline QR codes.', keywords: ['qr', 'offline'], toolType: 'client' },
-  { slug: 'reel-hook-generator', title: 'Reel Hook Gen', category: 'social', description: 'Generate viral first-3-second hooks.', keywords: ['reels', 'viral'], toolType: 'ai' },
-  { slug: 'refund-amount-explainer', title: 'Refund Diff Explainer', category: 'calculators', description: 'Why refund is less than original price.', keywords: ['refund', 'tax'], toolType: 'server' },
-  { slug: 'regex-tester', title: 'Regex Debugger', category: 'dev', description: 'Test and debug regular expressions live.', keywords: ['regex', 'dev'], toolType: 'server' },
-  { slug: 'responsive-layout-analyzer', title: 'Mobile Layout Analyzer', category: 'utility', description: 'Viewport and flexbox alignment audit.', keywords: ['web', 'debug'], toolType: 'server' },
-  { slug: 'resume-builder', title: 'AI Resume Builder', category: 'office', description: 'Architect ATS-friendly professional resumes.', keywords: ['jobs', 'cv'], toolType: 'ai' },
-  { slug: 'resume-filename-checker', title: 'Resume Filename Auditor', category: 'office', description: 'Check if filename is hurting your chances.', keywords: ['jobs', 'meta'], toolType: 'server' },
-  { slug: 'resume-format-checker', title: 'Format Compatibility Check', category: 'office', description: 'Test if layout is safe for ATS systems.', keywords: ['jobs', 'ats'], toolType: 'server' },
-  { slug: 'resume-rejection-analyzer', title: 'Resume Auditor Pro', category: 'office', description: 'Find why your resume is failing ATS.', keywords: ['audit', 'jobs'], toolType: 'server' },
-  { slug: 'robots-txt-generator', title: 'Robots.txt Generator', category: 'seo', description: 'Generate crawlers instructions accurately.', keywords: ['seo', 'bot'], toolType: 'server' },
-  { slug: 'roi-calculator', title: 'ROI Calculator', category: 'calculators', description: 'Calculate investment returns and CAGR.', keywords: ['finance', 'roi'], toolType: 'server' },
-  { slug: 'salary-calculator', title: 'Salary Calculator (India)', category: 'calculators', description: 'CTC to In-Hand breakdown for FY 24-25.', keywords: ['salary', 'tax'], toolType: 'server' },
-  { slug: 'scanned-pdf-readability-tester', title: 'Readability Tester', category: 'pdf', description: 'Test if an OCR bot will understand scan.', keywords: ['ocr', 'scan'], toolType: 'server' },
-  { slug: 'security-decryptor', title: 'AES-256 Text Decryptor', category: 'security', description: 'Recover and verify encrypted content.', keywords: ['security', 'decrypt'], toolType: 'client' },
-  { slug: 'security-encryptor', title: 'AES-256 Text Encryptor', category: 'security', description: 'Secure text using local key derivation.', keywords: ['security', 'encrypt'], toolType: 'client' },
-  { slug: 'seo-title-length-checker', title: 'SEO Title Checker', category: 'seo', description: 'Check title optimization for Search.', keywords: ['seo', 'title'], toolType: 'server' },
-  { slug: 'serp-snippet-preview-tool', title: 'SERP Preview', category: 'seo', description: 'Visualize Google search result snippet.', keywords: ['seo', 'preview'], toolType: 'server' },
-  { slug: 'signature-upload-fix-tool', title: 'Signature Fix Expert', category: 'image', description: 'Detailed action plan for rejected signatures.', keywords: ['sign', 'fix'], toolType: 'server' },
-  { slug: 'signature-upload-fixer', title: 'Signature Fix Tool', category: 'image', description: 'Enhance ink and remove shadows for forms.', keywords: ['sign', 'fix'], toolType: 'client' },
-  { slug: 'simple-interest-calc', title: 'Simple Interest Master', category: 'calculators', description: 'Basic interest calculations with breakdown.', keywords: ['finance', 'math'], toolType: 'server' },
-  { slug: 'size-vs-dpi-conflict-explainer', title: 'Size vs DPI Conflict', category: 'utility', description: 'Mathematical explanation for upload spec conflicts.', keywords: ['dpi', 'kb'], toolType: 'server' },
-  { slug: 'social-media-bio-formatter', title: 'Social Bio Architect', category: 'social', description: 'Craft high-conversion social media bios.', keywords: ['social', 'profile'], toolType: 'ai' },
-  { slug: 'social-media-compression-preview', title: 'Social Compression Preview', category: 'image', description: 'Preview quality loss on IG/WA/X.', keywords: ['social', 'preview'], toolType: 'server' },
-  { slug: 'speed-converter', title: 'Speed Converter Pro', category: 'unit-converters', description: 'Convert between km/h, m/s, mph, and knots.', keywords: ['speed', 'math'], toolType: 'server' },
-  { slug: 'ssl-expiry-checker', title: 'SSL Health Checker', category: 'network', description: 'Check certificate validity and expiry.', keywords: ['ssl', 'https'], toolType: 'server' },
-  { slug: 'subscription-trap-analyzer', title: 'Subscription Trap Finder', category: 'calculators', description: 'Detect dark patterns in auto-renewals.', keywords: ['trap', 'finance'], toolType: 'server' },
-  { slug: 'temperature-converter', title: 'Temperature Converter', category: 'unit-converters', description: 'Convert Celsius, Fahrenheit, and Kelvin.', keywords: ['temp', 'science'], toolType: 'server' },
-  { slug: 'text-cleaner', title: 'Professional Text Cleaner', category: 'office', description: 'Sanitize and normalize messy text data.', keywords: ['text', 'clean'], toolType: 'server' },
-  { slug: 'text-compare', title: 'Visual Diff Checker', category: 'office', description: 'Compare two text versions side-by-side.', keywords: ['diff', 'compare'], toolType: 'server' },
-  { slug: 'text-to-docx-converter', title: 'Text to DOCX', category: 'office', description: 'Convert Markdown to Microsoft Word.', keywords: ['docx', 'word'], toolType: 'client' },
-  { slug: 'text-to-speech-reader', title: 'AI Voice Reader (TTS)', category: 'office', description: 'Transform text into natural human speech.', keywords: ['tts', 'voice'], toolType: 'ai' },
-  { slug: 'time-duration-calculator', title: 'Time Duration Finder', category: 'calculators', description: 'Find hours and minutes between timestamps.', keywords: ['time', 'diff'], toolType: 'server' },
-  { slug: 'time-zone-converter', title: 'Global Time Zone', category: 'utility', description: 'Synchronize time across global cities.', keywords: ['timezone', 'world'], toolType: 'server' },
-  { slug: 'url-encoder-decoder', title: 'Pro URL Transcoder', category: 'dev', description: 'Safely encode or decode URL components.', keywords: ['url', 'dev'], toolType: 'server' },
-  { slug: 'url-safety-checker', title: 'URL Safety Guard', category: 'network', description: 'Analyze URLs for phishing patterns.', keywords: ['security', 'url'], toolType: 'server' },
-  { slug: 'user-agent-parser', title: 'User Agent Parser', category: 'network', description: 'Identify browser and OS from strings.', keywords: ['ua', 'dev'], toolType: 'server' },
-  { slug: 'uuid-generator', title: 'UUID v4 Generator', category: 'utility', description: 'Generate secure unique IDs for devs.', keywords: ['uuid', 'dev'], toolType: 'server' },
-  { slug: 'video-audio-extractor', title: 'Video Audio Extractor', category: 'video', description: 'Extract audio tracks without re-encoding.', keywords: ['audio', 'extract'], toolType: 'client' },
-  { slug: 'video-compressor', title: 'Professional Video Compressor', category: 'video', description: 'High-efficiency browser-side compression.', keywords: ['compress', 'mp4'], toolType: 'client' },
-  { slug: 'video-converter', title: 'Video Converter Pro', category: 'video', description: 'Convert between MP4, WebM, and GIF.', keywords: ['convert', 'video'], toolType: 'client' },
-  { slug: 'video-merger', title: 'Video Merger Pro', category: 'video', description: 'Merge clips into a seamless video file.', keywords: ['merge', 'join'], toolType: 'client' },
-  { slug: 'video-speed-controller', title: 'Video Speed Master', category: 'video', description: 'Change video playback speed precisely.', keywords: ['speed', 'slo-mo'], toolType: 'client' },
-  { slug: 'video-thumbnail-extractor', title: 'Thumbnail Extractor', category: 'video', description: 'Extract high-quality stills from video.', keywords: ['thumbnail', 'youtube'], toolType: 'client' },
-  { slug: 'video-to-gif-high-res', title: 'Video to GIF Studio', category: 'video', description: 'Generate high-res animated GIFs.', keywords: ['gif', 'convert'], toolType: 'client' },
-  { slug: 'video-trimmer', title: 'Video Trimmer Studio', category: 'video', description: 'Cut and trim videos with precision.', keywords: ['trim', 'cut'], toolType: 'client' },
-  { slug: 'viral-caption-formatter', title: 'Viral Caption Formatter', category: 'social', description: 'Turn text into high-engagement captions.', keywords: ['social', 'copy'], toolType: 'ai' },
-  { slug: 'volume-converter', title: 'Precision Volume Converter', category: 'unit-converters', description: 'Convert between Liter, US Gallon, and Cup.', keywords: ['volume', 'unit'], toolType: 'server' },
-  { slug: 'weight-converter', title: 'Precision Weight Converter', category: 'unit-converters', description: 'Convert between kg, lb, and oz.', keywords: ['weight', 'mass'], toolType: 'server' },
-  { slug: 'why-emi-high-explainer', title: 'Why EMI So High?', category: 'calculators', description: 'Find mathematical reasons for high EMIs.', keywords: ['emi', 'finance'], toolType: 'server' },
-  { slug: 'word-counter', title: 'Word Counter Pro', category: 'office', description: 'Advanced count analysis and WPM stats.', keywords: ['counter', 'words'], toolType: 'server' },
-  { slug: 'working-days-calculator', title: 'Working Days Calc', category: 'utility', description: 'Calculate days excluding weekends.', keywords: ['jobs', 'hr'], toolType: 'server' },
-  { slug: 'wrong-format-error-translator', title: 'Format Error Fixer', category: 'utility', description: 'Translate "Invalid MIME" errors into actionable fixes.', keywords: ['error', 'format'], toolType: 'server' },
-  { slug: 'xml-sitemap-generator', title: 'XML Sitemap Maker', category: 'seo', description: 'Automate search engine URL mapping.', keywords: ['seo', 'sitemap'], toolType: 'server' },
-  { slug: 'youtube-description-generator', title: 'YouTube Desc Studio', category: 'social', description: 'Generate descriptions with timestamps.', keywords: ['youtube', 'seo'], toolType: 'ai' },
-  { slug: 'youtube-title-generator', title: 'YouTube Title Pro', category: 'social', description: 'High-CTR, SEO-optimized video titles.', keywords: ['youtube', 'ctr'], toolType: 'ai' },
-  { slug: 'youtube-video-idea-generator', title: 'YouTube Idea Architect', category: 'social', description: 'Generate viral video concepts for niches.', keywords: ['youtube', 'ideas'], toolType: 'ai' },
-  { slug: 'zip-file-creator', title: 'ZIP File Creator', category: 'file', description: 'Bundle multiple files into a ZIP archive.', keywords: ['zip', 'bundle'], toolType: 'client' },
-  { slug: 'zip-file-extractor', title: 'ZIP File Extractor', category: 'file', description: 'Unpack ZIP archives in your browser.', keywords: ['unzip', 'extract'], toolType: 'client' }
+  // ==========================================
+  // GOVERNMENT / FORM PAIN CLUSTER (1-10)
+  // ==========================================
+  {
+    slug: 'why-upload-rejected-analyzer',
+    title: 'Why My Upload Is Rejected? Analyzer',
+    category: 'utility',
+    description: 'Stop the rejection loop. Analyze your file against 15+ common portal rules to find hidden errors.',
+    keywords: ['rejected', 'error', 'upload', 'government', 'ssc'],
+    toolType: 'client',
+    priority: 100,
+    execute: async (file: File, options: any) => {
+      const { govtCluster } = await import('../tools/executors/govtCluster');
+      return govtCluster.analyzeRejection(file, options);
+    }
+  },
+  {
+    slug: 'govt-form-rule-decoder',
+    title: 'Govt Form File Rule Decoder',
+    category: 'utility',
+    description: 'Get exact technical specs for UPSC, SSC, Banking, and State portals in plain English.',
+    keywords: ['rules', 'decoder', 'portal', 'dimensions'],
+    toolType: 'client',
+    priority: 95,
+    execute: async (options: any) => {
+      const { govtCluster } = await import('../tools/executors/govtCluster');
+      return govtCluster.decodeRules(options);
+    }
+  },
+  {
+    slug: 'signature-upload-fix-tool',
+    title: 'Signature Upload Fix Tool',
+    category: 'image',
+    description: 'Auto-adjust contrast and crop signatures to meet strict government portal guidelines.',
+    keywords: ['signature', 'fix', 'crop', 'ink'],
+    toolType: 'client',
+    priority: 98,
+    execute: async (file: File) => {
+      const { govtCluster } = await import('../tools/executors/govtCluster');
+      return govtCluster.fixSignature(file);
+    }
+  },
+
+  // ==========================================
+  // IMAGE / MEDIA VIRAL PROBLEMS (11-20)
+  // ==========================================
+  {
+    slug: 'blurry-after-upload-simulator',
+    title: 'Why Image Looks Blurry After Upload? Simulator',
+    category: 'image',
+    description: 'See how Instagram or WhatsApp compression will affect your photo before you hit send.',
+    keywords: ['blurry', 'compression', 'simulator', 'whatsapp', 'instagram'],
+    toolType: 'client',
+    priority: 92,
+    execute: async (file: File, options: any) => {
+      const { mediaAdvancedCluster } = await import('../tools/executors/mediaAdvancedCluster');
+      return mediaAdvancedCluster.simulateBlur(file, options);
+    }
+  },
+  {
+    slug: 'image-stretching-predictor',
+    title: 'Image Stretching Issue Predictor',
+    category: 'image',
+    description: 'Predict if your photo will look "squashed" or "stretched" on a portal based on aspect ratios.',
+    keywords: ['stretch', 'aspect ratio', 'distortion'],
+    toolType: 'client',
+    execute: async (options: any) => {
+      const { mediaAdvancedCluster } = await import('../tools/executors/mediaAdvancedCluster');
+      return mediaAdvancedCluster.predictStretch(options);
+    }
+  },
+
+  // ==========================================
+  // PDF / DOCUMENT PAIN CLUSTER (21-30)
+  // ==========================================
+  {
+    slug: 'pdf-not-opening-checker',
+    title: 'Why PDF Is Not Opening on Portal? Checker',
+    category: 'pdf',
+    description: 'Diagnose structural errors, version mismatch, or encryption locks in PDF files.',
+    keywords: ['pdf', 'not opening', 'error', 'portal'],
+    toolType: 'client',
+    execute: async (file: File) => {
+      const { pdfAdvancedCluster } = await import('../tools/executors/pdfAdvancedCluster');
+      return pdfAdvancedCluster.checkOpening(file);
+    }
+  },
+  {
+    slug: 'pdf-print-cutoff-predictor',
+    title: 'PDF Print Cut-Off Predictor',
+    category: 'pdf',
+    description: 'Will your header or footer get sliced? Predict printer behavior based on margins.',
+    keywords: ['print', 'cutoff', 'margins', 'pdf'],
+    toolType: 'client',
+    execute: async (options: any) => {
+      const { pdfAdvancedCluster } = await import('../tools/executors/pdfAdvancedCluster');
+      return pdfAdvancedCluster.predictCutoff(options);
+    }
+  },
+
+  // ==========================================
+  // JOB / CAREER PAIN CLUSTER (31-40)
+  // ==========================================
+  {
+    slug: 'resume-rejection-analyzer',
+    title: 'Resume Rejection Reason Analyzer',
+    category: 'office',
+    description: 'Identify ATS gaps, formatting risks, and keyword misses that get resumes rejected.',
+    keywords: ['resume', 'rejection', 'ats', 'job', 'hiring'],
+    toolType: 'client',
+    priority: 99,
+    execute: async (options: any) => {
+      const { careerAdvancedCluster } = await import('../tools/executors/careerAdvancedCluster');
+      return careerAdvancedCluster.analyzeResume(options);
+    }
+  },
+  {
+    slug: 'ats-keyword-gap-finder',
+    title: 'ATS Keyword Gap Finder',
+    category: 'office',
+    description: 'Find missing skills in your resume compared to a Job Description.',
+    keywords: ['ats', 'keywords', 'resume', 'skills'],
+    toolType: 'client',
+    execute: async (input: string) => {
+      const { careerAdvancedCluster } = await import('../tools/executors/careerAdvancedCluster');
+      return careerAdvancedCluster.findKeywordGap(input);
+    }
+  },
+
+  // ==========================================
+  // FINANCE CONFUSION CLUSTER (41-50)
+  // ==========================================
+  {
+    slug: 'why-emi-high-explainer',
+    title: 'Why EMI So High? Explainer Tool',
+    category: 'calculators',
+    description: 'Uncover the math of front-loaded interest and loan tenures.',
+    keywords: ['emi', 'loan', 'interest', 'high emi'],
+    toolType: 'client',
+    priority: 88,
+    execute: async (options: any) => {
+      const { financeAdvancedCluster } = await import('../tools/executors/financeAdvancedCluster');
+      return financeAdvancedCluster.explainEmi(options);
+    }
+  },
+  {
+    slug: 'no-cost-emi-reality-checker',
+    title: '“No Cost EMI” Reality Checker',
+    category: 'calculators',
+    description: 'Expose hidden processing fees and pre-discount traps in "Zero Interest" deals.',
+    keywords: ['no cost emi', 'hidden cost', 'emi reality'],
+    toolType: 'client',
+    execute: async (options: any) => {
+      const { financeAdvancedCluster } = await import('../tools/executors/financeAdvancedCluster');
+      return financeAdvancedCluster.checkNoCostEmi(options);
+    }
+  },
+
+  // ==========================================
+  // DAILY LIFE CLUSTER (51-60)
+  // ==========================================
+  {
+    slug: 'internet-slow-analyzer',
+    title: 'Why Internet Slow Despite High Speed? Analyzer',
+    category: 'network',
+    description: 'Diagnose DNS latency, ISP throttling, and hardware bottlenecks.',
+    keywords: ['slow internet', 'wifi', 'dns', 'buffer'],
+    toolType: 'client',
+    execute: async (options: any) => {
+      const { dailyLifeAdvancedCluster } = await import('../tools/executors/dailyLifeAdvancedCluster');
+      return dailyLifeAdvancedCluster.analyzeInternet(options);
+    }
+  },
+  {
+    slug: 'otp-not-coming-flow-analyzer',
+    title: 'Why OTP Not Coming? Flow Analyzer',
+    category: 'network',
+    description: 'Trace potential blocks like DND, carrier filters, or signal latency.',
+    keywords: ['otp', 'sms', 'not coming', 'dnd'],
+    toolType: 'client',
+    execute: async () => {
+      const { dailyLifeAdvancedCluster } = await import('../tools/executors/dailyLifeAdvancedCluster');
+      return dailyLifeAdvancedCluster.analyzeOtpFlow();
+    }
+  },
+
+  // Maintain core legacy tools
+  { 
+    slug: 'salary-calculator', 
+    title: 'Salary Calculator (CTC to In-Hand)', 
+    category: 'calculators', 
+    description: 'India-specific tax breakdown FY 24-25.', 
+    keywords: ['salary', 'tax', 'in-hand'], 
+    toolType: 'client',
+    execute: async (options: any) => {
+      const { financeAdvancedCluster } = await import('../tools/executors/financeAdvancedCluster');
+      return financeAdvancedCluster.calcSalary(options);
+    }
+  }
 ];

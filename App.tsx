@@ -9,6 +9,7 @@ import PrivacyPolicy from './pages/PrivacyPolicy';
 import Terms from './pages/Terms';
 import Contact from './pages/Contact';
 import AddonLayer from './components/AddonLayer';
+import TourOverlay from './components/TourOverlay';
 import { CategorySlug } from './types';
 import { trackPageView } from './utils/analytics';
 
@@ -20,6 +21,7 @@ interface NavigationState {
 const App: React.FC = () => {
   const [nav, setNav] = useState<NavigationState>({ page: 'home' });
   const [searchQuery, setSearchQuery] = useState('');
+  const [showTour, setShowTour] = useState(false);
   
   const [favorites, setFavorites] = useState<string[]>(() => {
     const saved = localStorage.getItem('tv_favorites');
@@ -27,11 +29,12 @@ const App: React.FC = () => {
   });
 
   const handlePathChange = () => {
+    // Robust path detection for deep links on refresh
     const path = window.location.pathname;
     trackPageView(path);
 
     startTransition(() => {
-      if (path === '/' || path === '' || path === '/index.html') {
+      if (path === '/' || path === '' || path.includes('index.html')) {
         setNav({ page: 'home' });
       } else if (path === '/about') {
         setNav({ page: 'about' });
@@ -41,13 +44,16 @@ const App: React.FC = () => {
         setNav({ page: 'terms' });
       } else if (path === '/contact') {
         setNav({ page: 'contact' });
-      } else if (path.startsWith('/category/')) {
-        const id = path.split('/')[2] as CategorySlug;
+      } else if (path.includes('/category/')) {
+        const parts = path.split('/');
+        const id = parts[parts.indexOf('category') + 1] as CategorySlug;
         setNav({ page: 'category', params: { id } });
-      } else if (path.startsWith('/tools/')) {
-        const slug = path.split('/')[2];
+      } else if (path.includes('/tools/')) {
+        const parts = path.split('/');
+        const slug = parts[parts.indexOf('tools') + 1];
         setNav({ page: 'tool', params: { slug } });
       } else {
+        // Safe fallback to home if path is unrecognized
         setNav({ page: 'home' });
       }
     });
@@ -55,7 +61,14 @@ const App: React.FC = () => {
 
   useEffect(() => {
     window.addEventListener('popstate', handlePathChange);
-    handlePathChange(); // Solve white screen on refresh
+    handlePathChange();
+
+    // Check for first-time user tour
+    const hasSeenTour = localStorage.getItem('tv_tour_completed');
+    if (!hasSeenTour) {
+      setTimeout(() => setShowTour(true), 1500);
+    }
+
     return () => window.removeEventListener('popstate', handlePathChange);
   }, []);
 
@@ -72,9 +85,11 @@ const App: React.FC = () => {
   };
 
   const toggleFavorite = (slug: string) => {
-    setFavorites(prev => 
-      prev.includes(slug) ? prev.filter(s => s !== slug) : [slug, ...prev].slice(0, 12)
-    );
+    setFavorites(prev => {
+      const next = prev.includes(slug) ? prev.filter(s => s !== slug) : [slug, ...prev].slice(0, 12);
+      localStorage.setItem('tv_favorites', JSON.stringify(next));
+      return next;
+    });
   };
 
   const renderContent = () => {
@@ -100,6 +115,7 @@ const App: React.FC = () => {
       onSearch={setSearchQuery}
     >
       <AddonLayer />
+      {showTour && <TourOverlay onClose={() => setShowTour(false)} />}
       <Suspense fallback={
         <div className="flex items-center justify-center min-h-[70vh]">
           <div className="w-12 h-12 border-4 border-indigo-600 border-t-transparent rounded-full animate-spin"></div>

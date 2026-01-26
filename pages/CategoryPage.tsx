@@ -73,38 +73,25 @@ const CategoryPage: React.FC<CategoryPageProps> = ({ categoryId, onNavigate, fav
 
       <div className="max-w-[1600px] mx-auto px-8 -mt-24 relative z-20">
         <div className="flex flex-col lg:flex-row gap-16">
-          
           <div className="lg:flex-grow">
             <div className="flex items-center justify-between mb-16 bg-white/80 backdrop-blur-xl p-8 rounded-[3rem] border border-slate-100 shadow-xl">
                <h2 className="text-xs font-black text-slate-400 uppercase tracking-[0.4em] flex items-center">
                  <span className="w-12 h-1 bg-indigo-600 rounded-full mr-6"></span>
                  Available Logic Nodes ({categoryTools.length})
                </h2>
-               <div className="flex gap-2">
-                  <div className="w-3 h-3 rounded-full bg-emerald-500 animate-pulse"></div>
-                  <div className="w-3 h-3 rounded-full bg-slate-200"></div>
-                  <div className="w-3 h-3 rounded-full bg-slate-200"></div>
-               </div>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-10 animate-in fade-in slide-in-from-bottom-8 duration-700">
-              {categoryTools.length > 0 ? (
-                categoryTools.map((tool, idx) => (
-                  <div key={tool.slug} className="animate-in fade-in zoom-in-95" style={{ animationDelay: `${idx * 50}ms` }}>
-                    <ToolCard 
-                      tool={tool} 
-                      onClick={() => onNavigate('tool', { slug: tool.slug })} 
-                      isFavorite={favorites.includes(tool.slug)}
-                      onToggleFavorite={onToggleFavorite}
-                    />
-                  </div>
-                ))
-              ) : (
-                <div className="col-span-full py-40 text-center bg-white rounded-[4rem] border border-slate-100 shadow-inner">
-                  <div className="text-8xl mb-8 opacity-20 animate-bounce">🏗️</div>
-                  <p className="text-slate-400 font-black uppercase tracking-[0.3em] text-sm">Cluster optimization in progress...</p>
+              {categoryTools.map((tool, idx) => (
+                <div key={tool.slug} style={{ animationDelay: `${idx * 20}ms` }} className="animate-in fade-in">
+                  <ToolCard 
+                    tool={tool} 
+                    onClick={() => onNavigate('tool', { slug: tool.slug })} 
+                    isFavorite={favorites.includes(tool.slug)}
+                    onToggleFavorite={onToggleFavorite}
+                  />
                 </div>
-              )}
+              ))}
             </div>
             
             <AdPlaceholder type="inline" />
@@ -112,11 +99,6 @@ const CategoryPage: React.FC<CategoryPageProps> = ({ categoryId, onNavigate, fav
 
           <aside className="lg:w-96 flex-shrink-0 space-y-12">
             <div className="bg-slate-900 p-12 rounded-[4rem] text-white shadow-2xl relative overflow-hidden group">
-              <img 
-                src={category.images[1]} 
-                className="absolute inset-0 w-full h-full object-cover opacity-10 group-hover:opacity-20 transition-opacity duration-1000" 
-                alt=""
-              />
               <div className="relative z-10">
                 <h3 className="font-black text-indigo-400 mb-10 uppercase text-[10px] tracking-[0.3em] border-b border-white/5 pb-6">Parallel Hubs</h3>
                 <div className="space-y-4">
@@ -124,22 +106,15 @@ const CategoryPage: React.FC<CategoryPageProps> = ({ categoryId, onNavigate, fav
                     <button 
                       key={cat.id}
                       onClick={() => onNavigate('category', { id: cat.id })}
-                      className="flex items-center w-full px-6 py-4 rounded-2xl bg-white/5 border border-white/5 hover:bg-indigo-600 hover:border-indigo-600 text-slate-300 hover:text-white transition-all hover:translate-x-3 group/item"
+                      className="flex items-center w-full px-6 py-4 rounded-2xl bg-white/5 border border-white/5 hover:bg-indigo-600 text-slate-300 hover:text-white transition-all hover:translate-x-3"
                     >
-                      <span className="mr-6 text-2xl group-hover/item:scale-125 transition-transform">{cat.icon}</span>
+                      <span className="mr-6 text-2xl">{cat.icon}</span>
                       <span className="text-[11px] font-black uppercase tracking-widest">{cat.name}</span>
                     </button>
                   ))}
                 </div>
-                <button 
-                  onClick={() => window.dispatchEvent(new Event('tv_open_menu'))}
-                  className="w-full mt-12 py-5 bg-white text-slate-900 rounded-[1.5rem] font-black text-[10px] uppercase tracking-widest hover:bg-indigo-100 transition-all"
-                >
-                  View Global Directory
-                </button>
               </div>
             </div>
-            <AdPlaceholder type="sidebar" />
           </aside>
         </div>
       </div>

@@ -2,9 +2,11 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import ToolLayout from '../ToolLayout';
 import OptionsPanel from '../OptionsPanel';
-import { getToolConfig } from '../../utils/configRegistry';
-import { identifyHashType } from '../../tools/executors/networkCluster';
-import SparkMD5 from 'spark-md5';
+import { TOOLS } from '../../data/tools';
+import { 
+  passwordStrengthConfig, hashGeneratorConfig, 
+  hashIdentifierConfig, encryptorConfig, decryptorConfig 
+} from '../../config/securityTools';
 
 interface ToolProps {
   slug: string;
@@ -17,7 +19,12 @@ const SecurityTools: React.FC<ToolProps> = ({ slug, onSuccess, onError }) => {
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<any>(null);
 
-  const activeConfig = useMemo(() => getToolConfig(slug), [slug]);
+  const toolNode = useMemo(() => TOOLS.find(t => t.slug === slug), [slug]);
+  const activeConfig = useMemo(() => [
+    passwordStrengthConfig, hashGeneratorConfig, 
+    hashIdentifierConfig, encryptorConfig, decryptorConfig
+  ].find(c => c.slug === slug) || hashGeneratorConfig, [slug]);
+
   const [options, setOptions] = useState<Record<string, any>>({});
 
   useEffect(() => {
@@ -31,39 +38,18 @@ const SecurityTools: React.FC<ToolProps> = ({ slug, onSuccess, onError }) => {
   }, [slug, activeConfig]);
 
   const handleRun = async () => {
-    if (!input.trim()) {
-      onError("Please provide input data.");
-      return;
-    }
+    if (!toolNode?.execute) { onError("Vault logic missing."); return; }
+    if (!input.trim()) { onError("Input data required for vault operation."); return; }
 
     setLoading(true);
     setResult(null);
 
     try {
-      let output: any = null;
-
-      if (slug === 'hash-generator') {
-        const algo = options.algorithm || 'SHA-256';
-        if (algo === 'MD5') {
-          output = SparkMD5.hash(input);
-        } else {
-          const encoder = new TextEncoder();
-          const data = encoder.encode(input);
-          const hashBuffer = await crypto.subtle.digest(algo.replace('-', ''), data);
-          output = Array.from(new Uint8Array(hashBuffer)).map(b => b.toString(16).padStart(2, '0')).join('');
-        }
-        if (options.uppercase) output = output.toUpperCase();
-      } else if (slug === 'hash-identifier') {
-        output = identifyHashType(input);
-      } else {
-        // Fallback for more complex security audit tasks
-        output = { "Status": "Logic Node Active", "Data": "Processed via standard orchestrator." };
-      }
-
+      const output = await toolNode.execute(input, options);
       setResult(output);
       onSuccess("Security Operation Complete!");
     } catch (err: any) {
-      onError("Security engine fault: " + err.message);
+      onError("Security Engine Fault: " + err.message);
     } finally {
       setLoading(false);
     }
@@ -81,23 +67,17 @@ const SecurityTools: React.FC<ToolProps> = ({ slug, onSuccess, onError }) => {
           <textarea
             value={input}
             onChange={e => setInput(e.target.value)}
-            placeholder={slug === 'hash-identifier' ? "Paste unknown hash here..." : "Enter text to secure..."}
-            className="w-full h-44 p-8 bg-slate-50 border border-slate-200 rounded-[2.5rem] outline-none font-mono text-lg font-bold text-slate-700 shadow-inner resize-none focus:ring-8 focus:ring-indigo-500/5 transition-all"
+            placeholder="Paste raw content for cryptographic processing..."
+            className="w-full h-44 p-8 bg-slate-50 border border-slate-200 rounded-[2.5rem] outline-none font-mono text-lg font-bold text-slate-700 shadow-inner resize-none transition-all"
           />
         </div>
       }
       options={activeConfig.options?.length > 0 ? <OptionsPanel options={activeConfig.options as any} values={options} onChange={(id, v) => setOptions(p => ({...p, [id]: v}))} /> : undefined}
-      actions={
-        <button onClick={handleRun} disabled={loading} className={`w-full py-7 ${activeConfig.colorClass} text-white rounded-[2.5rem] font-black text-2xl shadow-2xl transition-all active:scale-95 disabled:opacity-50`}>
-          {loading ? "Processing Encryption..." : "Execute Security Task"}
-        </button>
-      }
+      actions={<button onClick={handleRun} disabled={loading} className={`w-full py-7 ${activeConfig.colorClass} text-white rounded-[2.5rem] font-black text-2xl shadow-2xl transition-all active:scale-95 disabled:opacity-50`}>{loading ? "Processing Encryption..." : "Execute Security Task"}</button>}
       result={result && (
-        <div className="space-y-6 animate-in slide-in-from-top-4">
+        <div className="animate-in slide-in-from-top-4">
            <div className="bg-slate-900 p-8 md:p-12 rounded-[3rem] shadow-2xl relative overflow-hidden group">
-              <div className="absolute top-0 right-0 p-8 opacity-5">
-                 <div className="text-8xl font-black italic uppercase">Vault</div>
-              </div>
+              <div className="absolute top-0 right-0 p-8 opacity-5"><div className="text-8xl font-black italic uppercase">Vault</div></div>
               <div className="relative z-10">
                  {typeof result === 'string' ? (
                    <div className="space-y-4">

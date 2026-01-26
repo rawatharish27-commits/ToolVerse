@@ -1,10 +1,9 @@
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import ToolLayout from '../ToolLayout';
 import OptionsPanel from '../OptionsPanel';
-import { getToolConfig } from '../../utils/configRegistry';
-import { GoogleGenAI } from "@google/genai";
-import { atsKeywordGapFinder, resumeFormatChecker, resumeFileNameChecker } from '../../tools/executors/jobCluster';
+import { TOOLS } from '../../data/tools';
+import { textToDocxConfig, docxMetadataConfig, resumeBuilderConfig } from '../../config/officeTools';
 
 interface ToolProps {
   slug: string;
@@ -14,11 +13,14 @@ interface ToolProps {
 
 const OfficeTools: React.FC<ToolProps> = ({ slug, onSuccess, onError }) => {
   const [inputText, setInputText] = useState("");
-  const [secondaryText, setSecondaryText] = useState("");
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<any>(null);
 
-  const activeConfig = getToolConfig(slug);
+  const toolNode = useMemo(() => TOOLS.find(t => t.slug === slug), [slug]);
+  const activeConfig = useMemo(() => [
+    textToDocxConfig, docxMetadataConfig, resumeBuilderConfig
+  ].find(c => c.slug === slug) || textToDocxConfig, [slug]);
+
   const [options, setOptions] = useState<Record<string, any>>({});
 
   useEffect(() => {
@@ -28,42 +30,20 @@ const OfficeTools: React.FC<ToolProps> = ({ slug, onSuccess, onError }) => {
     }
     setOptions(initial);
     setInputText("");
-    setSecondaryText("");
     setResult(null);
   }, [slug, activeConfig]);
 
   const handleRun = async () => {
-    if (!inputText.trim()) {
-      onError("Please provide context for the AI Architect.");
-      return;
-    }
+    if (!toolNode?.execute) { onError("Office Node missing."); return; }
+    if (!inputText.trim()) { onError("Input required for document generation."); return; }
 
     setLoading(true);
     try {
-      if (slug === 'ats-keyword-gap-finder') {
-        setResult(atsKeywordGapFinder(inputText, secondaryText));
-        onSuccess("Gap Analysis Complete!");
-      } else if (slug === 'resume-filename-checker') {
-        setResult(resumeFileNameChecker(inputText));
-        onSuccess("Filename Audit Ready!");
-      } else {
-        // AI Generation Path (Resume Builder, Invoice Generator)
-        const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
-        const systemInstruction = slug === 'invoice-generator' 
-          ? "You are an Expert Accountant. Generate a clean, structured Markdown invoice. Include placeholders for Company, Client, Itemized List, and Totals."
-          : "You are a Professional Career Coach. Generate a high-impact, ATS-optimized Resume in Markdown based on the user's provided details. Use professional tone.";
-
-        const response = await ai.models.generateContent({
-          model: 'gemini-3-flash-preview',
-          contents: [{ parts: [{ text: `Generate ${slug} for: ${inputText}. Options: ${JSON.stringify(options)}` }] }],
-          config: { systemInstruction }
-        });
-
-        setResult(response.text || "");
-        onSuccess("Intelligence Dispatched Successfully!");
-      }
-    } catch (e: any) {
-      onError("AI Engine synchronization error.");
+      const output = await toolNode.execute(inputText, options);
+      setResult(output);
+      onSuccess("Document Logic Resolved!");
+    } catch (err: any) {
+      onError("Office engine synchronization error.");
     } finally {
       setLoading(false);
     }
@@ -77,49 +57,42 @@ const OfficeTools: React.FC<ToolProps> = ({ slug, onSuccess, onError }) => {
       colorClass={activeConfig.colorClass}
       input={
         <div className="space-y-6">
-          <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest px-2">Data Workspace</label>
+          <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest px-2">Document Content Buffer</label>
           <textarea
             value={inputText}
             onChange={e => setInputText(e.target.value)}
-            placeholder={
-              slug === 'invoice-generator' ? "Details: Sold 5 chairs to X Inc for $50 each..." :
-              slug === 'resume-builder' ? "Experience: Sr Developer at Meta, 2 years. Skills: React, TS..." :
-              "Paste your content here..."
-            }
-            className="w-full h-44 p-8 bg-slate-50 border border-slate-200 rounded-[2.5rem] outline-none font-sans text-lg font-bold text-slate-700 shadow-inner resize-none focus:ring-8 focus:ring-indigo-500/5 transition-all"
+            placeholder="Enter text or paste raw content for professional formatting..."
+            className="w-full h-64 p-8 bg-slate-50 border border-slate-200 rounded-[3rem] outline-none font-sans text-lg font-bold text-slate-700 shadow-inner resize-none focus:ring-8 focus:ring-indigo-500/5 transition-all"
           />
         </div>
       }
       options={activeConfig.options?.length > 0 ? <OptionsPanel options={activeConfig.options as any} values={options} onChange={(id, val) => setOptions(p => ({ ...p, [id]: val }))} /> : undefined}
-      actions={<button onClick={handleRun} disabled={loading} className={`w-full py-7 ${activeConfig.colorClass} text-white rounded-[2.5rem] font-black text-2xl shadow-2xl transition-all active:scale-95`}>{loading ? "Synchronizing Logic..." : `Run ${activeConfig.title}`}</button>}
+      actions={<button onClick={handleRun} disabled={loading} className={`w-full py-7 ${activeConfig.colorClass} text-white rounded-[2.5rem] font-black text-2xl shadow-2xl transition-all active:scale-95`}>{loading ? "Architecting Document..." : "Generate Master Output"}</button>}
       result={result && (
         <div className="animate-in zoom-in-95">
-           {typeof result === 'string' ? (
-             <div className="space-y-6">
-                <div className="bg-white p-10 md:p-16 rounded-[3rem] border border-slate-100 shadow-inner prose prose-slate max-w-none font-medium leading-relaxed whitespace-pre-wrap">
-                   {result}
+           {result instanceof Blob ? (
+             <div className="bg-slate-900 p-10 rounded-[3rem] text-white flex flex-col items-center gap-6">
+                <div className="text-6xl">📄</div>
+                <div className="text-center">
+                   <h4 className="text-xl font-black mb-2">Word Document Ready</h4>
+                   <p className="text-slate-400 text-sm">Download your formatted .docx file below.</p>
                 </div>
                 <button 
-                  onClick={() => { navigator.clipboard.writeText(result); onSuccess("Copied!"); }}
-                  className="w-full py-5 bg-slate-900 text-white rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-slate-800 transition-all shadow-xl"
+                  onClick={() => {
+                    const url = URL.createObjectURL(result);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = `toolverse_doc_${Date.now()}.docx`;
+                    a.click();
+                  }}
+                  className="px-12 py-5 bg-indigo-600 text-white rounded-2xl font-black shadow-xl"
                 >
-                  Copy Document to Clipboard
+                  Download .DOCX
                 </button>
              </div>
            ) : (
-             <div className="grid grid-cols-1 gap-4">
-                {Object.entries(result).map(([k, v]) => (
-                  <div key={k} className="bg-slate-50 p-6 rounded-2xl border border-slate-100 flex flex-col md:flex-row justify-between items-start md:items-center gap-2">
-                     <span className="text-[9px] font-black text-slate-400 uppercase tracking-widest">{k}</span>
-                     <span className="text-sm font-black text-indigo-600">
-                       {Array.isArray(v) ? (
-                           <ul className="list-disc pl-4 text-left">
-                             {v.map((item, i) => <li key={i}>{item}</li>)}
-                           </ul>
-                       ) : (v as string)}
-                     </span>
-                  </div>
-                ))}
+             <div className="bg-white p-10 rounded-[3rem] border border-slate-100 shadow-inner prose max-w-none whitespace-pre-wrap">
+                {result}
              </div>
            )}
         </div>

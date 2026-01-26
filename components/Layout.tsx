@@ -1,5 +1,5 @@
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { CATEGORIES } from '../data/categories';
 import { TOOLS } from '../data/tools';
 import { getAttractionState, getUserLevel } from '../utils/attraction';
@@ -14,12 +14,10 @@ interface LayoutProps {
 const Layout: React.FC<LayoutProps> = ({ children, onNavigate, onSearch, searchQuery }) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [expandedCat, setExpandedCat] = useState<string | null>(null);
-  const [time, setTime] = useState(new Date());
   const [points, setPoints] = useState(0);
   const [showBackToTop, setShowBackToTop] = useState(false);
 
   useEffect(() => {
-    const timer = setInterval(() => setTime(new Date()), 1000);
     const syncState = () => setPoints(getAttractionState().points);
     syncState();
     window.addEventListener('attraction_update', syncState);
@@ -28,31 +26,34 @@ const Layout: React.FC<LayoutProps> = ({ children, onNavigate, onSearch, searchQ
     window.addEventListener('tv_open_menu', handleOpenMenu);
 
     const handleScroll = () => setShowBackToTop(window.scrollY > 500);
-    window.addEventListener('scroll', handleScroll);
+    window.addEventListener('scroll', handleScroll, { passive: true });
 
     return () => {
-      clearInterval(timer);
       window.removeEventListener('attraction_update', syncState);
       window.removeEventListener('tv_open_menu', handleOpenMenu);
       window.removeEventListener('scroll', handleScroll);
     };
   }, []);
 
-  const level = getUserLevel(points);
+  const level = useMemo(() => getUserLevel(points), [points]);
+
+  const handleSearchChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    onSearch(e.target.value);
+  }, [onSearch]);
 
   return (
     <div className="min-h-screen flex flex-col bg-white">
-      {/* HEADER */}
       <header className="sticky top-0 z-[200] bg-white/80 backdrop-blur-2xl border-b border-slate-100 h-20 md:h-24">
         <div className="max-w-[1600px] mx-auto px-6 h-full flex items-center justify-between gap-8">
           <div className="flex items-center gap-6">
             <button 
               onClick={() => setIsMenuOpen(true)}
               className="w-12 h-12 flex flex-col items-center justify-center gap-1.5 bg-slate-50 hover:bg-indigo-50 rounded-2xl transition-all group active:scale-90"
+              aria-label="Toggle Menu"
             >
-               <span className="w-1.5 h-1.5 bg-slate-400 group-hover:bg-indigo-600 rounded-full transition-colors"></span>
-               <span className="w-1.5 h-1.5 bg-slate-400 group-hover:bg-indigo-600 rounded-full transition-colors"></span>
-               <span className="w-1.5 h-1.5 bg-slate-400 group-hover:bg-indigo-600 rounded-full transition-colors"></span>
+               <span className="w-1.5 h-1.5 bg-slate-400 group-hover:bg-indigo-600 rounded-full"></span>
+               <span className="w-1.5 h-1.5 bg-slate-400 group-hover:bg-indigo-600 rounded-full"></span>
+               <span className="w-1.5 h-1.5 bg-slate-400 group-hover:bg-indigo-600 rounded-full"></span>
             </button>
             <div onClick={() => onNavigate('home')} className="flex items-center cursor-pointer group">
               <div className="w-10 h-10 bg-slate-900 rounded-xl flex items-center justify-center text-white font-black text-lg mr-3 group-hover:bg-indigo-600 transition-all shadow-lg shadow-slate-900/10">TV</div>
@@ -64,7 +65,7 @@ const Layout: React.FC<LayoutProps> = ({ children, onNavigate, onSearch, searchQ
             <input 
               type="text" 
               value={searchQuery}
-              onChange={(e) => onSearch(e.target.value)}
+              onChange={handleSearchChange}
               placeholder="Search across 500+ logic nodes..." 
               className="w-full pl-12 pr-6 py-3.5 bg-slate-100 border-none rounded-2xl focus:ring-4 focus:ring-indigo-500/10 focus:bg-white transition-all font-bold text-slate-700"
             />
@@ -72,7 +73,7 @@ const Layout: React.FC<LayoutProps> = ({ children, onNavigate, onSearch, searchQ
           </div>
 
           <div className="flex items-center gap-6">
-             <div className="flex items-center gap-3 bg-slate-900 text-white px-5 py-2.5 rounded-2xl shadow-xl hover:shadow-indigo-500/20 transition-all cursor-pointer">
+             <div className="flex items-center gap-3 bg-slate-900 text-white px-5 py-2.5 rounded-2xl shadow-xl transition-all cursor-pointer">
                 <div className="flex flex-col items-end mr-1">
                   <span className="text-[7px] font-black text-indigo-400 uppercase tracking-widest leading-none mb-1">PRO XP</span>
                   <span className="text-[10px] font-bold tracking-tight">{points}</span>
@@ -83,7 +84,6 @@ const Layout: React.FC<LayoutProps> = ({ children, onNavigate, onSearch, searchQ
         </div>
       </header>
 
-      {/* SIDEBAR DRAWER */}
       <div className={`fixed inset-0 z-[300] transition-all duration-500 ${isMenuOpen ? 'opacity-100 visible' : 'opacity-0 invisible pointer-events-none'}`}>
         <div className="absolute inset-0 bg-slate-950/40 backdrop-blur-md" onClick={() => setIsMenuOpen(false)}></div>
         <aside className={`absolute top-0 left-0 h-full w-full max-w-xs md:max-w-sm bg-white shadow-2xl transition-transform duration-500 transform ${isMenuOpen ? 'translate-x-0' : '-translate-x-full'} flex flex-col`}>
@@ -144,28 +144,21 @@ const Layout: React.FC<LayoutProps> = ({ children, onNavigate, onSearch, searchQ
       </main>
 
       <footer className="bg-slate-950 text-white py-24 px-8 border-t border-white/5 relative overflow-hidden">
-        <div className="absolute top-0 right-0 w-96 h-96 bg-indigo-600/10 rounded-full blur-[100px] pointer-events-none"></div>
         <div className="max-w-[1600px] mx-auto grid grid-cols-1 md:grid-cols-4 gap-16 relative z-10">
            <div className="md:col-span-2">
               <div className="flex items-center mb-8">
-                 <div className="w-12 h-12 bg-indigo-600 rounded-2xl flex items-center justify-center text-white font-black text-xl mr-4 shadow-xl shadow-indigo-600/20">TV</div>
+                 <div className="w-12 h-12 bg-indigo-600 rounded-2xl flex items-center justify-center text-white font-black text-xl mr-4">TV</div>
                  <span className="text-3xl font-black tracking-tighter">ToolVerse</span>
               </div>
               <p className="text-slate-400 font-medium max-w-sm mb-8 leading-relaxed">
-                The world's most advanced professional utility ecosystem. 100% private, browser-native processing with zero cloud storage.
+                The world's most advanced professional utility ecosystem. 100% private processing with zero cloud storage.
               </p>
-              <div className="flex gap-4">
-                 {['X', 'GitHub', 'LinkedIn'].map(s => (
-                   <button key={s} className="w-10 h-10 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center hover:bg-indigo-600 hover:border-indigo-600 transition-all text-xs font-bold">{s[0]}</button>
-                 ))}
-              </div>
            </div>
            <div>
               <h4 className="text-[10px] font-black text-indigo-400 uppercase tracking-[0.3em] mb-8">Legal Standards</h4>
               <ul className="space-y-4">
                 <li><button onClick={() => onNavigate('privacy')} className="text-slate-400 hover:text-white font-bold text-sm transition-colors">Privacy Protocol</button></li>
                 <li><button onClick={() => onNavigate('terms')} className="text-slate-400 hover:text-white font-bold text-sm transition-colors">Terms of Logic</button></li>
-                <li><button onClick={() => onNavigate('contact')} className="text-slate-400 hover:text-white font-bold text-sm transition-colors">Compliance Hub</button></li>
               </ul>
            </div>
            <div>
@@ -173,16 +166,14 @@ const Layout: React.FC<LayoutProps> = ({ children, onNavigate, onSearch, searchQ
               <ul className="space-y-4">
                 <li><button onClick={() => onNavigate('about')} className="text-slate-400 hover:text-white font-bold text-sm transition-colors">Core Mission</button></li>
                 <li><button onClick={() => onNavigate('home')} className="text-slate-400 hover:text-white font-bold text-sm transition-colors">Performance Nodes</button></li>
-                <li><button className="text-slate-400 hover:text-white font-bold text-sm transition-colors">Status Dashboard</button></li>
               </ul>
            </div>
         </div>
         <div className="max-w-[1600px] mx-auto mt-24 pt-8 border-t border-white/5 text-center md:text-left">
-           <p className="text-[10px] font-black uppercase tracking-[0.4em] text-slate-600">© 2026 ToolVerse Ecosystem • Architected by Harish Rawat • v4.5.1 Stable</p>
+           <p className="text-[10px] font-black uppercase tracking-[0.4em] text-slate-600">© 2026 ToolVerse Ecosystem • Architected by Harish Rawat</p>
         </div>
       </footer>
 
-      {/* BACK TO TOP */}
       <button 
         onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
         className={`fixed bottom-10 left-10 z-[140] w-14 h-14 bg-white border border-slate-200 text-slate-900 rounded-full shadow-2xl flex items-center justify-center transition-all duration-500 hover:bg-indigo-600 hover:text-white hover:-translate-y-2 ${showBackToTop ? 'opacity-100 scale-100' : 'opacity-0 scale-50 pointer-events-none'}`}
