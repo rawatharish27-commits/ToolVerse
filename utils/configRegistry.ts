@@ -1,4 +1,3 @@
-
 import * as Calc from '../config/calculatorTools';
 import * as Util from '../config/utilityTools';
 import * as Data from '../config/dataTools';
@@ -21,25 +20,7 @@ export const TOOL_CONFIG_REGISTRY: Record<string, any> = {
   'image-compressor-smart': Image.imageCompressorConfig,
   'image-format-universal': Image.imageFormatConverterConfig,
   'image-metadata-viewer': Image.imageMetadataViewerConfig,
-  'image-metadata-remover': Image.imageMetadataRemoverConfig,
-  'image-palette-extractor': Image.imagePaletteExtractorConfig,
-  'image-shadow-gen': Image.imageShadowGeneratorConfig,
-  'image-perspective-fix': Image.imagePerspectiveConfig,
-  'background-remover-native': Image.backgroundRemoverNonAIConfig,
-  'image-noise-reducer': Image.imageNoiseReducerConfig,
-  'image-print-size-calc': Image.imagePrintSizeConfig,
-  'image-authenticity-analyzer': Image.imageAuthenticityConfig,
-  'image-upload-debugger': Image.imageUploadFailureConfig,
-  'form-image-autofix': Image.formImageFixerConfig,
-  'dpi-myth-breaker': Image.dpiMythBreakerConfig,
-  'image-stretch-predictor': Image.stretchingPredictorConfig,
-  'pixel-to-kb-calc': Image.pixelToKbConfig,
-  'camera-vs-screenshot': Image.cameraVsScreenshotConfig,
-  'mobile-camera-advisor': Image.mobileCameraAdvisorConfig,
-  'bg-rejection-predictor': Image.backgroundPredictorConfig,
-  'upload-blur-sim': Image.blurSimulatorConfig,
-  'social-compression-preview': Image.socialCompressionPreviewConfig,
-  'why-not-clear-analyzer': Image.photoClarityConfig,
+  'photo-clarity-analyzer': Image.photoClarityConfig,
   'print-vs-screen-diff': Image.printVsScreenConfig,
 
   // PDF CLUSTER
@@ -54,21 +35,25 @@ export const TOOL_CONFIG_REGISTRY: Record<string, any> = {
   'pdf-metadata-view': PDF.pdfMetadataConfig,
   'pdf-ocr-local': PDF.pdfOcrConfig,
   'pdf-compare-diff': PDF.pdfCompareConfig,
-  'pdf-compliance-check': PDF.pdfCompareConfig,
-  // Fix: Property 'pdfComplianceConfig' does not exist in PDF module. Mapping to 'pdfCompatibilityConfig' which handles standard compliance.
-  'pdf-version-analyze': PDF.pdfCompatibilityConfig,
-  'pdf-upload-estimator': PDF.pdfUploadTimeConfig,
-  'pdf-margin-cutoff': PDF.pdfPrintCutoffConfig,
-  'pdf-font-decoder': PDF.pdfFontErrorDecoderConfig,
-  'pdf-bw-preview': PDF.pdfBwPreviewConfig,
-  'pdf-portal-check': PDF.pdfOpeningCheckerConfig,
-  'pdf-selectable-explainer': PDF.pdfTextSelectableConfig,
-  'pdf-order-solver': PDF.pdfPageOrderConfig,
-  'pdf-readability-test': PDF.scannedPdfReadabilityConfig,
 
   // CALCULATORS
-  'percent-calc': { title: "Percentage", icon: "📊", colorClass: "bg-orange-500", options: [] },
-  'si-calc': { title: "Simple Interest", icon: "🔢", colorClass: "bg-orange-500", options: [] },
+  'percent-calc': { 
+    title: "Percentage Calculator", icon: "📊", colorClass: "bg-orange-500", 
+    options: [
+      { id: "oldValue", type: "number", label: "Original Value", default: 100 },
+      { id: "newValue", type: "number", label: "New Value", default: 120 },
+      { id: "mode", type: "select", label: "Calculation Mode", values: ["auto", "increase", "decrease"], default: "auto" }
+    ] 
+  },
+  'si-calc': { 
+    title: "Simple Interest", icon: "🔢", colorClass: "bg-orange-500", 
+    options: [
+      { id: "principal", type: "number", label: "Principal (P)", default: 10000 },
+      { id: "rate", type: "number", label: "Rate (R %)", default: 5 },
+      { id: "time", type: "number", label: "Time (T)", default: 2 },
+      { id: "timeUnit", type: "select", label: "Unit", values: ["years", "months", "days"], default: "years" }
+    ] 
+  },
   'ci-calc': Calc.compoundInterestCalculatorConfig,
   'age-calc': Calc.ageCalculatorConfig,
   'emi-calc-pro': Calc.emiCalculatorConfig,
@@ -77,19 +62,23 @@ export const TOOL_CONFIG_REGISTRY: Record<string, any> = {
   'inflation-calc': Calc.inflationCalculatorConfig,
   'why-emi-high': Calc.emiHighExplainerConfig,
   'actual-interest-analyzer': Calc.interestAnalyzerConfig,
-  'offer-price-truth': Calc.offerPriceTruthConfig,
-  'refund-diff-explainer': Calc.refundAmountConfig,
-  'subscription-trap-analyzer': Calc.subscriptionTrapConfig,
+
+  // UTILITY CLUSTER
+  'word-counter-adv': Util.wordCounterConfig,
+  'case-converter-text': Util.caseConverterConfig,
+  'pass-strength-audit': Util.passwordStrengthConfig,
+  'qr-arch-gen': Util.qrCodeConfig,
+  'file-size-transcode': Util.fileSizeConfig,
+  'uuid-v4-gen': Util.uuidGeneratorConfig,
 
   // AI CLUSTER
-  // Fix: Property 'aiResumeBulletGeneratorConfig' does not exist in AI module. Mapping to 'aiResumeWriterConfig' which generates achievement bullets.
   'ai-res-bul': AI.aiResumeWriterConfig,
   'ai-wa-rep': { title: "AI WhatsApp Reply", icon: "💬", colorClass: "bg-indigo-600", options: [] },
   'ai-email-writ': AI.aiEmailGeneratorConfig,
   'ai-article-generator': AI.aiArticleGeneratorConfig,
   'ai-grammar-fix': AI.aiGrammarConfig,
 
-  // CAREER & GOVT & LIFE (Diagnostic Mapping)
+  // DIAGNOSTICS (Heuristic Mapping)
   'why-rej-gov': { title: "Upload Rejection", icon: "🚫", colorClass: "bg-rose-600", options: [] },
   'rule-dec-gov': { title: "Rule Decoder", icon: "📜", colorClass: "bg-indigo-700", options: [] },
   'res-rej-node': Office.resumeRejectionAnalyzerConfig,
