@@ -1,23 +1,23 @@
 
 export type CategorySlug = 
-  | 'ai' 
   | 'image' 
-  | 'video' 
-  | 'audio'
   | 'pdf' 
-  | 'dev' 
-  | 'seo' 
   | 'calculators' 
-  | 'unit-converters'
-  | 'utility' 
-  | 'security' 
+  | 'utility'
+  | 'data' 
   | 'network' 
-  | 'office' 
-  | 'education'
-  | 'file'
-  | 'data'
-  | 'social'
-  | 'business';
+  | 'security' 
+  | 'seo' 
+  | 'social' 
+  | 'education' 
+  | 'business'
+  | 'career'
+  | 'government'
+  | 'daily-life'
+  | 'ai'
+  | 'office'
+  | 'finance'
+  | 'miscellaneous';
 
 export interface ToolCategory {
   id: CategorySlug;
@@ -51,7 +51,6 @@ export interface Tool {
   features?: string[];
   faqs?: ToolFAQ[];
   priority?: number; // Higher number = higher visibility
-  // CENTRALIZED EXECUTION ENGINE
   execute?: (input: any, options?: any) => Promise<any>;
 }
 

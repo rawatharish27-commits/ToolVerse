@@ -96,47 +96,24 @@ const ToolRenderer: React.FC<ToolRendererProps> = ({ slug, onSuccess, onError })
           const props = { slug, onSuccess, onError: customErrorHandler };
           const cat = tool.category;
           
-          // Route specialized Govt, Career, and Daily-Life Analyzers
-          const isPainPoint = slug.includes('rejected') || 
-                            slug.includes('rule-decoder') || 
-                            slug.includes('dob-error') || 
-                            slug.includes('status-decoder') || 
-                            slug.includes('format-translator') || 
-                            slug.includes('resume-rejection') || 
-                            slug.includes('keyword-gap') || 
-                            slug.includes('resume-format') || 
-                            slug.includes('jd-vs-resume') ||
-                            slug.includes('internet-speed-issue') ||
-                            slug.includes('upload-vs-download') ||
-                            slug.includes('app-install') ||
-                            slug.includes('file-corruption') ||
-                            slug.includes('otp-not-coming') ||
-                            slug.includes('email-bounce') ||
-                            slug.includes('print-looks-different') ||
-                            slug.includes('website-looks-different');
-
-          if (isPainPoint) {
+          // Route specialized Diagnostic and AI Tools
+          if (cat === 'government' || cat === 'career' || cat === 'daily-life') {
             return <PainPointTools {...props} />;
           }
 
           if (cat === 'ai') return slug.includes('image') ? <AIImageTools {...props} /> : <AITextTools {...props} />;
           if (cat === 'image') return <ImageTools {...props} />;
-          if (cat === 'video') return <VideoAudioTools {...props} />;
-          if (cat === 'audio') return <AudioTools {...props} />;
           if (cat === 'pdf') return <PDFTools {...props} />;
-          if (cat === 'dev') return <DevTools {...props} />;
           if (cat === 'data') return <DataTools {...props} />;
-          if (cat === 'calculators') return <FinanceTools {...props} />;
-          if (cat === 'unit-converters') return <UnitConverterTools {...props} />;
+          if (cat === 'calculators' || cat === 'finance') return <FinanceTools {...props} />;
           if (cat === 'security') return <SecurityTools {...props} />;
           if (cat === 'network') return <NetworkTools {...props} />;
-          if (cat === 'utility') return <UtilityTools {...props} />;
+          if (cat === 'utility' || cat === 'miscellaneous') return <UtilityTools {...props} />;
           if (cat === 'education') return <EducationTools {...props} />;
           if (cat === 'seo') return <SEOTools {...props} />;
           if (cat === 'office') return <OfficeTools {...props} />;
           if (cat === 'social') return <SocialTools {...props} />;
-          if (cat === 'file') return <FileTools {...props} />;
-          if (cat === 'business') return <AITextTools {...props} />;
+          
           return <GeneralTools {...props} />;
         })()}
       </Suspense>

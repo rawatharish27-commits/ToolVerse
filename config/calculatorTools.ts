@@ -147,3 +147,32 @@ export const emiCalculatorConfig = {
     { id: "tenureYears", label: "Tenure (Years)", type: "number", default: 10 }
   ],
 };
+
+// Added compoundInterestCalculatorConfig
+export const compoundInterestCalculatorConfig = {
+  slug: "compound-interest-calculator",
+  title: "Compound Interest Calculator",
+  description: "Advanced investment modeling with periodic frequency.",
+  icon: "📈",
+  colorClass: "bg-indigo-700",
+  options: [
+    { id: "principal", label: "Principal Amount", type: "number", default: 10000 },
+    { id: "rate", label: "Annual Interest Rate (%)", type: "number", default: 8 },
+    { id: "time", label: "Time Period (Years)", type: "number", default: 10 },
+    { id: "frequency", label: "Compounding Frequency (per year)", type: "select", values: [1, 2, 4, 12], default: 1 }
+  ]
+};
+
+// Added loanCalculatorConfig
+export const loanCalculatorConfig = {
+  slug: "loan-calculator-standard",
+  title: "Standard Loan Calculator",
+  description: "Calculate loan details for principal and interest repayments.",
+  icon: "💳",
+  colorClass: "bg-indigo-600",
+  options: [
+    { id: "loanAmount", label: "Loan Amount", type: "number", default: 100000 },
+    { id: "interestRate", label: "Annual Interest Rate (%)", type: "number", default: 10 },
+    { id: "tenureYears", label: "Tenure (Years)", type: "number", default: 5 }
+  ]
+};
