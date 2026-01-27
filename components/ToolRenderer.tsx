@@ -1,4 +1,3 @@
-
 import React, { Suspense, lazy, useState } from 'react';
 import { TOOLS } from '../data/tools';
 import { canRotateKey, incrementKeyRotation } from '../utils/apiQuota';
@@ -113,6 +112,7 @@ const ToolRenderer: React.FC<ToolRendererProps> = ({ slug, onSuccess, onError })
           if (cat === 'seo') return <SEOTools {...props} />;
           if (cat === 'office') return <OfficeTools {...props} />;
           if (cat === 'social') return <SocialTools {...props} />;
+          if (cat === 'business') return <AITextTools {...props} />;
           
           return <GeneralTools {...props} />;
         })()}

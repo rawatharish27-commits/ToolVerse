@@ -1,26 +1,32 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-  <!-- Core Pages -->
+  <!-- Core Hubs -->
   <url><loc>https://toolverse-4gr.pages.dev/</loc><priority>1.0</priority></url>
   <url><loc>https://toolverse-4gr.pages.dev/about</loc><priority>0.5</priority></url>
   <url><loc>https://toolverse-4gr.pages.dev/privacy</loc><priority>0.5</priority></url>
-  <url><loc>https://toolverse-4gr.pages.dev/terms</loc><priority>0.5</priority></url>
-  <url><loc>https://toolverse-4gr.pages.dev/contact</loc><priority>0.5</priority></url>
 
-  <!-- Categories -->
+  <!-- Logic Clusters (18) -->
   <url><loc>https://toolverse-4gr.pages.dev/category/image</loc><priority>0.9</priority></url>
   <url><loc>https://toolverse-4gr.pages.dev/category/pdf</loc><priority>0.9</priority></url>
   <url><loc>https://toolverse-4gr.pages.dev/category/calculators</loc><priority>0.9</priority></url>
   <url><loc>https://toolverse-4gr.pages.dev/category/utility</loc><priority>0.9</priority></url>
-  <url><loc>https://toolverse-4gr.pages.dev/category/government</loc><priority>0.9</priority></url>
+  <url><loc>https://toolverse-4gr.pages.dev/category/data</loc><priority>0.9</priority></url>
+  <url><loc>https://toolverse-4gr.pages.dev/category/network</loc><priority>0.9</priority></url>
+  <url><loc>https://toolverse-4gr.pages.dev/category/security</loc><priority>0.9</priority></url>
+  <url><loc>https://toolverse-4gr.pages.dev/category/seo</loc><priority>0.9</priority></url>
+  <url><loc>https://toolverse-4gr.pages.dev/category/social</loc><priority>0.9</priority></url>
+  <url><loc>https://toolverse-4gr.pages.dev/category/education</loc><priority>0.9</priority></url>
+  <url><loc>https://toolverse-4gr.pages.dev/category/business</loc><priority>0.9</priority></url>
   <url><loc>https://toolverse-4gr.pages.dev/category/career</loc><priority>0.9</priority></url>
+  <url><loc>https://toolverse-4gr.pages.dev/category/government</loc><priority>0.9</priority></url>
+  <url><loc>https://toolverse-4gr.pages.dev/category/daily-life</loc><priority>0.9</priority></url>
   <url><loc>https://toolverse-4gr.pages.dev/category/ai</loc><priority>0.9</priority></url>
+  <url><loc>https://toolverse-4gr.pages.dev/category/office</loc><priority>0.9</priority></url>
   <url><loc>https://toolverse-4gr.pages.dev/category/finance</loc><priority>0.9</priority></url>
+  <url><loc>https://toolverse-4gr.pages.dev/category/miscellaneous</loc><priority>0.9</priority></url>
 
   <!-- Priority Tool Nodes -->
   <url><loc>https://toolverse-4gr.pages.dev/tools/image-size-reducer-kb</loc><priority>0.8</priority></url>
-  <url><loc>https://toolverse-4gr.pages.dev/tools/passport-photo-maker</loc><priority>0.8</priority></url>
-  <url><loc>https://toolverse-4gr.pages.dev/tools/emi-calc-pro</loc><priority>0.8</priority></url>
-  <url><loc>https://toolverse-4gr.pages.dev/tools/qr-arch-gen</loc><priority>0.8</priority></url>
-  <url><loc>https://toolverse-4gr.pages.dev/tools/ai-article-generator</loc><priority>0.8</priority></url>
+  <url><loc>https://toolverse-4gr.pages.dev/tools/salary-calc-hand</loc><priority>0.8</priority></url>
+  <url><loc>https://toolverse-4gr.pages.dev/tools/ats-res-builder</loc><priority>0.8</priority></url>
 </urlset>
