@@ -11,8 +11,8 @@ interface SEOHeadProps {
 }
 
 /**
- * ToolVerse SEO Orchestrator v5.0
- * Handles Meta Reset, Canonical Enforcement, and Schema Automation injection.
+ * ToolVerse SEO Orchestrator v6.0
+ * Handles Meta Reset, Canonical Enforcement, and Domain Trust readiness.
  */
 const SEOHead: React.FC<SEOHeadProps> = ({ title, description, url, type = 'website', schemas = [] }) => {
   useEffect(() => {
@@ -33,31 +33,32 @@ const SEOHead: React.FC<SEOHeadProps> = ({ title, description, url, type = 'webs
       el.setAttribute('content', content);
     };
 
-    // 3. Apply Standard & Social Meta
+    // 3. Absolute URL Logic (Critical for custom domain indexing)
+    const absoluteUrl = url.startsWith('http') ? url : `${SITE_CONFIG.baseUrl}${url}`;
+
+    // 4. Apply Standard & Social Meta
     setMeta('description', description);
-    setMeta('robots', 'index, follow, max-image-preview:large');
+    setMeta('robots', 'index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1');
     setMeta('theme-color', SITE_CONFIG.themeColor);
     setMeta('og:type', type, true);
     setMeta('og:title', title, true);
     setMeta('og:description', description, true);
-    setMeta('og:url', url, true);
+    setMeta('og:url', absoluteUrl, true);
     setMeta('og:image', 'https://images.unsplash.com/photo-1614064641938-3bbee52942c7?auto=format&fit=crop&q=80&w=1200', true);
     setMeta('twitter:card', 'summary_large_image');
     setMeta('twitter:title', title);
+    setMeta('twitter:description', description);
     
-    // 4. Canonical Enforcement (Growth Signal)
-    const currentPath = window.location.pathname;
-    const canonicalUrl = `${SITE_CONFIG.baseUrl}${currentPath === '/' ? '' : currentPath}`;
+    // 5. Canonical Enforcement
     let link = document.querySelector('link[rel="canonical"]');
     if (!link) {
       link = document.createElement('link');
       link.setAttribute('rel', 'canonical');
       document.head.appendChild(link);
     }
-    link.setAttribute('href', canonicalUrl);
+    link.setAttribute('href', absoluteUrl);
 
-    // 5. Schema Injection (Hard Reset Logic)
-    // Remove all existing ToolVerse generated schemas to prevent GSC duplicates
+    // 6. Schema Injection
     document.querySelectorAll('.tv-schema-node').forEach(el => el.remove());
     
     schemas.forEach((schemaObj) => {

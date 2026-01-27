@@ -8,6 +8,7 @@ import ToolSEOContent from '../components/ToolSEOContent';
 import RelatedTools from '../components/RelatedTools';
 import AdSlot from '../components/AdSlot';
 import PostTaskOrchestrator from '../components/PostTaskOrchestrator';
+import UniversalSEOLayer from '../components/UniversalSEOLayer';
 import { AD_CONFIG } from '../config/ads';
 import { getHighCTRTitle, getBreadcrumbSchema, getAutoFaqSchema } from '../utils/seo';
 
@@ -28,7 +29,7 @@ const ToolPage: React.FC<ToolPageProps> = ({ slug, onNavigate, favorites, onTogg
   useEffect(() => {
     if (tool) {
       window.scrollTo({ top: 0, behavior: 'smooth' });
-      setShowPostTask(false); // Reset on tool switch
+      setShowPostTask(false);
     }
   }, [tool]);
 
@@ -52,7 +53,6 @@ const ToolPage: React.FC<ToolPageProps> = ({ slug, onNavigate, favorites, onTogg
 
   const handleSuccess = (msg: string) => {
     setSuccess(msg);
-    // After a delay, trigger suggestions/rating
     setTimeout(() => {
       setSuccess(null);
       setShowPostTask(true);
@@ -63,16 +63,15 @@ const ToolPage: React.FC<ToolPageProps> = ({ slug, onNavigate, favorites, onTogg
     <div className="max-w-[1600px] mx-auto px-6 py-12">
       <SEOHead title={seoData.title} description={tool.description} url={seoData.url} type="article" schemas={[seoData.breadcrumb, seoData.faq]} />
       
+      {/* LAYER 1: STATIC SEO (GOOGLE BOT) */}
+      <UniversalSEOLayer tool={tool} category={category} />
+
+      {/* LAYER 2: DYNAMIC UI (USER) */}
       {showPostTask && <PostTaskOrchestrator tool={tool} onNavigate={onNavigate} onClose={() => setShowPostTask(false)} />}
 
-      {/* PERSISTENT BACK CONTROLS */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-16">
          <div className="flex items-center gap-6">
-            <button 
-              onClick={() => onNavigate('home')}
-              className="w-12 h-12 flex items-center justify-center bg-slate-100 hover:bg-slate-900 hover:text-white rounded-2xl transition-all shadow-sm group"
-              title="Return to Home"
-            >
+            <button onClick={() => onNavigate('home')} className="w-12 h-12 flex items-center justify-center bg-slate-100 hover:bg-slate-900 hover:text-white rounded-2xl transition-all shadow-sm group">
                <span className="font-black text-xl group-hover:-translate-x-1 transition-transform">←</span>
             </button>
             <nav className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 flex items-center gap-3">
@@ -83,11 +82,9 @@ const ToolPage: React.FC<ToolPageProps> = ({ slug, onNavigate, favorites, onTogg
                <span className="text-indigo-600 underline underline-offset-4 decoration-2">{tool.title}</span>
             </nav>
          </div>
-         <div className="flex items-center gap-3">
-            <div className="px-4 py-2 bg-emerald-50 text-emerald-600 rounded-xl text-[10px] font-black uppercase border border-emerald-100">
-               <span className="w-1.5 h-1.5 bg-emerald-500 rounded-full inline-block mr-2 animate-pulse"></span>
-               NODE: OPERATIONAL
-            </div>
+         <div className="px-4 py-2 bg-emerald-50 text-emerald-600 rounded-xl text-[10px] font-black uppercase border border-emerald-100">
+            <span className="w-1.5 h-1.5 bg-emerald-500 rounded-full inline-block mr-2 animate-pulse"></span>
+            NODE: OPERATIONAL
          </div>
       </div>
 
@@ -96,22 +93,15 @@ const ToolPage: React.FC<ToolPageProps> = ({ slug, onNavigate, favorites, onTogg
           <h1 className="text-5xl md:text-8xl font-black text-slate-900 mb-12 tracking-tighter leading-[0.9]">
             {tool.title}
           </h1>
-
           <AdSlot id={AD_CONFIG.slots.header} className="mb-16" />
-
           <div className="bg-white rounded-[4rem] p-8 md:p-20 shadow-2xl border border-slate-100 min-h-[600px] relative overflow-hidden">
-            <div className="absolute top-0 right-0 p-10 opacity-[0.03] pointer-events-none">
-               <div className="text-[15rem] font-black italic">{category.icon}</div>
-            </div>
             <ToolRenderer slug={tool.slug} onSuccess={handleSuccess} onError={() => {}} />
           </div>
-
           <AdSlot id={AD_CONFIG.slots.mid_content} variant="result-based" className="my-24" />
           <ToolSEOContent tool={tool} />
           <AdSlot id={AD_CONFIG.slots.footer} className="my-24" />
           <RelatedTools currentSlug={tool.slug} category={tool.category} onNavigate={onNavigate} />
         </div>
-
         <aside className="w-full lg:w-96 flex-shrink-0">
            <div className="lg:sticky lg:top-32 space-y-10">
               <div className="bg-slate-900 p-10 rounded-[3.5rem] text-white shadow-2xl relative overflow-hidden">
@@ -120,23 +110,17 @@ const ToolPage: React.FC<ToolPageProps> = ({ slug, onNavigate, favorites, onTogg
                       <div className="text-[10px] font-black text-indigo-400 uppercase tracking-[0.3em]">Hardware Status</div>
                       <div className="text-xl font-black text-white tracking-tight flex items-center gap-3">
                          <span className="w-3 h-3 bg-emerald-500 rounded-full shadow-[0_0_15px_rgba(16,185,129,0.5)]"></span>
-                         CLUSTER: {Math.random().toString(36).substring(7).toUpperCase()}
+                         CLUSTER: ONLINE
                       </div>
                     </div>
-                    <div className="space-y-4">
-                      <button 
-                        onClick={() => onToggleFavorite(tool.slug)}
-                        className={`w-full py-6 rounded-2xl text-xs font-black uppercase tracking-widest flex items-center justify-center gap-3 transition-all ${favorites.includes(tool.slug) ? 'bg-white text-slate-900 shadow-xl' : 'bg-white/5 text-white border border-white/10 hover:bg-white/10'}`}
-                      >
-                        {favorites.includes(tool.slug) ? '★ IN VAULT' : '☆ ADD TO VAULT'}
-                      </button>
-                    </div>
+                    <button onClick={() => onToggleFavorite(tool.slug)} className={`w-full py-6 rounded-2xl text-xs font-black uppercase tracking-widest flex items-center justify-center gap-3 transition-all ${favorites.includes(tool.slug) ? 'bg-white text-slate-900 shadow-xl' : 'bg-white/5 text-white border border-white/10 hover:bg-white/10'}`}>
+                      {favorites.includes(tool.slug) ? '★ IN VAULT' : '☆ ADD TO VAULT'}
+                    </button>
                  </div>
               </div>
            </div>
         </aside>
       </div>
-
       {success && (
         <div className="fixed bottom-12 left-1/2 -translate-x-1/2 z-[200] bg-emerald-600 text-white px-12 py-6 rounded-full shadow-2xl font-black text-base animate-in slide-in-from-bottom-10">
           ✅ {success}

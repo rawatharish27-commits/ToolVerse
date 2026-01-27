@@ -1,5 +1,11 @@
 
 User-agent: *
 Allow: /
+Allow: /tools/*
+Allow: /category/*
 
+# SITEMAP DISCOVERY
 Sitemap: https://toolverse-4gr.pages.dev/sitemap.xml
+
+# CRAWL DELAY (Optional for heavy bots)
+Crawl-delay: 1

@@ -6,6 +6,7 @@ import { CategorySlug } from '../types';
 import ToolCard from '../components/ToolCard';
 import AdPlaceholder from '../components/AdPlaceholder';
 import SEOHead from '../components/SEOHead';
+import UniversalSEOLayer from '../components/UniversalSEOLayer';
 
 interface CategoryPageProps {
   categoryId: CategorySlug;
@@ -16,8 +17,6 @@ interface CategoryPageProps {
 
 const CategoryPage: React.FC<CategoryPageProps> = ({ categoryId, onNavigate, favorites, onToggleFavorite }) => {
   const category = useMemo(() => CATEGORIES.find(c => c.id === categoryId), [categoryId]);
-  
-  // FIX: Explicitly filter and sort all tools in the registry for this category
   const categoryTools = useMemo(() => 
     TOOLS.filter(t => t.category === categoryId).sort((a,b) => (b.priority || 0) - (a.priority || 0)), 
   [categoryId]);
@@ -38,24 +37,21 @@ const CategoryPage: React.FC<CategoryPageProps> = ({ categoryId, onNavigate, fav
         url={`https://toolverse-4gr.pages.dev/category/${category.id}`}
       />
 
+      {/* SEO BOT LAYER */}
+      <UniversalSEOLayer category={category} />
+
       <section className="relative h-[50vh] md:h-[60vh] flex items-center overflow-hidden bg-slate-900">
         <div className="absolute inset-0 z-0">
-           <img 
-            src={category.images[0]} 
-            alt={category.name}
-            className="w-full h-full object-cover opacity-30 scale-105"
-           />
+           <img src={category.images[0]} alt={category.name} className="w-full h-full object-cover opacity-30 scale-105" />
            <div className="absolute inset-0 bg-gradient-to-t from-white via-white/5 to-transparent"></div>
            <div className="absolute inset-0 bg-gradient-to-r from-slate-950 via-slate-950/40 to-transparent"></div>
         </div>
-        
         <div className="max-w-[1600px] mx-auto px-8 relative z-10 w-full">
            <nav className="flex mb-12 text-[10px] font-black uppercase tracking-[0.3em]">
             <button onClick={() => onNavigate('home')} className="text-white/40 hover:text-white transition-colors">Core Hub</button>
             <span className="mx-4 text-white/10">/</span>
             <span className="text-indigo-400">{category.name} Cluster</span>
           </nav>
-
           <div className="flex flex-col md:flex-row md:items-end gap-10">
             <div className={`w-24 h-24 md:w-40 md:h-40 ${category.color} text-white rounded-[2.5rem] md:rounded-[3.5rem] flex items-center justify-center text-5xl md:text-7xl shadow-2xl border-[4px] border-white/10 animate-in zoom-in-95 duration-700`}>
               {category.icon}
@@ -81,41 +77,22 @@ const CategoryPage: React.FC<CategoryPageProps> = ({ categoryId, onNavigate, fav
                  Available Logic Nodes ({categoryTools.length})
                </h2>
             </div>
-
             <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8 animate-in fade-in slide-in-from-bottom-8 duration-700">
-              {categoryTools.length > 0 ? categoryTools.map((tool, idx) => (
+              {categoryTools.map((tool, idx) => (
                 <div key={tool.slug} style={{ animationDelay: `${idx * 15}ms` }} className="animate-in fade-in">
-                  <ToolCard 
-                    tool={tool} 
-                    onClick={() => onNavigate('tool', { slug: tool.slug })} 
-                    isFavorite={favorites.includes(tool.slug)}
-                    onToggleFavorite={onToggleFavorite}
-                  />
+                  <ToolCard tool={tool} onClick={() => onNavigate('tool', { slug: tool.slug })} isFavorite={favorites.includes(tool.slug)} onToggleFavorite={onToggleFavorite} />
                 </div>
-              )) : (
-                <div className="col-span-full py-20 text-center bg-slate-50 rounded-[3rem] border border-dashed border-slate-200">
-                   <div className="text-4xl mb-4">🌀</div>
-                   <p className="text-slate-400 font-bold uppercase tracking-widest text-[10px]">Registry sync in progress...</p>
-                </div>
-              )}
+              ))}
             </div>
-            
-            <div className="mt-20">
-              <AdPlaceholder type="inline" />
-            </div>
+            <div className="mt-20"><AdPlaceholder type="inline" /></div>
           </div>
-
           <aside className="lg:w-80 flex-shrink-0 space-y-10">
             <div className="bg-slate-900 p-10 rounded-[3.5rem] text-white shadow-2xl relative overflow-hidden group">
               <div className="relative z-10">
                 <h3 className="font-black text-indigo-400 mb-8 uppercase text-[9px] tracking-[0.3em] border-b border-white/5 pb-4">Other Gateways</h3>
                 <div className="space-y-3">
                   {CATEGORIES.filter(c => c.id !== categoryId).slice(0, 12).map(cat => (
-                    <button 
-                      key={cat.id}
-                      onClick={() => onNavigate('category', { id: cat.id })}
-                      className="flex items-center w-full px-5 py-3.5 rounded-2xl bg-white/5 border border-white/5 hover:bg-indigo-600 text-slate-400 hover:text-white transition-all"
-                    >
+                    <button key={cat.id} onClick={() => onNavigate('category', { id: cat.id })} className="flex items-center w-full px-5 py-3.5 rounded-2xl bg-white/5 border border-white/5 hover:bg-indigo-600 text-slate-400 hover:text-white transition-all">
                       <span className="mr-5 text-xl">{cat.icon}</span>
                       <span className="text-[10px] font-black uppercase tracking-widest">{cat.name}</span>
                     </button>

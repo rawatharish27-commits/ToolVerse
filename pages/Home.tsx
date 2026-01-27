@@ -8,6 +8,7 @@ import SiteStatus from '../components/SiteStatus';
 import RewardHub from '../components/RewardHub';
 import TopSitesSection from '../components/TopSitesSection';
 import InternalLinking from '../components/InternalLinking';
+import UniversalSEOLayer from '../components/UniversalSEOLayer';
 
 interface HomeProps {
   onNavigate: (page: string, params?: any) => void;
@@ -46,6 +47,9 @@ const Home: React.FC<HomeProps> = ({ onNavigate, searchQuery = '', favorites, on
   return (
     <div className="bg-white min-h-screen">
       <SEOHead title="ToolVerse | 200+ Master Utility Nodes" description="Execute 215+ professional browser-native tools instantly. Privacy hardened, zero-upload architecture." url="https://toolverse-4gr.pages.dev/" />
+
+      {/* LAYER 1: STATIC SEO CORE (FOR BOTS) */}
+      {!deferredSearch && <UniversalSEOLayer />}
 
       {/* HERO SECTION */}
       <section className="relative min-h-[85vh] flex flex-col items-center justify-center bg-slate-950 overflow-hidden px-6">
