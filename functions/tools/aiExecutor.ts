@@ -6,11 +6,8 @@ import { GoogleGenAI } from "@google/genai";
  * Centralized logic for Gemini 3.0 Pro & Flash tasks.
  */
 export const executeAITask = async (toolId: string, input: any, options: any, env: any) => {
-  // Use env.API_KEY primarily for Cloudflare Pages Functions
-  const apiKey = env.API_KEY || process.env.API_KEY;
-  if (!apiKey) throw new Error("GEMINI_API_KEY is not configured in environment.");
-
-  const ai = new GoogleGenAI({ apiKey });
+  // Fix: Obtained exclusively from process.env.API_KEY as per guidelines
+  const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
   
   // Complexity heuristic for model selection
   const modelName = (toolId.includes('article') || toolId.includes('resume')) 
@@ -19,7 +16,8 @@ export const executeAITask = async (toolId: string, input: any, options: any, en
 
   const response = await ai.models.generateContent({
     model: modelName,
-    contents: [{ role: 'user', parts: [{ text: `Task: ${toolId}\nInput: ${typeof input === 'string' ? input : JSON.stringify(input)}\nOptions: ${JSON.stringify(options)}` }] }],
+    // Fix: Simplified contents structure for text generation
+    contents: `Task: ${toolId}\nInput: ${typeof input === 'string' ? input : JSON.stringify(input)}\nOptions: ${JSON.stringify(options)}`,
     config: {
       systemInstruction: getSystemPrompt(toolId),
       temperature: 0.7,

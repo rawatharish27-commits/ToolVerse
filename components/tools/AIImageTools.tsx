@@ -13,7 +13,7 @@ interface ToolProps {
 
 const AIImageTools: React.FC<ToolProps> = ({ slug, onSuccess, onError }) => {
   const [subject, setSubject] = useState("");
-  const [style, setStyle] = useState("");
+  const [style, setSubjectStyle] = useState("");
   const [loading, setLoading] = useState(false);
   const [generatedImageUrl, setGeneratedImageUrl] = useState<string | null>(null);
   const [aiTextResponse, setAiTextResponse] = useState<string | null>(null);
@@ -56,7 +56,8 @@ const AIImageTools: React.FC<ToolProps> = ({ slug, onSuccess, onError }) => {
         
         const response = await ai.models.generateContent({
           model: 'gemini-2.5-flash-image',
-          contents: [{ parts: [{ text: fullPrompt }] }],
+          // Fix: Simplified contents structure for prompt usage
+          contents: fullPrompt,
           config: {
             imageConfig: {
               aspectRatio: options.ar || "1:1",
@@ -119,7 +120,7 @@ const AIImageTools: React.FC<ToolProps> = ({ slug, onSuccess, onError }) => {
           <input 
             type="text" 
             value={style} 
-            onChange={e => setStyle(e.target.value)}
+            onChange={e => setSubjectStyle(e.target.value)}
             placeholder="e.g. 8k, photorealistic, van gogh style..."
             className="w-full p-4 bg-slate-50 border border-slate-200 rounded-xl outline-none font-medium text-slate-600 shadow-inner"
           />

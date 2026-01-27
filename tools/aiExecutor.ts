@@ -6,20 +6,18 @@ import { GoogleGenAI } from "@google/genai";
  * Hidden Prompt Templates reside here.
  */
 export const executeAITask = async (toolId: string, input: any, options: any, env: any) => {
-  const apiKey = env.API_KEY || process.env.API_KEY;
-  if (!apiKey) throw new Error("GEMINI_API_KEY is not configured in backend environment.");
-
-  const ai = new GoogleGenAI({ apiKey });
-  const model = ai.models.generateContent({
+  // Fix: Obtained exclusively from process.env.API_KEY as per guidelines
+  const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+  const response = await ai.models.generateContent({
     model: toolId.includes('article') ? 'gemini-3-pro-preview' : 'gemini-3-flash-preview',
     config: {
       systemInstruction: getSystemPrompt(toolId),
       temperature: 0.7,
     },
-    contents: [{ role: 'user', parts: [{ text: `User Input: ${input}\nOptions: ${JSON.stringify(options)}` }] }]
+    // Fix: Simplified contents structure for text generation
+    contents: `User Input: ${input}\nOptions: ${JSON.stringify(options)}`
   });
 
-  const response = await model;
   return { 
     success: true, 
     type: 'markdown', 

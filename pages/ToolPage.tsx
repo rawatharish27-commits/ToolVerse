@@ -63,7 +63,7 @@ const ToolPage: React.FC<ToolPageProps> = ({ slug, onNavigate, favorites, onTogg
     <div className="max-w-[1600px] mx-auto px-6 py-12">
       <SEOHead title={seoData.title} description={tool.description} url={seoData.url} type="article" schemas={[seoData.breadcrumb, seoData.faq]} />
       
-      {/* LAYER 1: STATIC SEO (GOOGLE BOT) */}
+      {/* LAYER 1: STATIC SEO (GOOGLE BOT) - 800+ Words Invisible Ghost Layer */}
       <UniversalSEOLayer tool={tool} category={category} />
 
       {/* LAYER 2: DYNAMIC UI (USER) */}
@@ -93,15 +93,27 @@ const ToolPage: React.FC<ToolPageProps> = ({ slug, onNavigate, favorites, onTogg
           <h1 className="text-5xl md:text-8xl font-black text-slate-900 mb-12 tracking-tighter leading-[0.9]">
             {tool.title}
           </h1>
+
+          {/* ADSENSE TOP SLOT */}
           <AdSlot id={AD_CONFIG.slots.header} className="mb-16" />
+
           <div className="bg-white rounded-[4rem] p-8 md:p-20 shadow-2xl border border-slate-100 min-h-[600px] relative overflow-hidden">
             <ToolRenderer slug={tool.slug} onSuccess={handleSuccess} onError={() => {}} />
           </div>
+
+          {/* ADSENSE MID SLOT - POST RESULT TRIGGER */}
           <AdSlot id={AD_CONFIG.slots.mid_content} variant="result-based" className="my-24" />
+
+          {/* AUTHORITY DOCUMENTATION (USER FACING) */}
           <ToolSEOContent tool={tool} />
+
+          {/* ADSENSE FOOTER SLOT */}
           <AdSlot id={AD_CONFIG.slots.footer} className="my-24" />
+
+          {/* SEMANTIC INTERNAL LINKING */}
           <RelatedTools currentSlug={tool.slug} category={tool.category} onNavigate={onNavigate} />
         </div>
+        
         <aside className="w-full lg:w-96 flex-shrink-0">
            <div className="lg:sticky lg:top-32 space-y-10">
               <div className="bg-slate-900 p-10 rounded-[3.5rem] text-white shadow-2xl relative overflow-hidden">
@@ -118,6 +130,9 @@ const ToolPage: React.FC<ToolPageProps> = ({ slug, onNavigate, favorites, onTogg
                     </button>
                  </div>
               </div>
+              
+              {/* SIDEBAR AD SLOT */}
+              <AdSlot id={AD_CONFIG.slots.sidebar} className="min-h-[600px]" />
            </div>
         </aside>
       </div>

@@ -22,6 +22,7 @@ const GeneralTools = lazy(() => import('./tools/GeneralTools'));
 const OfficeTools = lazy(() => import('./tools/OfficeTools'));
 const SocialTools = lazy(() => import('./tools/SocialTools'));
 const FileTools = lazy(() => import('./tools/FileTools'));
+const PainPointTools = lazy(() => import('./tools/PainPointTools'));
 
 interface ToolRendererProps {
   slug: string;
@@ -94,6 +95,30 @@ const ToolRenderer: React.FC<ToolRendererProps> = ({ slug, onSuccess, onError })
         {(() => {
           const props = { slug, onSuccess, onError: customErrorHandler };
           const cat = tool.category;
+          
+          // Route specialized Govt, Career, and Daily-Life Analyzers
+          const isPainPoint = slug.includes('rejected') || 
+                            slug.includes('rule-decoder') || 
+                            slug.includes('dob-error') || 
+                            slug.includes('status-decoder') || 
+                            slug.includes('format-translator') || 
+                            slug.includes('resume-rejection') || 
+                            slug.includes('keyword-gap') || 
+                            slug.includes('resume-format') || 
+                            slug.includes('jd-vs-resume') ||
+                            slug.includes('internet-speed-issue') ||
+                            slug.includes('upload-vs-download') ||
+                            slug.includes('app-install') ||
+                            slug.includes('file-corruption') ||
+                            slug.includes('otp-not-coming') ||
+                            slug.includes('email-bounce') ||
+                            slug.includes('print-looks-different') ||
+                            slug.includes('website-looks-different');
+
+          if (isPainPoint) {
+            return <PainPointTools {...props} />;
+          }
+
           if (cat === 'ai') return slug.includes('image') ? <AIImageTools {...props} /> : <AITextTools {...props} />;
           if (cat === 'image') return <ImageTools {...props} />;
           if (cat === 'video') return <VideoAudioTools {...props} />;
@@ -111,7 +136,7 @@ const ToolRenderer: React.FC<ToolRendererProps> = ({ slug, onSuccess, onError })
           if (cat === 'office') return <OfficeTools {...props} />;
           if (cat === 'social') return <SocialTools {...props} />;
           if (cat === 'file') return <FileTools {...props} />;
-          if (cat === 'business') return <AITextTools {...props} />; // Business plans use AI Text
+          if (cat === 'business') return <AITextTools {...props} />;
           return <GeneralTools {...props} />;
         })()}
       </Suspense>

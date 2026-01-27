@@ -37,9 +37,10 @@ const UtilityTools: React.FC<ToolProps> = ({ slug, onSuccess, onError }) => {
     
     setLoading(true);
     try {
-      const output = await toolNode.execute(file || input || options, options);
+      // Pass both input and current options to the executor
+      const output = await toolNode.execute(input || options.value || "0", options);
       setResult(output);
-      onSuccess("Diagnostic Node Synchronized!");
+      onSuccess("Task Resolved!");
     } catch (e: any) {
       onError(e.message || "Logic failure.");
     } finally {
@@ -55,14 +56,7 @@ const UtilityTools: React.FC<ToolProps> = ({ slug, onSuccess, onError }) => {
       colorClass={activeConfig.colorClass}
       input={
         <div className="space-y-6">
-          {slug.includes('analyzer') || slug.includes('checker') || slug.includes('fixer') ? (
-            <div className="p-16 border-4 border-dashed border-slate-100 rounded-[3rem] text-center hover:border-indigo-100 transition-all cursor-pointer relative group">
-              <input type="file" onChange={e => setFile(e.target.files?.[0] || null)} className="absolute inset-0 w-full h-full opacity-0 z-10 cursor-pointer" />
-              <div className="text-7xl mb-6 group-hover:scale-110 transition-transform">🔍</div>
-              <p className="font-black text-slate-700 text-xl">{file ? file.name : "Staging Area: Drop File for Audit"}</p>
-              <p className="text-[10px] font-bold text-slate-400 mt-2 uppercase tracking-widest">Heuristic scan will perform 12+ checks</p>
-            </div>
-          ) : (
+          {slug !== 'uuid-generator' && slug !== 'file-size-converter' && (
             <textarea
               value={input}
               onChange={e => setInput(e.target.value)}
@@ -70,52 +64,39 @@ const UtilityTools: React.FC<ToolProps> = ({ slug, onSuccess, onError }) => {
               className="w-full h-44 p-8 bg-slate-50 border border-slate-200 rounded-[2.5rem] outline-none font-sans text-lg font-bold text-slate-700 shadow-inner resize-none focus:ring-8 focus:ring-indigo-500/5 transition-all"
             />
           )}
+          {(slug === 'uuid-generator' || slug === 'file-size-converter') && (
+            <div className="py-12 text-center bg-indigo-50/30 rounded-[3rem] border border-dashed border-indigo-100 flex flex-col items-center">
+              <div className="text-7xl mb-6">⚙️</div>
+              <p className="text-indigo-900 font-black text-lg">Logic Parameter Input Mode</p>
+              <p className="text-slate-400 font-bold uppercase tracking-widest text-[9px] mt-1">Configure options on the right to execute.</p>
+            </div>
+          )}
         </div>
       }
       options={activeConfig.options?.length > 0 ? <OptionsPanel options={activeConfig.options as any} values={options} onChange={(id, v) => setOptions(p => ({...p, [id]: v}))} /> : undefined}
-      actions={<button onClick={handleRun} disabled={loading} className={`w-full py-7 ${activeConfig.colorClass} text-white rounded-[2.5rem] font-black text-2xl shadow-2xl transition-all active:scale-95 disabled:opacity-50`}>{loading ? "Synchronizing Engines..." : "Execute Analysis"}</button>}
+      actions={<button onClick={handleRun} disabled={loading} className={`w-full py-7 ${activeConfig.colorClass} text-white rounded-[2.5rem] font-black text-2xl shadow-2xl transition-all active:scale-95 disabled:opacity-50`}>{loading ? "Synchronizing Engines..." : "Execute Logic Node"}</button>}
       result={result && (
         <div className="animate-in zoom-in-95">
-           {result.findings || result.diagnosis ? (
-             <div className="space-y-6">
-                <div className="bg-slate-900 p-8 rounded-[3rem] text-white">
-                   <h3 className="text-indigo-400 font-black text-[10px] uppercase tracking-[0.3em] mb-4">Core Verdict</h3>
-                   <p className="text-2xl font-black">{result.primaryReason || result.diagnosis || result.verdict}</p>
-                </div>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                   <div className="bg-rose-50 p-6 rounded-[2rem] border border-rose-100">
-                      <h4 className="text-rose-600 font-black text-[10px] uppercase tracking-widest mb-3">Detected Mismatches</h4>
-                      <ul className="space-y-2">
-                         {(result.findings || result.fullAudit || []).map((f: string, i: number) => (
-                           <li key={i} className="text-xs font-bold text-rose-900 flex items-center gap-2">
-                              <span className="w-1 h-1 rounded-full bg-rose-400"></span> {f}
-                           </li>
-                         ))}
-                      </ul>
-                   </div>
-                   <div className="bg-emerald-50 p-6 rounded-[2rem] border border-emerald-100">
-                      <h4 className="text-emerald-600 font-black text-[10px] uppercase tracking-widest mb-3">Corrective Actions</h4>
-                      <ul className="space-y-2">
-                         {(result.fixes || result.actionPlan || []).map((f: string, i: number) => (
-                           <li key={i} className="text-xs font-bold text-emerald-900 flex items-center gap-2">
-                              <span className="w-1.5 h-1.5 rounded-full bg-emerald-400"></span> {f}
-                           </li>
-                         ))}
-                      </ul>
-                   </div>
-                </div>
+           {result.qrUrl ? (
+             <div className="flex flex-col items-center py-6">
+                <img src={result.qrUrl} alt="QR" className="w-64 h-64 rounded-3xl shadow-2xl border-8 border-white" />
+                <a href={result.qrUrl} download="toolverse_qr.png" className="mt-8 px-10 py-4 bg-emerald-600 text-white rounded-2xl font-black text-xs uppercase tracking-widest">Download Image</a>
              </div>
-           ) : typeof result === 'object' ? (
+           ) : typeof result === 'string' ? (
+             <div className="relative group">
+                <div className="absolute top-4 right-6 text-[8px] font-black text-slate-500 uppercase tracking-widest z-10">Output Buffer</div>
+                <textarea readOnly value={result} className="w-full h-64 p-10 bg-slate-950 text-emerald-400 font-mono text-xs border-none outline-none resize-none rounded-[3rem] shadow-2xl" />
+                <button onClick={() => { navigator.clipboard.writeText(result); onSuccess("Copied!"); }} className="absolute bottom-8 right-10 px-8 py-3 bg-indigo-600 text-white rounded-xl font-black text-[10px] uppercase tracking-widest shadow-xl">Copy Result</button>
+             </div>
+           ) : (
              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {Object.entries(result).map(([k, v]) => (
-                  <div key={k} className="bg-slate-50 p-6 rounded-2xl border border-slate-100 flex justify-between items-center group">
+                  <div key={k} className="bg-slate-50 p-6 rounded-2xl border border-slate-100 flex justify-between items-center">
                      <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">{k}</span>
-                     <span className="text-sm font-black text-indigo-600 truncate ml-4">{(v as any)}</span>
+                     <span className="text-sm font-black text-indigo-600">{(v as any)}</span>
                   </div>
                 ))}
              </div>
-           ) : (
-             <pre className="bg-slate-950 text-emerald-400 p-10 rounded-[3rem] font-mono text-xs shadow-2xl overflow-x-auto whitespace-pre-wrap">{result}</pre>
            )}
         </div>
       )}

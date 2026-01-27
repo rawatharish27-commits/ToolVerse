@@ -5,8 +5,9 @@ import { GoogleGenAI } from "@google/genai";
  * Legacy AI Dispatcher - Syncing with updated SDK standards
  */
 export async function aiExecutor(toolId: string, input: any, env: any) {
+  // Fix: Obtained exclusively from process.env.API_KEY
   if (!process.env.API_KEY) {
-    throw new Error("Missing GEMINI_API_KEY in environment. Configuration required in Cloudflare dashboard.");
+    throw new Error("Missing API_KEY in environment. Configuration required in Cloudflare dashboard.");
   }
 
   const templates: Record<string, string> = {
@@ -23,7 +24,8 @@ export async function aiExecutor(toolId: string, input: any, env: any) {
 
   const response = await ai.models.generateContent({
     model: 'gemini-3-flash-preview',
-    contents: [{ parts: [{ text: userText }] }],
+    // Fix: Simplified contents structure for text generation
+    contents: userText,
     config: {
       systemInstruction,
       temperature: 0.7
