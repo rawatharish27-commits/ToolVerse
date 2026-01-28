@@ -1,4 +1,3 @@
-
 import { defineConfig, loadEnv } from 'vite';
 import react from '@vitejs/plugin-react';
 import process from 'node:process';
@@ -14,10 +13,9 @@ export default defineConfig(({ mode }) => {
   return {
     plugins: [react()],
     define: {
-      // Prevents "process is not defined" in the browser
-      'process.env': {},
+      // Correctly pass the API_KEY from the environment
+      'process.env.API_KEY': JSON.stringify(env.API_KEY || ''),
       'process.version': JSON.stringify('v18.0.0'),
-      // Fallback for libraries expecting a global 'global'
       'global': 'globalThis',
     },
     base: './',
