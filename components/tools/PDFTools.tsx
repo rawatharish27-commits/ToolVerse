@@ -1,4 +1,3 @@
-
 import React, { useState, useMemo, useEffect } from 'react';
 import ToolLayout from '../ToolLayout';
 import OptionsPanel from '../OptionsPanel';
@@ -19,7 +18,6 @@ const PDFTools: React.FC<ToolProps> = ({ slug, onSuccess, onError }) => {
   const [loading, setLoading] = useState(false);
   const [outputUrl, setOutputUrl] = useState<string | null>(null);
   const [files, setFiles] = useState<FileList | null>(null);
-  const [progress, setProgress] = useState(0);
 
   const toolNode = useMemo(() => TOOLS.find(t => t.slug === slug), [slug]);
   const activeConfig = useMemo(() => [
@@ -38,16 +36,21 @@ const PDFTools: React.FC<ToolProps> = ({ slug, onSuccess, onError }) => {
 
   const handleRun = async () => {
     if (!toolNode?.execute) { onError("Execution logic missing."); return; }
-    if (!files) { onError("Files required."); return; }
+    if (!files || files.length === 0) { onError("Files required."); return; }
 
     setLoading(true);
     try {
-      const result = await toolNode.execute(files[0], options);
+      const input = slug === 'pdf-merger' ? Array.from(files) : files[0];
+      const result = await toolNode.execute(input, options);
+      
       if (result instanceof Blob) {
         setOutputUrl(URL.createObjectURL(result));
-        onSuccess("PDF Task Complete");
+        onSuccess("Binary resolution successful!");
+      } else {
+        onError("Logic engine returned invalid response.");
       }
     } catch (err: any) {
+      console.error(err);
       onError(err.message || "Binary Engine Error.");
     } finally {
       setLoading(false);
@@ -61,17 +64,26 @@ const PDFTools: React.FC<ToolProps> = ({ slug, onSuccess, onError }) => {
       icon={activeConfig.icon}
       colorClass={activeConfig.colorClass}
       input={
-        <div className="p-10 border-4 border-dashed border-slate-100 rounded-[3rem] text-center hover:border-red-100 cursor-pointer relative group">
-           <input type="file" multiple={slug.includes('merger')} accept="application/pdf" onChange={e => setFiles(e.target.files)} className="absolute inset-0 w-full h-full opacity-0 z-10 cursor-pointer" />
-           <div className="text-6xl mb-4 group-hover:scale-110 transition-transform">📄</div>
-           <p className="font-black text-slate-700">{files ? `${files.length} File(s) Ready` : "Select PDF Source"}</p>
+        <div className="p-10 md:p-16 border-4 border-dashed border-slate-100 rounded-[3.5rem] text-center hover:border-red-100 transition-all cursor-pointer relative group">
+           <input type="file" multiple={slug === 'pdf-merger'} accept="application/pdf" onChange={e => setFiles(e.target.files)} className="absolute inset-0 w-full h-full opacity-0 z-10 cursor-pointer" />
+           <div className="text-7xl mb-6 group-hover:scale-110 transition-transform">📄</div>
+           <p className="font-black text-slate-700 text-xl">{files ? `${files.length} File(s) Ready` : "Select PDF Source"}</p>
+           <p className="text-slate-400 text-[10px] font-bold mt-2 uppercase tracking-widest">WASM Processing: Local Only</p>
         </div>
       }
       options={<OptionsPanel options={activeConfig.options as any} values={options} onChange={(id, v) => setOptions(p => ({...p, [id]: v}))} />}
-      actions={<button onClick={handleRun} disabled={loading} className="w-full py-6 bg-red-600 text-white rounded-[2rem] font-black text-xl shadow-2xl active:scale-95 transition-all">{loading ? "Processing..." : "Run PDF Logic"}</button>}
+      actions={<button onClick={handleRun} disabled={loading || !files} className="w-full py-8 bg-red-600 text-white rounded-[2.5rem] font-black text-2xl shadow-2xl active:scale-95 transition-all disabled:opacity-50">{loading ? "Synchronizing Bytes..." : "Run PDF Logic"}</button>}
       result={outputUrl && (
-        <div className="text-center mt-6">
-           <a href={outputUrl} download={`toolverse_result.pdf`} className="px-12 py-5 bg-emerald-600 text-white rounded-2xl font-black shadow-xl inline-block hover:scale-105 transition-transform">Download Result</a>
+        <div className="text-center space-y-8 animate-in zoom-in-95">
+           <div className="p-10 bg-emerald-50 rounded-[3rem] border border-emerald-100 inline-block">
+              <div className="text-5xl mb-4">✅</div>
+              <p className="text-emerald-800 font-black uppercase tracking-widest text-[10px]">Processing Complete</p>
+           </div>
+           <div>
+             <a href={outputUrl} download={`toolverse_output_${Date.now()}.pdf`} className="px-12 py-6 bg-slate-900 text-white rounded-[2rem] font-black text-lg shadow-2xl inline-flex items-center gap-3 hover:bg-indigo-600 transition-all">
+                <span>⬇️</span> Download Master PDF
+             </a>
+           </div>
         </div>
       )}
     />
