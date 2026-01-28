@@ -31,17 +31,17 @@ const ImageTools: React.FC<ToolProps> = ({ slug, onSuccess, onError }) => {
   }, [slug, activeConfig]);
 
   const handleRun = async () => {
-    if (!file) { onError("Please select an image."); return; }
-    if (!toolNode?.execute) { onError("Logic node offline."); return; }
+    if (!file) { onError("Phase E: No input detected."); return; }
+    if (!toolNode?.execute) { onError("Phase G: Logic node offline."); return; }
 
     setLoading(true);
     try {
       const result = await toolNode.execute(file, options);
       if (result.blob) setOutputUrl(URL.createObjectURL(result.blob));
       if (result.data) setAnalysis(result.data);
-      onSuccess("Image Processed Successfully");
+      onSuccess("Phase I: Processing Complete");
     } catch (e: any) {
-      onError(e.message || "Visual Engine Fault");
+      onError(e.message || "Phase M: Operational Fault.");
     } finally {
       setLoading(false);
     }
@@ -57,11 +57,12 @@ const ImageTools: React.FC<ToolProps> = ({ slug, onSuccess, onError }) => {
         <div className="p-16 border-4 border-dashed border-slate-100 rounded-[3rem] text-center hover:border-emerald-100 cursor-pointer relative group">
            <input type="file" accept="image/*" onChange={e => setFile(e.target.files?.[0] || null)} className="absolute inset-0 w-full h-full opacity-0 z-10 cursor-pointer" />
            <div className="text-7xl mb-6 group-hover:scale-110 transition-transform">🖼️</div>
-           <p className="font-black text-slate-700 text-xl">{file ? file.name : "Upload Source Image"}</p>
+           <p className="font-black text-slate-700 text-xl">{file ? file.name : "Select Image Source"}</p>
+           <p className="text-[10px] font-bold text-slate-400 mt-2 uppercase tracking-widest">WASM Isolate: Ready</p>
         </div>
       }
       options={<OptionsPanel options={activeConfig.options as any} values={options} onChange={(id, v) => setOptions(p => ({...p, [id]: v}))} />}
-      actions={<button onClick={handleRun} disabled={loading || !file} className="w-full py-8 bg-emerald-600 text-white rounded-[2.5rem] font-black text-2xl shadow-2xl transition-all active:scale-95 disabled:opacity-50">{loading ? "Processing Pixels..." : "Run Image Logic"}</button>}
+      actions={<button onClick={handleRun} disabled={loading || !file} className="w-full py-8 bg-emerald-600 text-white rounded-[2.5rem] font-black text-2xl shadow-2xl transition-all active:scale-95 disabled:opacity-50">{loading ? "Crunching Pixels..." : "Run Software logic"}</button>}
       result={(outputUrl || analysis) && (
         <div className="space-y-8 animate-in zoom-in-95">
            {analysis && (
@@ -75,9 +76,20 @@ const ImageTools: React.FC<ToolProps> = ({ slug, onSuccess, onError }) => {
              </div>
            )}
            {outputUrl && (
-             <div className="text-center">
-                <img src={outputUrl} className="max-h-80 mx-auto rounded-3xl shadow-xl mb-8 border-4 border-white" alt="Output" />
-                <a href={outputUrl} download={`toolverse_${slug}.jpg`} className="px-12 py-5 bg-slate-900 text-white rounded-2xl font-black shadow-xl inline-block hover:bg-indigo-600 transition-all">Download Result</a>
+             <div className="text-center space-y-6">
+                <div className="relative inline-block">
+                  <img src={outputUrl} className="max-h-80 mx-auto rounded-3xl shadow-xl border-4 border-white" alt="Output" />
+                  <div className="absolute top-4 right-4 px-3 py-1 bg-black/50 backdrop-blur-md text-white text-[8px] font-black uppercase rounded-lg">Logic Verified</div>
+                </div>
+                <div>
+                  <a href={outputUrl} download={`toolverse_${slug}.jpg`} className="px-12 py-5 bg-slate-900 text-white rounded-2xl font-black shadow-xl inline-block hover:bg-indigo-600 transition-all">Download Master Asset</a>
+                </div>
+                <div className="p-6 bg-slate-50 rounded-2xl border border-slate-100 text-left">
+                  <h5 className="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-2">Phase L: Honest Limitations</h5>
+                  <p className="text-[10px] text-slate-500 font-medium leading-relaxed italic">
+                    Binary search optimization used to reach target KB. Result is lossy; fine text may degrade if target is extremely small. Original aspect ratio preserved.
+                  </p>
+                </div>
              </div>
            )}
         </div>
