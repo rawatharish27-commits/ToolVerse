@@ -1,5 +1,4 @@
-
-import React, { useState, useEffect, Suspense, startTransition, useMemo } from 'react';
+import React, { useState, useEffect, Suspense, startTransition, useMemo, lazy } from 'react';
 import Layout from './components/Layout';
 import Home from './pages/Home';
 import CategoryPage from './pages/CategoryPage';
@@ -13,8 +12,11 @@ import TourOverlay from './components/TourOverlay';
 import { CategorySlug } from './types';
 import { trackPageView } from './utils/analytics';
 
+// Lazy load the mega directory
+const Directory = lazy(() => import('./pages/Directory'));
+
 interface NavigationState {
-  page: 'home' | 'category' | 'tool' | 'about' | 'privacy' | 'terms' | 'contact';
+  page: 'home' | 'category' | 'tool' | 'about' | 'privacy' | 'terms' | 'contact' | 'directory';
   params?: any;
 }
 
@@ -28,15 +30,15 @@ const App: React.FC = () => {
     return saved ? JSON.parse(saved) : [];
   });
 
-  // RESOLUTION: Deep Link & Refresh Persistence Engine
   const handlePathChange = () => {
     const path = window.location.pathname;
-    const searchParams = new URLSearchParams(window.location.search);
     trackPageView(path);
 
     startTransition(() => {
       if (path === '/' || path === '' || path.endsWith('index.html')) {
         setNav({ page: 'home' });
+      } else if (path === '/directory') {
+        setNav({ page: 'directory' });
       } else if (path.startsWith('/category/')) {
         const id = path.split('/')[2] as CategorySlug;
         setNav({ page: 'category', params: { id } });
@@ -47,7 +49,6 @@ const App: React.FC = () => {
         const page = path.substring(1) as any;
         setNav({ page });
       } else {
-        // Fallback for unknown paths
         setNav({ page: 'home' });
       }
     });
@@ -55,15 +56,12 @@ const App: React.FC = () => {
 
   useEffect(() => {
     window.addEventListener('popstate', handlePathChange);
-    // Initial check on load
     handlePathChange();
-
     const hasSeenTour = localStorage.getItem('tv_onboarding_v7');
     if (!hasSeenTour) {
       const timer = setTimeout(() => setShowTour(true), 2000);
       return () => clearTimeout(timer);
     }
-
     return () => window.removeEventListener('popstate', handlePathChange);
   }, []);
 
@@ -71,6 +69,7 @@ const App: React.FC = () => {
     let newPath = '/';
     if (page === 'category') newPath = `/category/${params.id}`;
     else if (page === 'tool') newPath = `/tools/${params.slug}`;
+    else if (page === 'directory') newPath = '/directory';
     else if (['about', 'privacy', 'terms', 'contact'].includes(page)) newPath = `/${page}`;
 
     if (window.location.pathname !== newPath) {
@@ -91,6 +90,7 @@ const App: React.FC = () => {
   const activeView = useMemo(() => {
     switch (nav.page) {
       case 'home': return <Home onNavigate={navigate} searchQuery={searchQuery} favorites={favorites} onToggleFavorite={toggleFavorite} recent={[]} />;
+      case 'directory': return <Directory onNavigate={navigate} favorites={favorites} onToggleFavorite={toggleFavorite} />;
       case 'category': return <CategoryPage categoryId={nav.params.id} onNavigate={navigate} favorites={favorites} onToggleFavorite={toggleFavorite} />;
       case 'tool': return <ToolPage slug={nav.params.slug} onNavigate={navigate} favorites={favorites} onToggleFavorite={toggleFavorite} />;
       case 'about': return <About />;
@@ -113,7 +113,7 @@ const App: React.FC = () => {
       <Suspense fallback={
         <div className="flex flex-col items-center justify-center min-h-[60vh] gap-6">
           <div className="w-12 h-12 border-4 border-indigo-600 border-t-transparent rounded-full animate-spin"></div>
-          <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.4em]">Initializing Logic Core...</p>
+          <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.4em]">Warping to Node...</p>
         </div>
       }>
         {activeView}

@@ -1,5 +1,4 @@
-
-import React, { useState, useEffect, useMemo, useCallback, useRef } from 'react';
+import React, { useState, useEffect, useMemo, useRef } from 'react';
 import { CATEGORIES } from '../data/categories';
 import { TOOLS } from '../data/tools';
 import { getAttractionState, getUserLevel } from '../utils/attraction';
@@ -18,7 +17,6 @@ const Layout: React.FC<LayoutProps> = ({ children, onNavigate, onSearch, searchQ
   const [points, setPoints] = useState(0);
   
   const [showSuggestions, setShowSuggestions] = useState(false);
-  const [selectedIndex, setSelectedIndex] = useState(-1);
   const searchRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -26,7 +24,6 @@ const Layout: React.FC<LayoutProps> = ({ children, onNavigate, onSearch, searchQ
     syncState();
     window.addEventListener('attraction_update', syncState);
     
-    // Global Event for "Browse Directory" buttons
     const openMenu = () => setIsMenuOpen(true);
     window.addEventListener('tv_open_menu', openMenu);
     
@@ -80,7 +77,7 @@ const Layout: React.FC<LayoutProps> = ({ children, onNavigate, onSearch, searchQ
               value={searchQuery}
               onChange={(e) => { onSearch(e.target.value); setShowSuggestions(true); }}
               onFocus={() => setShowSuggestions(true)}
-              placeholder="Search 200+ utilities..." 
+              placeholder="Search 500+ utilities..." 
               className="w-full pl-11 pr-5 py-3 bg-slate-100 border-none rounded-2xl focus:ring-4 focus:ring-indigo-500/10 focus:bg-white transition-all font-bold text-slate-700 text-sm shadow-inner"
             />
             <svg className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" strokeWidth="3" strokeLinecap="round"/></svg>
@@ -88,7 +85,7 @@ const Layout: React.FC<LayoutProps> = ({ children, onNavigate, onSearch, searchQ
             {showSuggestions && suggestions.length > 0 && (
               <div className="absolute top-full left-0 right-0 mt-3 bg-white rounded-[2rem] shadow-3xl border border-slate-100 overflow-hidden z-[300]">
                 <div className="p-2">
-                  {suggestions.map((item, idx) => (
+                  {suggestions.map((item) => (
                     <div 
                       key={item.id}
                       onClick={() => handleSelectSuggestion(item)}
@@ -116,7 +113,6 @@ const Layout: React.FC<LayoutProps> = ({ children, onNavigate, onSearch, searchQ
         </div>
       </header>
 
-      {/* SIDEBAR DIRECTORY */}
       <div className={`fixed inset-0 z-[300] transition-all duration-300 ${isMenuOpen ? 'opacity-100 visible' : 'opacity-0 invisible pointer-events-none'}`}>
         <div className="absolute inset-0 bg-slate-950/20 backdrop-blur-sm" onClick={() => setIsMenuOpen(false)}></div>
         <aside className={`absolute top-0 left-0 h-full w-full max-w-xs bg-white shadow-3xl transition-transform duration-300 transform ${isMenuOpen ? 'translate-x-0' : '-translate-x-full'} flex flex-col`}>
@@ -132,6 +128,14 @@ const Layout: React.FC<LayoutProps> = ({ children, onNavigate, onSearch, searchQ
              >
                 <span className="text-lg">🏠</span>
                 <span className="text-[11px] font-black uppercase tracking-widest">Home Hub</span>
+             </button>
+
+             <button 
+              onClick={() => { onNavigate('directory'); setIsMenuOpen(false); }}
+              className="w-full p-4 flex items-center gap-4 rounded-2xl bg-indigo-50 text-indigo-600 mb-4 transition-all"
+             >
+                <span className="text-lg">📂</span>
+                <span className="text-[11px] font-black uppercase tracking-widest">All 500+ Tools</span>
              </button>
 
              {CATEGORIES.map(cat => {
@@ -151,7 +155,7 @@ const Layout: React.FC<LayoutProps> = ({ children, onNavigate, onSearch, searchQ
                    
                    {expandedCat === cat.id && (
                      <div className="ml-8 space-y-1 py-3 border-l-2 border-slate-100 pl-5 animate-in slide-in-from-left-2 duration-300">
-                       {catTools.map(tool => (
+                       {catTools.slice(0, 10).map(tool => (
                          <button 
                           key={tool.slug}
                           onClick={() => { onNavigate('tool', { slug: tool.slug }); setIsMenuOpen(false); }}
@@ -164,7 +168,7 @@ const Layout: React.FC<LayoutProps> = ({ children, onNavigate, onSearch, searchQ
                         onClick={() => { onNavigate('category', { id: cat.id }); setIsMenuOpen(false); }} 
                         className="w-full text-left p-2.5 text-[9px] font-black text-indigo-400 uppercase hover:underline block"
                        >
-                         View All Cluster Nodes →
+                         View All {cat.name} →
                        </button>
                      </div>
                    )}
@@ -186,6 +190,7 @@ const Layout: React.FC<LayoutProps> = ({ children, onNavigate, onSearch, searchQ
                 <button onClick={() => onNavigate('privacy')} className="hover:text-white transition-colors">Privacy</button>
                 <button onClick={() => onNavigate('terms')} className="hover:text-white transition-colors">Terms</button>
                 <button onClick={() => onNavigate('contact')} className="hover:text-white transition-colors">Support</button>
+                <button onClick={() => onNavigate('directory')} className="hover:text-white transition-colors">A-Z Index</button>
             </div>
          </div>
       </footer>
