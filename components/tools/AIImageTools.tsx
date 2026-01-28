@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { GoogleGenAI } from "@google/genai";
 import ToolLayout from '../ToolLayout';
@@ -56,11 +55,10 @@ const AIImageTools: React.FC<ToolProps> = ({ slug, onSuccess, onError }) => {
         
         const response = await ai.models.generateContent({
           model: 'gemini-2.5-flash-image',
-          // Fix: Simplified contents structure for prompt usage
-          contents: fullPrompt,
+          contents: { parts: [{ text: fullPrompt }] },
           config: {
             imageConfig: {
-              aspectRatio: options.ar || "1:1",
+              aspectRatio: (options.ar as any) || "1:1",
             }
           }
         });
@@ -81,7 +79,7 @@ const AIImageTools: React.FC<ToolProps> = ({ slug, onSuccess, onError }) => {
         // For analysis tools (Caption, Bio, etc.)
         const response = await ai.models.generateContent({
           model: 'gemini-3-flash-preview',
-          contents: `Task: ${slug}. Content: ${subject}. Options: ${JSON.stringify(options)}`,
+          contents: { parts: [{ text: `Task: ${slug}. Content: ${subject}. Options: ${JSON.stringify(options)}` }] },
           config: {
             systemInstruction: "You are an elite Visual Strategist. Return only the final output (captions, instructions, or labels). Be concise.",
           }

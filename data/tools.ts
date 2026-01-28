@@ -100,7 +100,7 @@ TOOLS.forEach(tool => {
     switch (tool.category) {
       case 'image': return await imageCluster.execute(tool.slug, input, options);
       case 'pdf': return await pdfCluster.execute(tool.slug, input, options);
-      case 'finance':
+      case 'finance': return await financeCluster.execute(tool.slug, input, options);
       case 'calculators': return await calculatorCluster.execute(tool.slug, input, options);
       case 'ai': return await aiCluster.execute(tool.slug, input, options);
       case 'utility': return await utilityCluster.execute(tool.slug, input, options);

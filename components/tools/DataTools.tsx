@@ -183,7 +183,7 @@ const DataTools: React.FC<ToolProps> = ({ slug, onSuccess, onError }) => {
              <div className="absolute top-0 left-0 w-1.5 h-full bg-slate-200"></div>
              <h5 className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-3">Phase U: Honest Limitations</h5>
              <p className="text-xs text-slate-500 font-medium leading-relaxed italic">
-               Large datasets (>50,000 rows) may trigger browser throttling. Conversions assume RFC 4180 standard for CSV quoting. Complex nested JSON objects are flattened using a simple key-path logic which may not preserve multi-dimensional relationships.
+               {"Large datasets (>50,000 rows) may trigger browser throttling. Conversions assume RFC 4180 standard for CSV quoting. Complex nested JSON objects are flattened using a simple key-path logic which may not preserve multi-dimensional relationships."}
              </p>
            </div>
         </div>
