@@ -37,3 +37,19 @@ export const convertJsonToCsv = (json: any[]) => {
   ];
   return csvRows.join('\n');
 };
+
+// --- FIX: Exporting dataCluster as expected by master registry ---
+export const dataCluster = {
+  execute: async (slug: string, input: any, options: any) => {
+    switch (slug) {
+      case 'excel-data-cleaner':
+        return cleanData(input, options);
+      case 'data-deduplication-tool':
+        return deduplicate(input, options.caseSensitive);
+      case 'json-to-csv':
+        return convertJsonToCsv(input);
+      default:
+        return { status: "Data Resolved", slug };
+    }
+  }
+};

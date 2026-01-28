@@ -1,3 +1,4 @@
+
 export function whyEmiHighExplainer({ loanAmount, tenureYears, interestRate }: any) {
   const monthlyRate = interestRate / 12 / 100;
   const months = tenureYears * 12;
@@ -46,3 +47,19 @@ export function noCostEmiRealityChecker({ productPrice, emiAmount, tenure }: any
     "Reality Check": hiddenCost > 0 ? "Not 'No Cost'. The discount given by the brand is being used to pay the bank's interest." : "Congratulations, this is a genuine zero-interest deal."
   };
 }
+
+// --- FIX: Exporting financeCluster as expected by master registry ---
+export const financeCluster = {
+  execute: async (slug: string, input: any, options: any) => {
+    switch (slug) {
+      case 'why-emi-high-explainer':
+        return whyEmiHighExplainer(options);
+      case 'actual-interest-analyzer':
+        return actualInterestAnalyzer(options);
+      case 'no-cost-emi-reality-checker':
+        return noCostEmiRealityChecker(options);
+      default:
+        return { status: "Finance Resolved", slug };
+    }
+  }
+};

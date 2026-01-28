@@ -52,3 +52,19 @@ export const checkUrlSafetyHeuristic = (urlString: string) => {
     return { "Error": "Invalid URL format." };
   }
 };
+
+// --- FIX: Exporting networkCluster as expected by master registry ---
+export const networkCluster = {
+  execute: async (slug: string, input: any, options: any) => {
+    switch (slug) {
+      case 'user-agent-parser':
+        return parseUserAgent(input || navigator.userAgent);
+      case 'hash-identifier':
+        return identifyHashType(input);
+      case 'url-safety-checker':
+        return checkUrlSafetyHeuristic(input);
+      default:
+        return { status: "Network Resolved", slug };
+    }
+  }
+};

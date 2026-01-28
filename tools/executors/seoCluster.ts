@@ -73,3 +73,22 @@ export const suggestInternalLinks = (keyword: string, content: string) => {
     "Linking Logic": "Ensures semantic relevance and pass link equity to the pillar page."
   };
 };
+
+// --- FIX: Exporting seoCluster as expected by master registry ---
+export const seoCluster = {
+  execute: async (slug: string, input: any, options: any) => {
+    switch (slug) {
+      case 'xml-sitemap-generator':
+        const urls = typeof input === 'string' ? input.split('\n') : input;
+        return generateXmlSitemap(urls, options.priority, options.changefreq);
+      case 'breadcrumb-schema-generator':
+        return generateBreadcrumbSchema(input);
+      case 'keyword-difficulty-checker':
+        return calculateKeywordDifficulty(input);
+      case 'internal-link-generator':
+        return suggestInternalLinks(input, "");
+      default:
+        return { status: "SEO Resolved", slug };
+    }
+  }
+};

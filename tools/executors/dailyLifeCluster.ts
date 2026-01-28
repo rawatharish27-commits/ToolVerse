@@ -1,3 +1,4 @@
+
 export function internetSlowAnalyzer({ connectionType }: any) {
   const symptoms = [
     "DNS Latency: Speed is high but 'lookup' takes 5 seconds.",
@@ -46,3 +47,19 @@ export function emailBounceDecoder(errorMessage: string) {
     "Recommended Action": fix
   };
 }
+
+// --- FIX: Exporting dailyLifeCluster as expected by master registry ---
+export const dailyLifeCluster = {
+  execute: async (slug: string, input: any, options: any) => {
+    switch (slug) {
+      case 'internet-slow-analyzer':
+        return internetSlowAnalyzer(options);
+      case 'otp-not-coming-analyzer':
+        return otpNotComingAnalyzer();
+      case 'email-bounce-decoder':
+        return emailBounceDecoder(input);
+      default:
+        return { status: "Daily Life Resolved", slug };
+    }
+  }
+};

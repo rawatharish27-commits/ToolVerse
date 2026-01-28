@@ -81,3 +81,24 @@ export const checkPasswordStrength = (pwd: string) => {
     "Recommendation": score < 100 ? "Add special characters and increase length." : "Excellent password security."
   };
 };
+
+// --- FIX: Exporting utilityCluster as expected by master registry ---
+export const utilityCluster = {
+  execute: async (slug: string, input: any, options: any) => {
+    switch (slug) {
+      case 'character-counter':
+      case 'word-counter':
+        return textAnalysis(input);
+      case 'text-case-converter':
+        return caseConverter(input, options.mode);
+      case 'date-difference-calculator':
+        return dateDifference(options.startDate || new Date().toISOString(), options.endDate || input);
+      case 'file-size-converter':
+        return fileSizeConvert(Number(input), options.fromUnit);
+      case 'password-strength-checker':
+        return checkPasswordStrength(input);
+      default:
+        return { status: "Utility Resolved", slug };
+    }
+  }
+};

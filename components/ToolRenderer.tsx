@@ -96,7 +96,7 @@ const ToolRenderer: React.FC<ToolRendererProps> = ({ slug, onSuccess, onError })
           const cat = tool.category;
           
           // Route specialized Diagnostic and AI Tools
-          if (cat === 'government' || cat === 'career' || cat === 'daily-life') {
+          if (cat === 'government' || cat === 'career' || cat === 'daily-life' || slug.includes('why') || slug.includes('failure') || slug.includes('rule')) {
             return <PainPointTools {...props} />;
           }
 
@@ -112,7 +112,6 @@ const ToolRenderer: React.FC<ToolRendererProps> = ({ slug, onSuccess, onError })
           if (cat === 'seo') return <SEOTools {...props} />;
           if (cat === 'office') return <OfficeTools {...props} />;
           if (cat === 'social') return <SocialTools {...props} />;
-          if (cat === 'business') return <AITextTools {...props} />;
           
           return <GeneralTools {...props} />;
         })()}

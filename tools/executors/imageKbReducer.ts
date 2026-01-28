@@ -1,7 +1,8 @@
+
 export interface KbReducerOptions {
   targetKb: number;
   format?: 'image/jpeg' | 'image/webp';
-  allowResizing?: boolean;
+  precision?: 'Standard' | 'High' | 'Ultra';
 }
 
 export interface KbReducerResult {
@@ -9,21 +10,21 @@ export interface KbReducerResult {
   finalSize: number;
   originalSize: number;
   qualityUsed: number;
-  dimensions: { width: number; height: number };
+  iterations: number;
 }
 
 /**
- * Image KB Reducer Engine
- * Uses binary search to find the optimal quality for a target file size.
+ * Enterprise Image KB Target Engine
+ * Logic: Binary search optimization for file size constraints.
  */
 export async function imageKbReducer(
   file: File,
   options: KbReducerOptions
 ): Promise<KbReducerResult> {
-  const { targetKb, format = 'image/jpeg', allowResizing = true } = options;
-  const targetBytes = targetKb * 1024;
+  const targetBytes = options.targetKb * 1024;
   const originalSize = file.size;
-
+  const format = options.format === 'image/webp' ? 'image/webp' : 'image/jpeg';
+  
   // 1. Create Image Object
   const img = new Image();
   const url = URL.createObjectURL(file);
@@ -36,67 +37,44 @@ export async function imageKbReducer(
 
   const canvas = document.createElement('canvas');
   const ctx = canvas.getContext('2d')!;
-  
-  let width = img.width;
-  let height = img.height;
-  let quality = 0.9;
+  canvas.width = img.width;
+  canvas.height = img.height;
+  ctx.drawImage(img, 0, 0);
+
+  // 2. Binary Search for Quality
+  let minQ = 0.01;
+  let maxQ = 0.99;
   let bestBlob: Blob | null = null;
-
-  // Helper to test a specific configuration
-  const testCompression = async (q: number, w: number, h: number): Promise<Blob> => {
-    canvas.width = w;
-    canvas.height = h;
-    ctx.drawImage(img, 0, 0, w, h);
-    return new Promise((resolve) => {
-      canvas.toBlob((b) => resolve(b!), format, q);
-    });
-  };
-
-  // Step 1: Binary Search for Quality (Fixed Dimensions)
-  let minQ = 0.05;
-  let maxQ = 1.0;
+  let bestQ = 0.5;
   
-  for (let i = 0; i < 8; i++) {
-    quality = (minQ + maxQ) / 2;
-    const blob = await testCompression(quality, width, height);
+  const maxIterations = options.precision === 'Ultra' ? 12 : (options.precision === 'High' ? 8 : 5);
+  let iterations = 0;
+
+  for (let i = 0; i < maxIterations; i++) {
+    iterations++;
+    const currentQ = (minQ + maxQ) / 2;
+    const blob: Blob = await new Promise((r) => canvas.toBlob(b => r(b!), format, currentQ));
     
     if (blob.size <= targetBytes) {
       bestBlob = blob;
-      minQ = quality; // Try higher quality
+      bestQ = currentQ;
+      minQ = currentQ; // Try to get better quality
     } else {
-      maxQ = quality; // Need lower quality
+      maxQ = currentQ; // Need smaller file
     }
   }
 
-  // Step 2: If lowest quality is still too big, start reducing resolution
-  if ((!bestBlob || bestBlob.size > targetBytes) && allowResizing) {
-    let scale = 0.9;
-    while (scale > 0.1) {
-      const scaledW = Math.floor(img.width * scale);
-      const scaledH = Math.floor(img.height * scale);
-      const blob = await testCompression(0.5, scaledW, scaledH); // Use decent quality while scaling
-      
-      if (blob.size <= targetBytes) {
-        // Once dimensions fit, do one more quick quality pass if needed
-        bestBlob = blob;
-        width = scaledW;
-        height = scaledH;
-        break;
-      }
-      scale -= 0.1;
-    }
-  }
-
-  // Final fallback
+  // 3. Safety Fallback: If target is impossible at current dimensions
   if (!bestBlob) {
-    bestBlob = await testCompression(0.1, Math.floor(img.width * 0.5), Math.floor(img.height * 0.5));
+    // Return smallest possible at 0.01 quality
+    bestBlob = await new Promise((r) => canvas.toBlob(b => r(b!), format, 0.01));
   }
 
   return {
     blob: bestBlob,
     finalSize: bestBlob.size,
     originalSize,
-    qualityUsed: Number(quality.toFixed(2)),
-    dimensions: { width, height }
+    qualityUsed: Number(bestQ.toFixed(2)),
+    iterations
   };
 }
