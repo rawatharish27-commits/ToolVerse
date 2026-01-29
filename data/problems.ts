@@ -21,7 +21,8 @@ export const PROBLEM_HUBS: ProblemHub[] = [
     title: "Government Upload Failure Flow",
     description: "Solve 'Invalid File' or 'Rejected' errors on SSC, UPSC, or State portals.",
     icon: "🏛️",
-    category: "government",
+    // Fixed category mapping for government forms
+    category: "upload-rejection",
     flow: [
       { toolSlug: "why-my-upload-is-rejected-analyzer", instruction: "Analyze the specific rejection pattern." },
       { toolSlug: "file-name-rejection-cause-finder", instruction: "Check for forbidden characters or length." },
@@ -36,7 +37,8 @@ export const PROBLEM_HUBS: ProblemHub[] = [
     title: "PDF Not Accepted Flow",
     description: "Fix PDF documents that portals refuse to load or display correctly.",
     icon: "📄",
-    category: "pdf",
+    // Fixed category mapping for pdf
+    category: "pdf-diagnostics",
     flow: [
       { toolSlug: "pdf-upload-portal-acceptance-predictor", instruction: "Predict portal acceptance based on structure." },
       { toolSlug: "pdf-compliance-checker", instruction: "Verify ISO standard adherence." },
@@ -50,7 +52,8 @@ export const PROBLEM_HUBS: ProblemHub[] = [
     title: "Image Quality Rejection Flow",
     description: "Fix photos rejected due to 'Blur', 'Low Quality', or 'Wrong Dimensions'.",
     icon: "🖼️",
-    category: "image",
+    // Fixed category mapping for image
+    category: "media-acceptance",
     flow: [
       { toolSlug: "image-dpi-checker", instruction: "Check and fix pixel density metadata." },
       { toolSlug: "image-aspect-ratio-rejection-predictor", instruction: "Predict ratio-based failures." },
@@ -64,7 +67,8 @@ export const PROBLEM_HUBS: ProblemHub[] = [
     title: "Resume Rejection Flow",
     description: "Optimize your resume to pass automated Applicant Tracking Systems (ATS).",
     icon: "🚀",
-    category: "career",
+    // Fixed category mapping for career
+    category: "career-diagnostics",
     flow: [
       { toolSlug: "resume-parsing-preview", instruction: "View your resume through an ATS lens." },
       { toolSlug: "resume-keyword-over-optimization-detector", instruction: "Detect 'Keyword Stuffing' flags." },
@@ -78,7 +82,8 @@ export const PROBLEM_HUBS: ProblemHub[] = [
     title: "Network / OTP Failure Flow",
     description: "Diagnose why specific websites or OTP services are not working for you.",
     icon: "🌐",
-    category: "network",
+    // Fixed category mapping for network
+    category: "connectivity",
     flow: [
       { toolSlug: "internet-works-but-site-doesnt-analyzer", instruction: "Analyze DNS and CDN peering health." },
       { toolSlug: "otp-delay-probability-calculator", instruction: "Estimate SMS carrier delivery delay." },

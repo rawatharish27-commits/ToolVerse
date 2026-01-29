@@ -1,6 +1,8 @@
 
 import React from 'react';
-import { MASTER_REGISTRY, getAutoCategories } from '../data/tools';
+// Corrected imports to use TOOLS from data/tools and CATEGORIES from data/categories
+import { TOOLS } from '../data/tools';
+import { CATEGORIES } from '../data/categories';
 import ToolCard from '../components/ToolCard';
 import AdSenseManager from '../components/AdSenseManager';
 
@@ -10,8 +12,9 @@ interface Props {
 }
 
 const CategoryPage: React.FC<Props> = ({ categoryId, onNavigate }) => {
-  const category = getAutoCategories().find(c => c.id === categoryId);
-  const tools = MASTER_REGISTRY.filter(t => t.category === categoryId).sort((a, b) => a.title.localeCompare(b.title));
+  // Resolved MASTER_REGISTRY and getAutoCategories errors by using valid exports
+  const category = CATEGORIES.find(c => c.id === categoryId);
+  const tools = TOOLS.filter(t => t.category === categoryId).sort((a, b) => a.title.localeCompare(b.title));
 
   if (!category) return <div className="p-40 text-center font-black">CATEGORY NOT RESOLVED IN MASTER REGISTRY</div>;
 
@@ -33,7 +36,7 @@ const CategoryPage: React.FC<Props> = ({ categoryId, onNavigate }) => {
          
          {/* AdSense below results enforcement */}
          <div className="mt-20">
-            <AdSenseManager slotId="CATEGORY_PAGE_BOTTOM" type="mid" />
+            <AdSenseManager slotId="CATEGORY_PAGE_BOTTOM" />
          </div>
       </div>
     </div>

@@ -1,6 +1,6 @@
 
 export const LIMITS = {
   maxHtmlSnippetLength: 10000,
-  minHtmlSnippetLength: 3,
-  supportedAttributes: ['autocomplete', 'name', 'id', 'type']
+  supportedBrowsers: ['chrome', 'firefox', 'safari', 'edge'],
+  criticalAttributes: ['autocomplete', 'id', 'name', 'type']
 };

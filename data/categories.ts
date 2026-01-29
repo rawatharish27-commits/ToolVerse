@@ -2,22 +2,13 @@
 import { ToolCategory } from '../types';
 
 export const CATEGORIES: ToolCategory[] = [
-  { id: 'image', name: 'Image Tools', description: 'Professional visual processing and optimization nodes', icon: '🖼️', color: 'bg-emerald-500', images: ['https://images.unsplash.com/photo-1542038784456-1ea8e935640e?auto=format&fit=crop&q=80&w=1200'] },
-  { id: 'pdf', name: 'PDF Tools', description: 'Hardened document management and transformation suite', icon: '📄', color: 'bg-red-500', images: ['https://images.unsplash.com/photo-1568667256549-094345857637?auto=format&fit=crop&q=80&w=1200'] },
-  { id: 'calculators', name: 'Calculators', description: 'High-precision mathematical and scientific engines', icon: '🔢', color: 'bg-orange-500', images: ['https://images.unsplash.com/photo-1554224155-6726b3ff858f?auto=format&fit=crop&q=80&w=1200'] },
-  { id: 'utility', name: 'Utility Tools', description: 'Essential productivity and text manipulation utilities', icon: '🛠️', color: 'bg-pink-500', images: ['https://images.unsplash.com/photo-1530124560676-586cad3223c0?auto=format&fit=crop&q=80&w=1200'] },
-  { id: 'data', name: 'Data Tools', description: 'Structure, clean, and validate complex data sets', icon: '📊', color: 'bg-cyan-500', images: ['https://images.unsplash.com/photo-1551288049-bbda6462f744?auto=format&fit=crop&q=80&w=1200'] },
-  { id: 'network', name: 'Network Tools', description: 'Real-time network diagnostics and connectivity analysis', icon: '🌐', color: 'bg-indigo-500', images: ['https://images.unsplash.com/photo-1544197150-b99a580bb7a8?auto=format&fit=crop&q=80&w=1200'] },
-  { id: 'security', name: 'Security Tools', description: 'Hardened cryptographic and privacy protection tools', icon: '🛡️', color: 'bg-teal-500', images: ['https://images.unsplash.com/photo-1550751827-4bd374c3f58b?auto=format&fit=crop&q=80&w=1200'] },
-  { id: 'seo', name: 'SEO Tools', description: 'Search engine optimization and visibility auditing', icon: '🔍', color: 'bg-blue-600', images: ['https://images.unsplash.com/photo-1571721795195-a2ca2d3370a9?auto=format&fit=crop&q=80&w=1200'] },
-  { id: 'social', name: 'Social Media', description: 'Growth and engagement strategy optimization', icon: '📱', color: 'bg-cyan-600', images: ['https://images.unsplash.com/photo-1611162617213-7d7a39e9b1d7?auto=format&fit=crop&q=80&w=1200'] },
-  { id: 'education', name: 'Education Tools', description: 'Academic preparation and learning acceleration nodes', icon: '🎓', color: 'bg-amber-500', images: ['https://images.unsplash.com/photo-1497633762265-9d179a990aa6?auto=format&fit=crop&q=80&w=1200'] },
-  { id: 'business', name: 'Business Tools', description: 'Professional commerce and operation management', icon: '💼', color: 'bg-slate-900', images: ['https://images.unsplash.com/photo-1454165833767-017546b5aa22?auto=format&fit=crop&q=80&w=1200'] },
-  { id: 'career', name: 'Career Tools', description: 'Professional growth and recruitment optimization', icon: '🚀', color: 'bg-indigo-600', images: ['https://images.unsplash.com/photo-1486312338219-ce68d2c6f44d?auto=format&fit=crop&q=80&w=1200'] },
-  { id: 'government', name: 'Government Tools', description: 'Public service and official document compliance', icon: '🏛️', color: 'bg-slate-700', images: ['https://images.unsplash.com/photo-1529107386315-e1a2ed48a620?auto=format&fit=crop&q=80&w=1200'] },
-  { id: 'daily-life', name: 'Daily Life Tools', description: 'Household tech diagnostics and lifestyle utilities', icon: '🏠', color: 'bg-rose-500', images: ['https://images.unsplash.com/photo-1513694203232-719a280e022f?auto=format&fit=crop&q=80&w=1200'] },
-  { id: 'ai', name: 'AI Tools', description: 'Neural network powered generative intelligence', icon: '🧠', color: 'bg-indigo-700', images: ['https://images.unsplash.com/photo-1677442136019-21780ecad995?auto=format&fit=crop&q=80&w=1200'] },
-  { id: 'office', name: 'Office Tools', description: 'Corporate workflow and document standardization', icon: '📁', color: 'bg-blue-700', images: ['https://images.unsplash.com/photo-1497215728101-856f4ea42174?auto=format&fit=crop&q=80&w=1200'] },
-  { id: 'finance', name: 'Finance Tools', description: 'Economic modeling and personal wealth analysis', icon: '💸', color: 'bg-emerald-600', images: ['https://images.unsplash.com/photo-1554224155-6726b3ff858f?auto=format&fit=crop&q=80&w=1200'] },
-  { id: 'miscellaneous', name: 'Miscellaneous', description: 'Cross-functional system and environment tools', icon: '🌈', color: 'bg-slate-800', images: ['https://images.unsplash.com/photo-1506784983877-45594efa4cbe?auto=format&fit=crop&q=80&w=1200'] },
+  { id: 'upload-rejection', name: 'Upload & Rejection', description: 'Analyze why files are being rejected by portals.', icon: '📤', color: 'bg-rose-500' },
+  { id: 'pdf-diagnostics', name: 'PDF & Documents', description: 'Deep structural analysis of document files.', icon: '📄', color: 'bg-red-500' },
+  { id: 'media-acceptance', name: 'Image & Media', description: 'Verify photo acceptance for official use.', icon: '🖼️', color: 'bg-emerald-500' },
+  { id: 'career-diagnostics', name: 'Resume & Career', description: 'Optimize resumes for ATS and recruiters.', icon: '🚀', color: 'bg-indigo-600' },
+  { id: 'connectivity', name: 'Network & Connectivity', description: 'Diagnose internet and OTP delivery issues.', icon: '🌐', color: 'bg-blue-500' },
+  { id: 'email-comms', name: 'Email & Communication', description: 'Debug attachment and deliverability blocks.', icon: '📧', color: 'bg-amber-500' },
+  { id: 'platform-conflicts', name: 'Platform Conflicts', description: 'Resolve Browser, OS, and App mismatches.', icon: '💻', color: 'bg-slate-700' },
+  { id: 'finance-analysis', name: 'Finance & Transactions', description: 'Analyze payments, interest, and refunds.', icon: '💸', color: 'bg-emerald-600' },
+  { id: 'ux-performance', name: 'UX & Performance', description: 'Audit layout shifts and interaction delays.', icon: '⚡', color: 'bg-purple-600' }
 ];

@@ -1,23 +1,14 @@
 
 export type CategorySlug = 
-  | 'image' 
-  | 'pdf' 
-  | 'calculators' 
-  | 'utility'
-  | 'data' 
-  | 'network' 
-  | 'security' 
-  | 'seo' 
-  | 'social' 
-  | 'education' 
-  | 'business'
-  | 'career'
-  | 'government'
-  | 'daily-life'
-  | 'ai'
-  | 'office'
-  | 'finance'
-  | 'miscellaneous';
+  | 'upload-rejection' 
+  | 'pdf-diagnostics' 
+  | 'media-acceptance' 
+  | 'career-diagnostics'
+  | 'connectivity' 
+  | 'email-comms' 
+  | 'platform-conflicts' 
+  | 'finance-analysis' 
+  | 'ux-performance';
 
 export interface ToolCategory {
   id: CategorySlug;
@@ -25,36 +16,30 @@ export interface ToolCategory {
   description: string;
   icon: string;
   color: string;
-  images: string[];
 }
 
 export type ToolType = 'client' | 'ai' | 'server';
-
-export interface ToolFAQ {
-  q: string;
-  a: string;
-}
 
 export interface Tool {
   slug: string;
   title: string;
   category: CategorySlug;
   description: string;
-  seoTitle?: string;
-  seoDescription?: string;
-  useCases?: string[];
-  longDescription?: string;
   keywords: string[];
   toolType: ToolType;
-  icon?: string;
+  priority?: number;
+  // Added faqs and howTo to Tool interface to satisfy property access in SEO and UI components
+  faqs?: { q: string; a: string }[];
   howTo?: string[];
-  features?: string[];
-  faqs?: ToolFAQ[];
-  priority?: number; // Higher number = higher visibility
-  execute?: (input: any, options?: any) => Promise<any>;
 }
 
-export interface Breadcrumb {
-  label: string;
-  href: string;
+export interface ValidationResult { valid: boolean; error?: string; }
+export interface VerificationResult { secure: boolean; error?: string; }
+
+export interface ToolPipeline<I, O> {
+  validate: (input: I) => ValidationResult;
+  normalize: (input: I) => I;
+  process: (input: I, options?: any) => Promise<O>;
+  verify: (output: O) => VerificationResult;
+  explain: (output: O) => string;
 }

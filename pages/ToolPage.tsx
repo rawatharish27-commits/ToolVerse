@@ -1,8 +1,7 @@
 
-import React, { useState, useEffect, Suspense, lazy, useMemo } from 'react';
-import { MASTER_REGISTRY } from '../data/tools';
-import SEOHead from '../components/SEOHead';
-import AdSenseManager from '../components/AdSenseManager';
+import React, { useState, useEffect, Suspense, lazy } from 'react';
+import { TOOLS } from '../data/tools';
+import SEOManager from '../components/SEOManager';
 
 interface Props {
   slug: string;
@@ -10,114 +9,84 @@ interface Props {
 }
 
 const ToolPage: React.FC<Props> = ({ slug, onNavigate }) => {
-  const tool = MASTER_REGISTRY.find(t => t.slug === slug);
+  const tool = TOOLS.find(t => t.slug === slug);
   const [metadata, setMetadata] = useState<any>(null);
   const [ToolComponent, setToolComponent] = useState<any>(null);
 
   useEffect(() => {
     if (tool) {
-      // 1. Fetch mandatory tool metadata
-      import(`../tools/${tool.slug}/metadata.json`).catch(() => ({ default: {} })).then(m => setMetadata(m.default));
-      // 2. Lazy load the tool logic isolate
-      setToolComponent(lazy(() => import(`../tools/${tool.slug}/index`).catch(() => ({ default: () => <div className="p-20 text-center font-black opacity-20">NODE OFFLINE</div> }))));
+      // 1. Load standard metadata for SEO
+      import(`../tools/${tool.slug}/metadata.json`).then(m => setMetadata(m.default));
+      // 2. Load the tool entry UI
+      setToolComponent(lazy(() => import(`../tools/${tool.slug}/index`)));
     }
-  }, [slug, tool]);
+  }, [slug]);
 
-  if (!tool) return <div className="p-40 text-center font-black">NODE NOT FOUND IN REGISTRY</div>;
-
-  const toolUrl = `https://toolverse-4gr.pages.dev/tools/${tool.slug}`;
+  if (!tool) return <div className="p-40 text-center font-black">NODE_NOT_RESOLVED</div>;
 
   return (
-    <div className="min-h-screen bg-white">
-      <SEOHead 
-        title={metadata?.problemStatement || tool.title} 
-        description={`${tool.description} - Resolving common digital barriers with stateless browser-native logic.`} 
-        url={toolUrl} 
-      />
+    <div className="max-w-[1200px] mx-auto px-6 py-20">
+      <SEOManager tool={tool} metadata={metadata} />
       
-      <div className="max-w-[1600px] mx-auto px-8 py-12">
-        <div className="flex flex-col lg:flex-row gap-16">
-          
-          <main className="lg:flex-grow">
-            {/* EXECUTION LAYER: Result ALWAYS comes first for AdSense policy */}
-            <div className="bg-white rounded-[4rem] p-10 md:p-20 shadow-3xl border border-slate-100 mb-12 relative overflow-hidden group">
-               <div className="absolute top-0 left-0 w-2 h-full bg-indigo-600 opacity-20 group-hover:opacity-100 transition-opacity duration-700"></div>
-               <div className="mb-12">
-                  <div className="flex items-center gap-4 mb-4">
-                    <span className="text-3xl">🛠️</span>
-                    <h1 className="text-4xl md:text-6xl font-black text-slate-900 tracking-tighter">{tool.title}</h1>
-                  </div>
-                  <p className="text-xl text-slate-500 font-medium italic max-w-3xl">" {tool.description} "</p>
-               </div>
+      <div className="flex flex-col lg:flex-row gap-16">
+        <main className="flex-grow space-y-12">
+           <header className="space-y-4">
+              <div className="inline-flex items-center px-4 py-1.5 rounded-full bg-indigo-50 text-indigo-600 text-[10px] font-black uppercase tracking-widest">
+                Logic Node v4.2.1
+              </div>
+              <h1 className="text-4xl md:text-7xl font-black text-slate-900 tracking-tighter leading-none">{tool.title}</h1>
+              <p className="text-xl text-slate-500 font-medium max-w-2xl">" {tool.description} "</p>
+           </header>
 
-               <Suspense fallback={<div className="h-96 flex flex-col items-center justify-center gap-6"><div className="w-12 h-12 border-4 border-indigo-600 border-t-transparent rounded-full animate-spin"></div><p className="font-black text-[10px] text-slate-300 uppercase tracking-[0.4em]">Synchronizing Isolate...</p></div>}>
-                  {ToolComponent && <ToolComponent />}
-               </Suspense>
-            </div>
-
-            {/* AD PLACEMENT: Below fold / Result-First enforcement */}
-            <AdSenseManager slotId="MID_TOOL_PAGE" type="mid" />
-
-            {/* CONTENT LAYER: Mandatory 150+ Words for SEO Authority */}
-            <div className="space-y-20 mt-32 border-t border-slate-100 pt-20">
-               <section className="max-w-4xl">
-                  <h2 className="text-4xl font-black text-slate-900 mb-8 tracking-tight">Technical Root Analysis</h2>
-                  <div className="prose prose-slate prose-lg text-slate-600 font-medium leading-relaxed">
-                     <p>{metadata?.problemStatement || "This tool provides a deterministic diagnostic audit of your digital assets."}</p>
-                     <p>Most digital rejections in government and corporate portals occur due to strict binary header validation. Unlike humans, automated bots check 'Magic Numbers' inside your files rather than just the extension. This node executes a byte-stream audit within your browser's private memory isolate to identify these hidden mismatches without risking your data privacy.</p>
-                  </div>
-               </section>
-
-               <section className="bg-rose-50 p-10 md:p-16 rounded-[3.5rem] border border-rose-100">
-                  <h3 className="text-xl font-black text-rose-900 uppercase tracking-widest mb-8 flex items-center gap-4">
-                     <span>⚠️</span> Common User Pitfalls
-                  </h3>
-                  <ul className="space-y-4">
-                     {(metadata?.whatUsersUsuallyDoWrong || ["Rename file extensions manually", "Ignore DPI requirements", "Use outdated browser versions"]).map((m: string, i: number) => (
-                       <li key={i} className="flex items-start gap-4 text-rose-800 font-bold italic">
-                          <span className="text-rose-400">•</span> {m}
-                       </li>
-                     ))}
-                  </ul>
-               </section>
-
-               <section className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                  <div className="p-10 bg-slate-50 rounded-[3rem] border border-slate-100">
-                     <h4 className="text-sm font-black text-indigo-600 uppercase tracking-widest mb-4">Standard Operating Procedure</h4>
-                     <ol className="text-sm text-slate-500 space-y-3 font-medium list-decimal pl-5">
-                        <li>Stage the problematic raw asset in the buffer.</li>
-                        <li>Calibrate logic parameters on the right panel.</li>
-                        <li>Execute neural/algorithmic trace.</li>
-                        <li>Audit the high-fidelity results.</li>
-                     </ol>
-                  </div>
-                  <div className="p-10 bg-slate-900 rounded-[3rem] text-white">
-                     <h4 className="text-sm font-black text-indigo-400 uppercase tracking-widest mb-4">Phase U: Limitations</h4>
-                     <p className="text-xs text-slate-400 leading-relaxed font-medium">
-                        Result accuracy depends on the fidelity of the provided input. 100% Privacy is guaranteed via zero-upload architecture. Execution timeout is capped at 30 seconds per isolate.
-                     </p>
-                  </div>
-               </section>
-            </div>
-          </main>
-
-          <aside className="lg:w-80 flex-shrink-0">
-             <div className="sticky top-32 space-y-10">
-                <AdSenseManager slotId="SIDEBAR_TOOL_PAGE" type="sidebar" />
-                <div className="bg-slate-950 p-8 rounded-[2.5rem] text-white shadow-2xl relative overflow-hidden group">
-                   <div className="absolute -bottom-4 -right-4 text-8xl opacity-5 group-hover:rotate-12 transition-transform duration-700">🚀</div>
-                   <h4 className="text-xs font-black text-indigo-400 uppercase tracking-widest mb-4 relative z-10">Node Intelligence</h4>
-                   <div className="space-y-3 relative z-10">
-                      {metadata?.relatedTools?.map((s: string) => (
-                        <button key={s} onClick={() => onNavigate('tool', { slug: s })} className="block w-full text-left text-[11px] font-bold text-slate-400 hover:text-white transition-colors truncate">
-                          → {s.replace(/-/g, ' ')}
-                        </button>
-                      )) || <p className="text-[10px] text-slate-500">Related nodes are being synchronized...</p>}
-                   </div>
-                </div>
+           <section className="bg-white rounded-[4rem] p-10 md:p-20 shadow-3xl border border-slate-100 relative overflow-hidden">
+             <div className="absolute top-0 right-0 p-8 opacity-[0.03] select-none pointer-events-none">
+                <div className="text-[12rem] font-black italic">ISOLATE</div>
              </div>
-          </aside>
-        </div>
+             
+             <Suspense fallback={<div className="h-96 flex flex-col items-center justify-center gap-6"><div className="w-12 h-12 border-4 border-indigo-600 border-t-transparent rounded-full animate-spin"></div><p className="font-black uppercase text-[10px] text-slate-300 tracking-[0.4em]">Initializing WASM Core...</p></div>}>
+               {ToolComponent && <ToolComponent />}
+             </Suspense>
+           </section>
+
+           {/* Problem Explanation & SEO Authority Content */}
+           {metadata && (
+             <article className="prose prose-slate max-w-none border-t border-slate-100 pt-20">
+               <h2 className="text-4xl font-black text-slate-900 tracking-tight">Understanding the Barrier</h2>
+               <p className="text-lg text-slate-600 font-medium leading-relaxed">{metadata.problemStatement}</p>
+               
+               <h3 className="text-2xl font-black mt-12 mb-6">Technical Standard Compliance</h3>
+               <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                 {metadata.features.map((f: string, i: number) => (
+                   <div key={i} className="p-6 bg-slate-50 rounded-3xl flex items-center gap-4 group hover:bg-indigo-50 transition-colors">
+                      <span className="w-3 h-3 rounded-full bg-indigo-500 shadow-[0_0_10px_rgba(99,102,241,0.5)]"></span>
+                      <span className="font-bold text-slate-700">{f}</span>
+                   </div>
+                 ))}
+               </div>
+             </article>
+           )}
+        </main>
+
+        <aside className="lg:w-80 flex-shrink-0 space-y-12">
+           <div className="sticky top-32 space-y-12">
+              <div className="bg-slate-900 rounded-[3rem] p-8 text-white relative overflow-hidden group">
+                <h4 className="text-[10px] font-black uppercase tracking-widest text-indigo-400 mb-6">Related Logic</h4>
+                <div className="space-y-4 relative z-10">
+                   {metadata?.relatedTools.map((s: string) => (
+                     <button key={s} onClick={() => onNavigate('tool', { slug: s })} className="block w-full text-left text-xs font-bold text-slate-400 hover:text-white transition-colors truncate">
+                       → {s.replace(/-/g, ' ')}
+                     </button>
+                   ))}
+                </div>
+                <div className="absolute -bottom-10 -right-10 text-9xl opacity-[0.03] group-hover:rotate-12 transition-transform duration-1000">⚙️</div>
+              </div>
+
+              <div className="p-8 bg-indigo-600 rounded-[3rem] text-white">
+                 <h4 className="text-sm font-black mb-2">Zero-Upload Privacy</h4>
+                 <p className="text-xs text-indigo-100 leading-relaxed font-medium">All processing occurs locally in your browser memory. We never see your data.</p>
+              </div>
+           </div>
+        </aside>
       </div>
     </div>
   );

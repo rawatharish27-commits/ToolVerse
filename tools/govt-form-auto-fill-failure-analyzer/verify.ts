@@ -1,7 +1,9 @@
 
-import { VerificationResult } from '../../core/pipeline';
+import { VerificationResult } from '../../types';
 
 export function verify(output: any): VerificationResult {
-  if (output.verdict === undefined) return { secure: false, error: "Logic fault: No verdict generated." };
+  if (output.issues === undefined) {
+    return { secure: false, error: "Logic node failed to produce a valid issue array." };
+  }
   return { secure: true };
 }

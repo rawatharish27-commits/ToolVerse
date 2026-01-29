@@ -11,18 +11,17 @@ export const getHighCTRTitle = (tool: Tool): string => {
   const year = new Date().getFullYear();
   const title = tool.title;
 
-  if (tool.category === 'calculators') {
+  // Updated category slug comparison for finance
+  if (tool.category === 'finance-analysis') {
     return `Best ${title} India (${year}) – 100% Accurate Take-Home Calc`;
   }
 
-  if (tool.category === 'image' || tool.category === 'pdf') {
+  // Updated category slug comparisons for media and pdf
+  if (tool.category === 'media-acceptance' || tool.category === 'pdf-diagnostics') {
     return `${title} Online – No Upload, 100% Private & Instant (${year})`;
   }
 
-  if (tool.category === 'ai' || tool.category === 'social') {
-    return `Viral ${title} – AI Powered Content Engine (Free & Pro)`;
-  }
-
+  // Removed obsolete 'ai' and 'social' comparisons as they are no longer in CategorySlug
   return `Free ${title} Online – Professional Tools by Harish Rawat (${year})`;
 };
 

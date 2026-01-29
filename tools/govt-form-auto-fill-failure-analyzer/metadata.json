@@ -2,13 +2,18 @@
 {
   "name": "Govt Form Auto-Fill Failure Analyzer",
   "slug": "govt-form-auto-fill-failure-analyzer",
-  "category": "utility",
-  "subcategory": "diagnostics",
-  "keywords": ["autofill fix", "form error", "ssc form", "upsc form"],
-  "problemStatement": "Why doesn't Chrome or Safari autofill my name/address on this government portal?",
-  "whatUsersUsuallyDoWrong": ["Blaming the browser instead of the website's non-standard HTML attributes."],
+  "category": "platform-conflicts",
+  "problemStatement": "Why doesn't my browser save or fill my address and name on government portals like SSC or UPSC?",
+  "features": [
+    "Field attribute analysis",
+    "Autocomplete attribute detection",
+    "Security script identification",
+    "Browser compatibility check"
+  ],
   "inputType": "text",
   "outputType": "object",
-  "complexity": "medium",
-  "relatedTools": ["form-field-dependency-error-visualizer"]
+  "downloadFormats": ["txt", "json"],
+  "shareOptions": ["url", "clipboard"],
+  "seoKeywords": ["autofill fix", "ssc form help", "browser auto-complete not working"],
+  "relatedTools": ["browser-cache-side-effect-analyzer", "device-capability-limitation-analyzer"]
 }

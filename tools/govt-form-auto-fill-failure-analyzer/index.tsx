@@ -1,66 +1,93 @@
 
 import React, { useState } from 'react';
-import { PipelineRunner } from '../../core/pipeline';
 import { validate } from './validate';
 import { normalize } from './normalize';
 import { process } from './process';
 import { verify } from './verify';
 import { explain } from './explain';
+import AdSenseManager from '../../components/AdSenseManager';
 
 const AutoFillAnalyzer: React.FC = () => {
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<any>(null);
+  const [error, setError] = useState<string | null>(null);
 
   const handleRun = async () => {
+    setError(null);
+    setResult(null);
+    
+    // Pipeline Execution
+    const v = validate(input);
+    if (!v.valid) { setError(v.error!); return; }
+
     setLoading(true);
-    const res = await PipelineRunner.run('govt-form-auto-fill-failure-analyzer', 
-      { validate, normalize, process, verify, explain }, 
-      input
-    );
-    setResult(res);
-    setLoading(false);
+    try {
+      const n = normalize(input);
+      const p = await process(n);
+      const ver = verify(p);
+      if (!ver.secure) throw new Error(ver.error);
+
+      setResult({
+        data: p,
+        explanation: explain(p)
+      });
+    } catch (e: any) {
+      setError(e.message || "Logic Error.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
-    <div className="space-y-8">
-      <div className="space-y-4">
-        <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest px-2">Paste Input Tag or Field Name</label>
+    <div className="space-y-10">
+      <div className="bg-white rounded-[2.5rem] p-8 shadow-sm border border-slate-100">
+        <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest px-2 block mb-4">Paste <input> Tag or Portal URL</label>
         <textarea 
           value={input}
           onChange={e => setInput(e.target.value)}
-          placeholder='e.g. <input name="txt_1" id="id_val_99"> or just "txt_1"'
-          className="w-full h-40 p-6 bg-slate-50 border border-slate-200 rounded-[2rem] font-mono text-sm outline-none focus:ring-8 focus:ring-indigo-500/5 transition-all shadow-inner"
+          placeholder='e.g. <input name="txt_1" id="id_val_99">'
+          className="w-full h-40 p-6 bg-slate-50 border border-slate-200 rounded-[2rem] font-mono text-sm outline-none focus:ring-8 focus:ring-indigo-500/5 transition-all"
         />
-        <p className="text-[10px] text-slate-400 px-2 italic">Tip: Right-click the field on the portal and select 'Inspect' to find this code.</p>
+        <button 
+          onClick={handleRun}
+          disabled={loading || !input}
+          className="w-full mt-6 py-6 bg-indigo-600 text-white rounded-[2rem] font-black text-xl shadow-2xl transition-all active:scale-95 disabled:opacity-50"
+        >
+          {loading ? "Analyzing DOM Tree..." : "Analyze Rejection Reason"}
+        </button>
       </div>
 
-      <button 
-        onClick={handleRun}
-        disabled={loading || !input}
-        className="w-full py-8 bg-indigo-600 text-white rounded-[2.5rem] font-black text-xl shadow-2xl transition-all active:scale-95 disabled:opacity-50"
-      >
-        {loading ? "Analyzing DOM Logic..." : "Analyze Rejection Reason"}
-      </button>
+      {error && (
+        <div className="p-8 bg-rose-50 border border-rose-100 rounded-[2rem] text-rose-600 font-bold text-center">
+          ⚠️ {error}
+        </div>
+      )}
 
       {result && (
-        <div className="animate-in fade-in slide-in-from-top-4 duration-500">
-           {result.success ? (
-             <div className={`p-10 rounded-[3.5rem] border-2 ${result.data.found ? 'bg-amber-50 border-amber-100' : 'bg-emerald-50 border-emerald-100'}`}>
-                <h3 className="text-2xl font-black mb-6 uppercase tracking-tight">Verdict: {result.data.verdict}</h3>
-                <ul className="space-y-4 mb-8">
-                   {result.data.issues.map((iss: string, i: number) => (
-                     <li key={i} className="flex items-start gap-3 p-4 bg-white/50 rounded-2xl border border-white/20 font-bold text-slate-700 text-sm italic">
-                        <span className="text-amber-600">•</span> {iss}
-                     </li>
-                   ))}
-                </ul>
-                <div className="p-6 bg-slate-900 rounded-[2rem] text-white">
-                   <p className="text-[9px] font-black text-indigo-400 uppercase tracking-widest mb-2">Expert Strategy</p>
-                   <p className="text-sm font-medium leading-relaxed italic text-slate-300">" {result.explanation} "</p>
+        <div className="animate-in fade-in slide-in-from-top-4 duration-700">
+          <div className="bg-emerald-50 border border-emerald-100 rounded-[3rem] p-10 mb-8">
+            <h3 className="text-2xl font-black text-emerald-900 mb-6 tracking-tighter">Diagnostic Report</h3>
+            <div className="space-y-6">
+              {result.data.issues.map((iss: string, i: number) => (
+                <div key={i} className="flex gap-4 items-start">
+                  <span className="w-6 h-6 rounded-full bg-emerald-200 flex-shrink-0 flex items-center justify-center text-[10px] font-bold">!</span>
+                  <div>
+                    <p className="font-bold text-emerald-800">{iss}</p>
+                    <p className="text-emerald-600 text-sm mt-1">{result.data.suggestions[i]}</p>
+                  </div>
                 </div>
-             </div>
-           ) : <div className="p-10 bg-rose-50 rounded-3xl text-rose-700 font-bold border border-rose-100">{result.error}</div>}
+              ))}
+              {!result.data.foundIssues && (
+                <p className="text-emerald-700 font-medium">✓ No anti-autofill attributes detected in this snippet.</p>
+              )}
+            </div>
+            <p className="mt-10 pt-8 border-t border-emerald-200/50 text-emerald-800 font-medium italic">
+              " {result.explanation} "
+            </p>
+          </div>
+          
+          <AdSenseManager slotId="RESULT_BOTTOM_AF" />
         </div>
       )}
     </div>
