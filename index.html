@@ -1,148 +1,44 @@
+
 <!DOCTYPE html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; img-src 'self' data: https://logo.clearbit.com https://ui-avatars.com https://images.unsplash.com; script-src 'self' 'unsafe-inline' https://cdn.tailwindcss.com https://pagead2.googlesyndication.com https://www.googletagmanager.com https://esm.sh https://unpkg.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://esm.sh; font-src 'self' https://fonts.gstatic.com; connect-src 'self' https://generativelanguage.googleapis.com https://api.counterapi.dev https://www.google-analytics.com https://esm.sh https://unpkg.com; frame-src https://googleads.g.doubleclick.net; upgrade-insecure-requests;">
-    
-    <!-- PRIMARY SEO CORE -->
-    <meta name="description" content="ToolVerse: Execute 220+ Professional Utility Nodes. No Uploads, No Logins. 100% Private browser-native AI, PDF, Image, and Dev tools." />
-    <meta name="keywords" content="online tools, pdf merger, image compressor, ai article writer, salary calculator, seo tools, dev tools, toolverse" />
-    <meta name="author" content="ToolVerse Engineering" />
-    <link rel="canonical" href="https://toolverse-4gr.pages.dev/" />
-    
-    <!-- CRAWLER DIRECTIVES -->
-    <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />
-
-    <title>ToolVerse | Master Utility Ecosystem (220+ Professional Nodes)</title>
-    
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    
+    <title>ToolVerse | Mega Professional Utility Suite (500+ Tools)</title>
+    <meta name="description" content="Access 500+ free, stateless, browser-native tools for PDF, Images, AI, and Developers. Privacy-first architecture." />
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap" rel="stylesheet">
     <style>
-      :root { font-size: 16px; scroll-behavior: smooth; }
-      body { 
-        font-family: 'Inter', sans-serif; 
-        background: #ffffff; 
-        color: #0f172a; 
-        -webkit-font-smoothing: antialiased;
-        overflow-x: hidden;
-      }
-      
-      /* Standard Screen Reader Only Class - BOT VISIBLE */
-      .sr-only {
-        position: absolute;
-        width: 1px;
-        height: 1px;
-        padding: 0;
-        margin: -1px;
-        overflow: hidden;
-        clip: rect(0, 0, 0, 0);
-        white-space: nowrap;
-        border-width: 0;
-      }
-
-      ::-webkit-scrollbar { width: 6px; height: 6px; }
-      ::-webkit-scrollbar-track { background: transparent; }
+      body { font-family: 'Inter', sans-serif; -webkit-font-smoothing: antialiased; }
+      ::-webkit-scrollbar { width: 8px; }
       ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
-      ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
-
-      .glass-card {
-        background: rgba(255, 255, 255, 0.7);
-        backdrop-filter: blur(12px);
-        border: 1px solid rgba(241, 245, 249, 0.8);
-      }
-
-      .card-3d {
-        transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-        transform-style: preserve-3d;
-      }
-      .card-3d:hover {
-        transform: translateY(-8px) scale(1.02);
-        box-shadow: 0 40px 80px -20px rgba(79, 70, 229, 0.15);
-      }
-
-      @keyframes shimmer {
-        0% { background-position: -468px 0; }
-        100% { background-position: 468px 0; }
-      }
-      .skeleton {
-        background: #f6f7f8;
-        background-image: linear-gradient(to right, #f6f7f8 0%, #edeef1 20%, #f6f7f8 40%, #f6f7f8 100%);
-        background-repeat: no-repeat;
-        background-size: 800px 100%;
-        animation: shimmer 1.5s infinite linear;
-      }
-
-      @keyframes marquee {
-        0% { transform: translateX(0); }
-        100% { transform: translateX(-50%); }
-      }
-      .animate-marquee {
-        display: flex;
-        width: max-content;
-        animation: marquee 40s linear infinite;
-      }
-
-      .no-scrollbar::-webkit-scrollbar { display: none; }
-      .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+      .shadow-3xl { box-shadow: 0 40px 100px -20px rgba(0,0,0,0.12); }
     </style>
-    <script type="importmap">
+  <script type="importmap">
 {
   "imports": {
-    "react": "https://esm.sh/react@19.0.0",
-    "react/": "https://esm.sh/react@19.0.0/",
-    "react-dom": "https://esm.sh/react-dom@19.0.0",
-    "react-dom/client": "https://esm.sh/react-dom@19.0.0/client",
-    "@google/genai": "https://esm.sh/@google/genai@1.3.0",
-    "qrcode": "https://esm.sh/qrcode@1.5.4",
-    "pdf-lib": "https://esm.sh/pdf-lib@1.17.1",
-    "jszip": "https://esm.sh/jszip@3.10.1",
-    "jsqr": "https://esm.sh/jsqr@1.4.0",
-    "@ffmpeg/ffmpeg": "https://esm.sh/@ffmpeg/ffmpeg@0.12.10",
-    "@ffmpeg/util": "https://esm.sh/@ffmpeg/util@0.12.1",
-    "xlsx": "https://esm.sh/xlsx@0.18.5",
-    "jspdf": "https://esm.sh/jspdf@2.5.1",
-    "html2canvas": "https://esm.sh/html2canvas@1.4.1",
-    "browser-image-compression": "https://esm.sh/browser-image-compression@2.0.2",
-    "pdfjs-dist": "https://esm.sh/pdfjs-dist@4.0.379",
-    "tesseract.js": "https://esm.sh/tesseract.js@5.1.0",
-    "docx": "https://esm.sh/docx@9.1.0",
-    "react-easy-crop": "https://esm.sh/react-easy-crop@5.2.0",
-    "papaparse": "https://esm.sh/papaparse@5.4.1",
-    "spark-md5": "https://esm.sh/spark-md5@3.0.2",
-    "vite": "https://esm.sh/vite@^7.3.1",
-    "@vitejs/plugin-react": "https://esm.sh/@vitejs/plugin-react@^5.1.2",
+    "react-dom/": "https://esm.sh/react-dom@^19.2.4/",
     "path": "https://esm.sh/path@^0.12.7",
-    "react-dom/": "https://esm.sh/react-dom@^19.2.3/",
-    "fs": "https://esm.sh/fs@^0.0.1-security"
+    "@vitejs/plugin-react": "https://esm.sh/@vitejs/plugin-react@^5.1.2",
+    "vite": "https://esm.sh/vite@^7.3.1",
+    "@google/genai": "https://esm.sh/@google/genai@^1.38.0",
+    "docx": "https://esm.sh/docx@^9.5.1",
+    "fs": "https://esm.sh/fs@^0.0.1-security",
+    "qrcode": "https://esm.sh/qrcode@^1.5.4",
+    "jszip": "https://esm.sh/jszip@^3.10.1",
+    "pdfjs-dist": "https://esm.sh/pdfjs-dist@^5.4.530",
+    "pdf-lib": "https://esm.sh/pdf-lib@^1.17.1",
+    "react/": "https://esm.sh/react@^19.2.4/",
+    "react": "https://esm.sh/react@^19.2.4",
+    "browser-image-compression": "https://esm.sh/browser-image-compression@^2.0.2",
+    "@ffmpeg/ffmpeg": "https://esm.sh/@ffmpeg/ffmpeg@^0.12.15",
+    "@ffmpeg/util": "https://esm.sh/@ffmpeg/util@^0.12.2",
+    "tesseract.js": "https://esm.sh/tesseract.js@^7.0.0"
   }
 }
 </script>
-  </head>
-  <body>
-    <!-- SEO NOSCRIPT CORE: Fallback authority content for JS-disabled crawlers -->
-    <noscript>
-      <div style="padding: 50px; font-family: sans-serif; line-height: 1.6; max-width: 800px; margin: auto;">
-        <h1>ToolVerse - Ultimate Professional Utility Ecosystem</h1>
-        <p>Access 220+ professional browser-native tools across AI, PDF, Image, and Developer categories. Privacy-first, zero-upload architecture.</p>
-        
-        <h2>Tool Clusters</h2>
-        <ul>
-          <li><strong>AI Intelligence:</strong> Article Generator, Resume Writer, Code Debugger, Proofreader.</li>
-          <li><strong>Document Mastery:</strong> PDF Merger, PDF Compressor, PDF OCR, Splitter.</li>
-          <li><strong>Visual Core:</strong> Image Reducer (KB Selector), Passport Maker, DPI Checker.</li>
-          <li><strong>Logic Nodes:</strong> Salary Calculator, ROI Analyzer, EMI Explainer.</li>
-        </ul>
-        
-        <p>Visit <a href="https://toolverse-4gr.pages.dev/">toolverse-4gr.pages.dev</a> to initialize the full interactive logic suite.</p>
-        <hr>
-        <p>© 2026 ToolVerse Engineering. Distributed Intelligence Node.</p>
-      </div>
-    </noscript>
-    
+</head>
+  <body class="bg-slate-50">
     <div id="root"></div>
     <script type="module" src="./index.tsx"></script>
   </body>

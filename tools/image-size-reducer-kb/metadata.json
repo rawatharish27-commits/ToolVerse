@@ -1,0 +1,12 @@
+
+{
+  "name": "Image Size Reducer (KB Target)",
+  "slug": "image-size-reducer-kb",
+  "category": "image",
+  "subcategory": "compression",
+  "keywords": ["20kb", "50kb", "ssc photo", "upsc photo", "compress image"],
+  "related": ["passport-photo-maker", "image-dpi-checker"],
+  "inputType": "file",
+  "outputType": "file",
+  "complexity": "medium"
+}

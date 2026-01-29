@@ -1,11 +1,7 @@
 {
-  "name": "ToolVerse - Secure Utility Ecosystem",
+  "name": "ToolVerse - Universal Logic Ecosystem",
   "short_name": "ToolVerse",
-  "description": "Professional utility engine with zero-storage architecture and 500+ logic nodes.",
-  "start_url": "/",
-  "display": "standalone",
-  "background_color": "#ffffff",
-  "theme_color": "#4f46e5",
+  "description": "Production-grade utility engine with 500+ stateless logic nodes and zero-upload architecture.",
   "requestFramePermissions": [
     "camera",
     "microphone",
