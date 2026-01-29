@@ -1,0 +1,11 @@
+
+{
+  "name": "Govt Image Compliance Tool",
+  "slug": "govt-image-compliance-tool",
+  "category": "government",
+  "subcategory": "validation",
+  "keywords": ["ssc", "upsc", "photo compliance"],
+  "inputType": "file",
+  "outputType": "object",
+  "complexity": "medium"
+}

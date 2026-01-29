@@ -1,56 +1,64 @@
 
+export interface ValidationResult { valid: boolean; error?: string; }
+export interface VerificationResult { secure: boolean; error?: string; }
+
+// Fix: Added ExecutionResult interface to satisfy UI component requirements
 export interface ExecutionResult<T> {
   success: boolean;
   data?: T;
   error?: string;
-  stage?: string;
   explanation?: string;
+  latency?: number;
   timing?: number;
+  stage?: string;
 }
 
 export interface ToolPipeline<I, O> {
-  validate: (input: I) => { valid: boolean; error?: string };
+  validate: (input: I) => ValidationResult;
   normalize: (input: I) => I;
-  process: (input: I) => Promise<O>;
-  verify: (output: O) => { valid: boolean; error?: string };
+  process: (input: I, options?: any) => Promise<O>;
+  verify: (output: O) => VerificationResult;
   explain: (output: O) => string;
 }
 
 export class PipelineRunner {
+  // Fix: Explicitly typed the return value of run to ExecutionResult<O> to ensure consistency across the application
   static async run<I, O>(
     slug: string,
-    definition: ToolPipeline<I, O>,
-    input: I
+    pipeline: ToolPipeline<I, O>,
+    input: I,
+    options?: any
   ): Promise<ExecutionResult<O>> {
     const startTime = performance.now();
     try {
-      // 1. Lightweight Validation (Fast Fail)
-      const v = definition.validate(input);
-      if (!v.valid) throw new Error(v.error || "Validation Failed");
+      // 1. Fast Validation
+      const val = pipeline.validate(input);
+      if (!val.valid) throw new Error(`[Validation Failure]: ${val.error}`);
 
       // 2. Input Normalization
-      const normalized = definition.normalize(input);
+      const normalizedInput = pipeline.normalize(input);
 
       // 3. Core Processing
-      const output = await definition.process(normalized);
+      const output = await pipeline.process(normalizedInput, options);
 
       // 4. Output Verification
-      const ver = definition.verify(output);
-      if (!ver.valid) throw new Error(ver.error || "Integrity Check Failed");
+      const ver = pipeline.verify(output);
+      if (!ver.secure) throw new Error(`[Integrity Fault]: ${ver.error}`);
 
-      // 5. Success and Explanation
+      // 5. Success
+      const endTime = performance.now();
       return {
         success: true,
         data: output,
-        explanation: definition.explain(output),
-        timing: performance.now() - startTime
+        explanation: pipeline.explain(output),
+        latency: endTime - startTime,
+        timing: endTime - startTime
       };
-    } catch (e: any) {
+    } catch (err: any) {
       return {
         success: false,
-        error: e.message,
-        stage: "pipeline_failure",
-        timing: performance.now() - startTime
+        error: err.message,
+        stage: "Execution Aborted"
       };
     }
   }

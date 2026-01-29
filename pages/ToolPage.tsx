@@ -1,7 +1,6 @@
 
 import React, { Suspense, lazy, useState, useMemo } from 'react';
 import { TOOLS } from '../data/tools';
-import { CategorySlug } from '../types';
 import RelatedTools from '../components/RelatedTools';
 import ToolSEOContent from '../components/ToolSEOContent';
 import AdSlot from '../components/AdSlot';
@@ -23,8 +22,8 @@ const OfficeTools = lazy(() => import('../components/tools/OfficeTools'));
 const EducationTools = lazy(() => import('../components/tools/EducationTools'));
 const PainPointTools = lazy(() => import('../components/tools/PainPointTools'));
 
-// Specific implementations with unique UIs
-const ImageKbReducer = lazy(() => import('../tools/image-size-reducer-kb/index'));
+// Strict Structure Implementations
+const FileNameFinder = lazy(() => import('../tools/file-name-rejection-cause-finder/index'));
 
 interface ToolPageProps {
   slug: string;
@@ -33,7 +32,6 @@ interface ToolPageProps {
 
 const ToolPage: React.FC<ToolPageProps> = ({ slug, onNavigate }) => {
   const [toast, setToast] = useState<{ msg: string; type: 'success' | 'error' } | null>(null);
-
   const tool = useMemo(() => TOOLS.find(t => t.slug === slug), [slug]);
 
   const showToast = (msg: string, type: 'success' | 'error') => {
@@ -50,71 +48,41 @@ const ToolPage: React.FC<ToolPageProps> = ({ slug, onNavigate }) => {
       </div>
     );
 
-    // Dynamic Cluster Mapping
+    // 1. Check for Strict Structure Tool
+    if (slug === 'file-name-rejection-cause-finder') return <FileNameFinder />;
+
     const commonProps = { 
       slug, 
       onSuccess: (m: string) => showToast(m, 'success'), 
-      onError: (m: string) => showToast(m, 'error') 
+      onError: (m: string) => showToast(m, 'error'),
+      onNavigate
     };
 
+    // 2. Dynamic Cluster Mapping
     switch (tool.category) {
-      case 'image':
-        if (slug === 'image-size-reducer-kb') return <ImageKbReducer />;
-        return <ImageTools {...commonProps} />;
-      
-      case 'pdf': 
-        return <PDFTools {...commonProps} />;
-      
+      case 'image': return <ImageTools {...commonProps} />;
+      case 'pdf': return <PDFTools {...commonProps} />;
       case 'calculators':
-      case 'finance':
-        return <FinanceTools {...commonProps} />;
-      
-      case 'ai':
-        // Route image-gen AI tools differently from text-gen
-        if (slug.includes('image') || slug.includes('thumbnail') || slug.includes('meme')) {
-          return <AIImageTools {...commonProps} />;
-        }
-        return <AITextTools {...commonProps} />;
-      
+      case 'finance': return <FinanceTools {...commonProps} />;
+      case 'ai': return slug.includes('image') ? <AIImageTools {...commonProps} /> : <AITextTools {...commonProps} />;
       case 'utility':
-      case 'miscellaneous':
-        return <UtilityTools {...commonProps} />;
-      
-      case 'data':
-        return <DataTools {...commonProps} />;
-      
-      case 'network':
-        return <NetworkTools {...commonProps} />;
-      
-      case 'security':
-        return <SecurityTools {...commonProps} />;
-      
-      case 'seo':
-        return <SEOTools {...commonProps} />;
-      
-      case 'social':
-        return <SocialTools {...commonProps} />;
-      
-      case 'office':
-        return <OfficeTools {...commonProps} />;
-      
-      case 'education':
-        return <EducationTools {...commonProps} />;
-      
+      case 'miscellaneous': return <UtilityTools {...commonProps} />;
+      case 'data': return <DataTools {...commonProps} />;
+      case 'network': return <NetworkTools {...commonProps} />;
+      case 'security': return <SecurityTools {...commonProps} />;
+      case 'seo': return <SEOTools {...commonProps} />;
+      case 'social': return <SocialTools {...commonProps} />;
+      case 'office': return <OfficeTools {...commonProps} />;
+      case 'education': return <EducationTools {...commonProps} />;
       case 'government':
       case 'career':
-      case 'daily-life':
-        // Diagnostic AI for common life/govt hurdles
-        return <PainPointTools {...commonProps} />;
-
-      default:
-        return <UtilityTools {...commonProps} />;
+      case 'daily-life': return <PainPointTools {...commonProps} />;
+      default: return <UtilityTools {...commonProps} />;
     }
   };
 
   return (
     <div className="min-h-screen bg-slate-50 relative">
-      {/* Toast Notification Isolate */}
       {toast && (
         <div className={`fixed top-24 left-1/2 -translate-x-1/2 z-[500] px-8 py-4 rounded-2xl font-black text-xs uppercase tracking-widest shadow-2xl animate-in slide-in-from-top-4 duration-300 ${toast.type === 'success' ? 'bg-emerald-600 text-white' : 'bg-rose-600 text-white'}`}>
           {toast.type === 'success' ? '✓' : '⚠️'} {toast.msg}
@@ -124,12 +92,7 @@ const ToolPage: React.FC<ToolPageProps> = ({ slug, onNavigate }) => {
       <div className="max-w-[1600px] mx-auto px-8 pt-12 pb-32">
         <div className="flex flex-col lg:flex-row gap-16">
           <div className="lg:flex-grow">
-            <Suspense fallback={
-              <div className="flex flex-col items-center justify-center min-h-[60vh] gap-6">
-                <div className="w-16 h-16 border-4 border-indigo-600 border-t-transparent rounded-full animate-spin"></div>
-                <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.5em]">Initializing Logic Isolate...</p>
-              </div>
-            }>
+            <Suspense fallback={<div className="h-96 flex items-center justify-center animate-pulse text-[10px] font-black uppercase tracking-[0.5em] text-slate-300">Synchronizing Logic Isolate...</div>}>
               {renderToolLogic()}
             </Suspense>
 
@@ -147,10 +110,9 @@ const ToolPage: React.FC<ToolPageProps> = ({ slug, onNavigate }) => {
                <div className="bg-slate-900 rounded-[3rem] p-10 text-white shadow-2xl overflow-hidden group border border-white/5">
                   <div className="relative z-10">
                     <h3 className="text-xs font-black text-indigo-400 uppercase tracking-[0.3em] mb-4">Pro Status</h3>
-                    <p className="text-[11px] text-slate-400 leading-relaxed mb-6">You are executing nodes on the public edge. Upgrade for higher rate limits.</p>
+                    <p className="text-[11px] text-slate-400 leading-relaxed mb-6">Execution tier: Public Edge. Upgrade for deeper neural audits.</p>
                     <button onClick={() => onNavigate('contact')} className="w-full py-4 bg-white text-slate-900 rounded-xl font-black text-[9px] uppercase tracking-widest hover:bg-indigo-500 hover:text-white transition-all">Get Pro Token</button>
                   </div>
-                  <div className="absolute -bottom-6 -right-6 text-9xl opacity-5 group-hover:scale-110 transition-transform duration-700">💎</div>
                </div>
              </div>
           </aside>

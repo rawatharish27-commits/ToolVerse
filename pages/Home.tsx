@@ -9,6 +9,7 @@ import RewardHub from '../components/RewardHub';
 import TopSitesSection from '../components/TopSitesSection';
 import InternalLinking from '../components/InternalLinking';
 import UniversalSEOLayer from '../components/UniversalSEOLayer';
+import ProblemCommandCenter from '../components/ProblemCommandCenter';
 
 interface HomeProps {
   onNavigate: (page: string, params?: any) => void;
@@ -40,15 +41,10 @@ const Home: React.FC<HomeProps> = ({ onNavigate, searchQuery = '', favorites, on
     }
   };
 
-  const openDirectory = useCallback(() => {
-    window.dispatchEvent(new Event('tv_open_menu'));
-  }, []);
-
   return (
     <div className="bg-white min-h-screen">
-      <SEOHead title="ToolVerse | 200+ Master Utility Nodes" description="Execute 215+ professional browser-native tools instantly. Privacy hardened, zero-upload architecture." url="https://toolverse-4gr.pages.dev/" />
+      <SEOHead title="ToolVerse | 500+ Master Utility Nodes" description="Execute 500+ professional browser-native tools instantly. Privacy hardened, zero-upload architecture." url="https://toolverse-4gr.pages.dev/" />
 
-      {/* LAYER 1: STATIC SEO CORE (FOR BOTS) */}
       {!deferredSearch && <UniversalSEOLayer />}
 
       {/* HERO SECTION */}
@@ -59,33 +55,33 @@ const Home: React.FC<HomeProps> = ({ onNavigate, searchQuery = '', favorites, on
         </div>
 
         <div className="max-w-7xl mx-auto text-center relative z-10">
-          <div className="inline-flex items-center px-6 py-2 rounded-full bg-white/5 border border-white/10 text-indigo-400 text-[10px] font-black uppercase tracking-[0.3em] mb-10 shadow-2xl backdrop-blur-xl animate-in fade-in slide-in-from-bottom-4 duration-700">
+          <div className="inline-flex items-center px-6 py-2 rounded-full bg-white/5 border border-white/10 text-indigo-400 text-[10px] font-black uppercase tracking-[0.3em] mb-10 shadow-2xl backdrop-blur-xl">
              <span className="w-2 h-2 bg-indigo-500 rounded-full mr-3 animate-ping"></span>
-             Global Node Network: 215+ Active Instances
+             Global Node Network: 504 Active Instances
           </div>
           
-          <h1 className="text-6xl md:text-[8.5rem] font-black text-white tracking-tighter mb-10 leading-[0.85] animate-in fade-in slide-in-from-bottom-6 duration-1000">
-            Infinite <br /><span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 to-emerald-400 italic">Utility.</span>
+          <h1 className="text-6xl md:text-[8.5rem] font-black text-white tracking-tighter mb-10 leading-[0.85]">
+            Unified <br /><span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 to-emerald-400 italic">Solvers.</span>
           </h1>
           
-          <p className="text-lg md:text-xl text-slate-400 font-medium max-w-3xl mx-auto mb-16 animate-in fade-in slide-in-from-bottom-8 duration-1000 delay-200">
-            Professional browser-native tools for Developers, Content Creators, and Students. <br className="hidden md:block" /> 
-            100% Private. No signups. No cloud uploads.
+          <p className="text-lg md:text-xl text-slate-400 font-medium max-w-3xl mx-auto mb-16">
+            Production-grade utility engine with 500+ stateless logic nodes. <br className="hidden md:block" /> 
+            Solving real digital hurdles without data uploads.
           </p>
           
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-5 mb-20 animate-in fade-in slide-in-from-bottom-10 duration-1000 delay-300">
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-5">
              <button 
-              onClick={() => scrollToSection('master-hub')}
+              onClick={() => scrollToSection('problem-center')}
               className="px-12 py-6 bg-indigo-600 text-white rounded-[2rem] font-black text-lg shadow-2xl hover:bg-indigo-700 hover:-translate-y-1 transition-all group flex items-center gap-3"
              >
-               Launch Workspace
+               Describe Your Problem
                <span className="group-hover:translate-x-1 transition-transform">↓</span>
              </button>
              <button 
-              onClick={openDirectory}
+              onClick={() => onNavigate('directory')}
               className="px-12 py-6 bg-white/5 text-white border border-white/10 rounded-[2rem] font-black text-lg shadow-xl hover:bg-white/10 hover:-translate-y-1 transition-all backdrop-blur-sm"
              >
-               Browse Directory
+               Full A-Z Index
              </button>
           </div>
         </div>
@@ -95,10 +91,14 @@ const Home: React.FC<HomeProps> = ({ onNavigate, searchQuery = '', favorites, on
         </div>
       </section>
 
-      {/* STICKY NAVIGATION BAR */}
+      {/* PROBLEM COMMAND CENTER - Layer 2 */}
+      <div id="problem-center" className="max-w-[1600px] mx-auto px-8 pt-32 pb-20">
+         <ProblemCommandCenter onSelectProblem={(hubId) => onNavigate('flow', { hubId })} />
+      </div>
+
       <div className="sticky top-20 z-[100] bg-white/95 backdrop-blur-xl border-b border-slate-100 py-5 no-scrollbar overflow-x-auto shadow-md">
         <div className="max-w-[1600px] mx-auto px-8 flex items-center gap-3">
-          <div className="text-[10px] font-black text-slate-400 uppercase tracking-widest mr-4 whitespace-nowrap">Jump To Hub:</div>
+          <div className="text-[10px] font-black text-slate-400 uppercase tracking-widest mr-4 whitespace-nowrap">Explore Clusters:</div>
           {CATEGORIES.map(cat => (
             <button
               key={cat.id}
@@ -128,16 +128,9 @@ const Home: React.FC<HomeProps> = ({ onNavigate, searchQuery = '', favorites, on
                   <ToolCard key={tool.slug} tool={tool} onClick={() => onNavigate('tool', { slug: tool.slug })} isFavorite={favorites.includes(tool.slug)} onToggleFavorite={onToggleFavorite} />
                 ))}
               </div>
-              {searchResults.length === 0 && (
-                <div className="py-32 text-center">
-                   <div className="text-7xl mb-6 opacity-30">🌫️</div>
-                   <p className="text-lg font-black text-slate-300 uppercase tracking-widest">No matching frequency found.</p>
-                </div>
-              )}
             </section>
           )}
 
-          {/* MASTER CATEGORY LIST - SHOWING ALL 200+ TOOLS */}
           {!deferredSearch && (
             <div className="space-y-40">
               {CATEGORIES.map(cat => {
@@ -159,16 +152,10 @@ const Home: React.FC<HomeProps> = ({ onNavigate, searchQuery = '', favorites, on
                           </div>
                           <p className="text-xl text-slate-400 font-medium max-w-2xl leading-relaxed">{cat.description}</p>
                        </div>
-                       <button 
-                        onClick={() => onNavigate('category', { id: cat.id })}
-                        className="px-8 py-4 bg-slate-950 text-white rounded-2xl font-black text-[10px] uppercase tracking-[0.2em] shadow-xl hover:bg-indigo-600 transition-all"
-                       >
-                         Enter Hub →
-                       </button>
                     </div>
                     
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
-                      {catTools.map(tool => (
+                      {catTools.slice(0, 8).map(tool => (
                         <ToolCard 
                           key={tool.slug} 
                           tool={tool} 

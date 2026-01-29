@@ -1,3 +1,4 @@
+
 import React from 'react';
 import AdSlot from './AdSlot';
 import { AD_CONFIG } from '../config/ads';
@@ -13,6 +14,8 @@ interface ToolLayoutProps {
   result?: React.ReactNode;
   comparison?: React.ReactNode;
   footer?: React.ReactNode;
+  onReset?: () => void;
+  onBack?: () => void;
 }
 
 const ToolLayout: React.FC<ToolLayoutProps> = ({
@@ -25,11 +28,33 @@ const ToolLayout: React.FC<ToolLayoutProps> = ({
   actions,
   result,
   comparison,
-  footer
+  footer,
+  onReset,
+  onBack
 }) => {
   return (
     <div className="animate-in fade-in duration-500 space-y-12">
-      {/* Tool Header - Phase R: SEO Integration */}
+      {/* 1. Global Tool Control Bar */}
+      <div className="flex items-center justify-between px-2">
+         <button 
+           onClick={onBack}
+           className="group flex items-center gap-3 px-6 py-3 bg-white border border-slate-100 rounded-2xl shadow-sm hover:border-indigo-600 transition-all active:scale-95"
+         >
+           <span className="text-lg group-hover:-translate-x-1 transition-transform">←</span>
+           <span className="text-[10px] font-black text-slate-500 uppercase tracking-widest group-hover:text-indigo-600">Back to Hub</span>
+         </button>
+
+         {onReset && (
+           <button 
+             onClick={onReset}
+             className="flex items-center gap-3 px-6 py-3 bg-rose-50 text-rose-600 rounded-2xl font-black text-[10px] uppercase tracking-widest hover:bg-rose-100 transition-all active:scale-95"
+           >
+             <span>🧹</span> Flush Buffer
+           </button>
+         )}
+      </div>
+
+      {/* 2. Tool Header */}
       <div className="text-center space-y-6 pt-4">
         <div className={`w-24 h-24 ${colorClass} rounded-[2.5rem] flex items-center justify-center text-white text-5xl mx-auto shadow-2xl transform hover:rotate-3 transition-transform duration-700`}>
           {icon}
@@ -42,7 +67,7 @@ const ToolLayout: React.FC<ToolLayoutProps> = ({
         </div>
       </div>
 
-      {/* Workspace Grid - Phase G: Performance Aware Architecture */}
+      {/* 3. Workspace Grid */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-10">
         <div className={`${options ? 'lg:col-span-8' : 'lg:col-span-12'} space-y-8`}>
           <div className="bg-white rounded-[3.5rem] p-8 md:p-12 shadow-[0_40px_80px_-20px_rgba(0,0,0,0.08)] border border-slate-100 relative overflow-hidden transition-shadow hover:shadow-3xl">
@@ -89,7 +114,7 @@ const ToolLayout: React.FC<ToolLayoutProps> = ({
         </div>
       )}
 
-      {/* Result Area - Phase K: Incrementally Prepared Output */}
+      {/* Result Area */}
       {result && (
         <div className="pt-10 animate-in slide-in-from-top-12 duration-700">
            <div className="bg-white rounded-[4rem] p-10 md:p-20 shadow-[0_80px_160px_-40px_rgba(79,70,229,0.15)] border-2 border-indigo-50/80 relative overflow-hidden">
@@ -106,7 +131,6 @@ const ToolLayout: React.FC<ToolLayoutProps> = ({
         </div>
       )}
 
-      {/* Strategic Monetization - Load before Footer but after Result */}
       <AdSlot id={AD_CONFIG.slots.mid_content} className="my-20" variant="result-based" />
 
       {footer && (

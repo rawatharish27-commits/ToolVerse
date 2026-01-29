@@ -5,6 +5,7 @@ import Home from './pages/Home';
 import CategoryPage from './pages/CategoryPage';
 import ToolPage from './pages/ToolPage';
 import Directory from './pages/Directory';
+import GuidedFlowPage from './pages/GuidedFlowPage';
 import PrivacyPolicy from './pages/PrivacyPolicy';
 import Terms from './pages/Terms';
 import Contact from './pages/Contact';
@@ -13,7 +14,7 @@ import { CategorySlug } from './types';
 import AddonLayer from './components/AddonLayer';
 
 interface NavigationState {
-  page: 'home' | 'category' | 'tool' | 'about' | 'privacy' | 'terms' | 'contact' | 'directory';
+  page: 'home' | 'category' | 'tool' | 'about' | 'privacy' | 'terms' | 'contact' | 'directory' | 'flow';
   params?: any;
 }
 
@@ -23,29 +24,32 @@ const App: React.FC = () => {
   
   const handlePathChange = () => {
     const path = window.location.pathname;
-    startTransition(() => {
-      if (path === '/' || path === '' || path.endsWith('index.html')) {
-        setNav({ page: 'home' });
-      } else if (path.startsWith('/category/')) {
-        const id = path.split('/')[2] as CategorySlug;
-        setNav({ page: 'category', params: { id } });
-      } else if (path.startsWith('/tools/')) {
-        const slug = path.split('/')[2] || '';
-        setNav({ page: 'tool', params: { slug } });
-      } else if (path === '/directory') {
-        setNav({ page: 'directory' });
-      } else if (path === '/privacy') {
-        setNav({ page: 'privacy' });
-      } else if (path === '/terms') {
-        setNav({ page: 'terms' });
-      } else if (path === '/contact') {
-        setNav({ page: 'contact' });
-      } else if (path === '/about') {
-        setNav({ page: 'about' });
-      } else {
-        setNav({ page: 'home' });
-      }
-    });
+    
+    if (path === '/' || path === '' || path.endsWith('index.html')) {
+      setNav({ page: 'home' });
+    } else if (path.startsWith('/category/')) {
+      const id = path.split('/')[2] as CategorySlug;
+      setNav({ page: 'category', params: { id } });
+    } else if (path.startsWith('/tools/')) {
+      const slug = path.split('/')[2] || '';
+      setNav({ page: 'tool', params: { slug } });
+    } else if (path.startsWith('/solve/')) {
+      const hubId = path.split('/')[2] || '';
+      setNav({ page: 'flow', params: { hubId } });
+    } else if (path === '/directory') {
+      setNav({ page: 'directory' });
+    } else if (path === '/privacy') {
+      setNav({ page: 'privacy' });
+    } else if (path === '/terms') {
+      setNav({ page: 'terms' });
+    } else if (path === '/contact') {
+      setNav({ page: 'contact' });
+    } else if (path === '/about') {
+      setNav({ page: 'about' });
+    } else {
+      setNav({ page: 'home' });
+    }
+    
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
@@ -59,6 +63,7 @@ const App: React.FC = () => {
     let newPath = '/';
     if (page === 'category') newPath = `/category/${params.id}`;
     else if (page === 'tool') newPath = `/tools/${params.slug}`;
+    else if (page === 'flow') newPath = `/solve/${params.hubId}`;
     else if (page === 'directory') newPath = `/directory`;
     else if (page === 'privacy') newPath = `/privacy`;
     else if (page === 'terms') newPath = `/terms`;
@@ -76,6 +81,7 @@ const App: React.FC = () => {
       case 'home': return <Home onNavigate={navigate} searchQuery={searchQuery} favorites={[]} onToggleFavorite={()=>{}} recent={[]} />;
       case 'category': return <CategoryPage categoryId={nav.params.id} onNavigate={navigate} favorites={[]} onToggleFavorite={()=>{}} />;
       case 'tool': return <ToolPage slug={nav.params.slug} onNavigate={navigate} />;
+      case 'flow': return <GuidedFlowPage hubId={nav.params.hubId} onNavigate={navigate} />;
       case 'directory': return <Directory onNavigate={navigate} favorites={[]} onToggleFavorite={()=>{}} />;
       case 'privacy': return <PrivacyPolicy />;
       case 'terms': return <Terms />;

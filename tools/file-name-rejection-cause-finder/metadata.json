@@ -1,0 +1,9 @@
+
+{
+  "name": "File Name Rejection Cause Finder",
+  "slug": "file-name-rejection-cause-finder",
+  "category": "utility",
+  "inputType": "text",
+  "outputType": "object",
+  "complexity": "low"
+}

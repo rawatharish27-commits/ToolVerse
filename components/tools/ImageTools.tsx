@@ -10,9 +10,10 @@ interface ToolProps {
   slug: string;
   onSuccess: (msg: string) => void;
   onError: (msg: string) => void;
+  onNavigate: (page: string, params?: any) => void;
 }
 
-const ImageTools: React.FC<ToolProps> = ({ slug, onSuccess, onError }) => {
+const ImageTools: React.FC<ToolProps> = ({ slug, onSuccess, onError, onNavigate }) => {
   const [file, setFile] = useState<File | null>(null);
   const [loading, setLoading] = useState(false);
   const [progress, setProgress] = useState("");
@@ -25,14 +26,20 @@ const ImageTools: React.FC<ToolProps> = ({ slug, onSuccess, onError }) => {
   const toolNode = useMemo(() => TOOLS.find(t => t.slug === slug), [slug]);
 
   useEffect(() => {
-    const initial: Record<string, any> = {};
-    activeConfig.options.forEach((opt: any) => initial[opt.id] = opt.default);
-    setOptions(initial);
+    handleReset();
+  }, [slug, activeConfig]);
+
+  const handleReset = () => {
+    setFile(null);
     setOutputBlob(null);
     setOutputUrl(null);
     setAnalysis(null);
     setProgress("");
-  }, [slug, activeConfig]);
+    setLoading(false);
+    const initial: Record<string, any> = {};
+    activeConfig.options.forEach((opt: any) => initial[opt.id] = opt.default);
+    setOptions(initial);
+  };
 
   const handleRun = async () => {
     if (!file) { onError("Trust Failure: No image provided."); return; }
@@ -70,6 +77,8 @@ const ImageTools: React.FC<ToolProps> = ({ slug, onSuccess, onError }) => {
       description={activeConfig.description}
       icon={activeConfig.icon}
       colorClass={activeConfig.colorClass}
+      onReset={handleReset}
+      onBack={() => onNavigate('category', { id: toolNode?.category || 'image' })}
       input={
         <div className="p-16 border-4 border-dashed border-slate-100 rounded-[3rem] text-center hover:border-emerald-100 cursor-pointer relative group transition-all">
            <input type="file" accept="image/*" onChange={e => {

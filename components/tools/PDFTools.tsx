@@ -14,9 +14,10 @@ interface ToolProps {
   slug: string;
   onSuccess: (msg: string) => void;
   onError: (msg: string) => void;
+  onNavigate: (page: string, params?: any) => void;
 }
 
-const PDFTools: React.FC<ToolProps> = ({ slug, onSuccess, onError }) => {
+const PDFTools: React.FC<ToolProps> = ({ slug, onSuccess, onError, onNavigate }) => {
   const [loading, setLoading] = useState(false);
   const [progress, setProgress] = useState("");
   const [outputBlob, setOutputBlob] = useState<Blob | null>(null);
@@ -32,13 +33,19 @@ const PDFTools: React.FC<ToolProps> = ({ slug, onSuccess, onError }) => {
   const [options, setOptions] = useState<Record<string, any>>({});
 
   useEffect(() => {
-    const initial: Record<string, any> = {};
-    activeConfig.options.forEach((opt: any) => initial[opt.id] = (opt as any).default);
-    setOptions(initial);
+    handleReset();
+  }, [slug, activeConfig]);
+
+  const handleReset = () => {
+    setFiles(null);
     setOutputBlob(null);
     setOutputUrl(null);
     setProgress("");
-  }, [slug, activeConfig]);
+    setLoading(false);
+    const initial: Record<string, any> = {};
+    activeConfig.options.forEach((opt: any) => initial[opt.id] = (opt as any).default);
+    setOptions(initial);
+  };
 
   const handleRun = async () => {
     if (!toolNode?.execute) { onError("Logic node offline."); return; }
@@ -76,6 +83,8 @@ const PDFTools: React.FC<ToolProps> = ({ slug, onSuccess, onError }) => {
       description={activeConfig.description}
       icon={activeConfig.icon}
       colorClass={activeConfig.colorClass}
+      onReset={handleReset}
+      onBack={() => onNavigate('category', { id: toolNode?.category || 'pdf' })}
       input={
         <div className="p-16 border-4 border-dashed border-slate-100 rounded-[3rem] text-center hover:border-red-100 transition-all cursor-pointer relative group">
            <input type="file" multiple={slug === 'pdf-merger'} accept="application/pdf" onChange={e => {
