@@ -3,28 +3,28 @@ export async function process(input: string) {
   const issues: string[] = [];
   const suggestions: string[] = [];
 
-  // Logic: Check for standard 'autocomplete' attributes
-  if (!input.includes('autocomplete=')) {
-    issues.push("Missing 'autocomplete' attribute. Browsers rely on this tag to identify field types.");
-    suggestions.push("Manually type details this time. Modern browsers won't help without this attribute.");
+  // Logic Node 1: Check for 'autocomplete'
+  if (!input.includes('autocomplete')) {
+    issues.push("Missing 'autocomplete' attribute. Browsers cannot identify the purpose of this field.");
+    suggestions.push("Manually type data. The browser has no technical way to link this to your stored profile.");
   }
 
-  // Logic: Check for non-standard IDs or Names (Common in legacy portals)
-  const legacyPatterns = ['id1', 'txt_1', 'field_val'];
-  if (legacyPatterns.some(p => input.includes(p))) {
-    issues.push("Obfuscated field ID detected. The portal is using non-descriptive internal names.");
-  }
-
-  // Logic: Check for 'autocomplete=off' (The enemy of users)
+  // Logic Node 2: Check for 'autocomplete=off'
   if (input.includes('autocomplete="off"') || input.includes('autocomplete=off')) {
-    issues.push("The website has explicitly DISALLOWED autofill using 'autocomplete=off'.");
-    suggestions.push("Use a password manager extension that ignores this flag, or type manually.");
+    issues.push("Website has explicitly DISABLED autofill using 'autocomplete=off'.");
+    suggestions.push("Right-click the field and use a password manager extension which often ignores this tag.");
+  }
+
+  // Logic Node 3: Check for non-standard IDs
+  const nonStandard = ['id1', 'txt_1', 'field_val'];
+  if (nonStandard.some(p => input.includes(p))) {
+    issues.push("Obfuscated field names detected. The developer used generic naming like 'id1' instead of 'first_name'.");
   }
 
   return {
     found: issues.length > 0,
     issues,
     suggestions,
-    verdict: issues.length > 0 ? "Blocked by Website Code" : "Unknown Local Failure"
+    verdict: issues.length > 0 ? "Blocked by Portal Code" : "Local Browser Setting Conflict"
   };
 }

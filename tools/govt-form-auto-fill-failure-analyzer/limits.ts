@@ -1,6 +1,6 @@
 
 export const LIMITS = {
   maxHtmlSnippetLength: 10000,
-  minHtmlSnippetLength: 5,
-  browserPolicyLimit: 200
+  minHtmlSnippetLength: 3,
+  supportedAttributes: ['autocomplete', 'name', 'id', 'type']
 };
