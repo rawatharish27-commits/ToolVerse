@@ -12,6 +12,10 @@ interface ToolProps {
   onError: (msg: string) => void;
 }
 
+/**
+ * ToolVerse Diagnostic Hub
+ * Uses AI to solve common hurdles (Govt Portal Errors, Career Blockers).
+ */
 const PainPointTools: React.FC<ToolProps> = ({ slug, onSuccess, onError }) => {
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
@@ -32,8 +36,10 @@ const PainPointTools: React.FC<ToolProps> = ({ slug, onSuccess, onError }) => {
   }, [slug, activeConfig]);
 
   const handleRun = async () => {
-    if (!input.trim() && !slug.includes('rule-decoder')) {
-      return onError("Please provide the error message or text to analyze.");
+    // If it's a rule decoder, it might not need input text
+    const isDecoder = slug.includes('rule-decoder') || slug.includes('checker');
+    if (!input.trim() && !isDecoder) {
+      return onError("Please describe the issue or paste the error message.");
     }
 
     setLoading(true);
@@ -42,33 +48,34 @@ const PainPointTools: React.FC<ToolProps> = ({ slug, onSuccess, onError }) => {
     try {
       const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
       const prompt = `
-        Task: Diagnostic Analysis for ${toolNode?.title}
-        Context: The user is facing a common digital barrier (Government portal failure, Job rejection, or document error).
-        User Input/Error: "${input}"
+        Context: The user is using the tool "${toolNode?.title}" on the ToolVerse platform.
+        Category: ${toolNode?.category}
+        Specific User Task: "${input || 'General guidance request for this tool'}"
         Parameters: ${JSON.stringify(options)}
         
-        Provide a structured diagnostic response including:
-        1. "Hidden Root Cause": The technical reason this is happening.
-        2. "Human Translation": A simple explanation of the error.
-        3. "Actionable Fix": Step-by-step instructions to solve it using ToolVerse.
-        4. "Expert Tip": A pro-tip to prevent this in the future.
+        Provide a professional diagnostic report with:
+        1. "Root Analysis": What is technically causing the barrier.
+        2. "Solution Protocol": Step-by-step instructions.
+        3. "ToolVerse Recommendation": Which other tools to use (e.g. Image Compressor if size is the issue).
+        4. "Compliance Note": Mention any specific government or industry standards.
         
-        Format the response as a clean, structured JSON-like text block.
+        Style: Authoritative, helpful, technical but accessible. Format in Markdown.
       `;
 
       const response = await ai.models.generateContent({
         model: 'gemini-3-flash-preview',
         contents: prompt,
         config: {
-          systemInstruction: "You are the ToolVerse Diagnostic Engine. You help users overcome technical barriers in government and career portals. Be empathetic, authoritative, and extremely clear.",
+          systemInstruction: "You are the ToolVerse Expert Diagnostic Node. You help users solve technical hurdles in government portals, job applications, and document management.",
           temperature: 0.2
         }
       });
 
       setResult(response.text);
-      onSuccess("Diagnostic Node Synchronized!");
+      onSuccess("Diagnostic Audit Complete.");
     } catch (err: any) {
-      onError("Diagnostic engine is at capacity. Retrying...");
+      console.error(err);
+      onError("Neural core is synchronized but busy. Please retry.");
     } finally {
       setLoading(false);
     }
@@ -82,40 +89,36 @@ const PainPointTools: React.FC<ToolProps> = ({ slug, onSuccess, onError }) => {
       colorClass={activeConfig.colorClass}
       input={
         <div className="space-y-6">
-          <div className="p-8 bg-rose-50 border border-rose-100 rounded-[2rem] flex items-start gap-6">
-             <div className="text-4xl">⚠️</div>
+          <div className="p-8 bg-indigo-50 border border-indigo-100 rounded-[2rem] flex items-start gap-6">
+             <div className="text-4xl">🔬</div>
              <div>
-                <p className="text-[10px] font-black text-rose-500 uppercase tracking-widest mb-1">Diagnostic Mode Active</p>
-                <p className="text-sm font-bold text-rose-900 leading-relaxed italic">
-                  "Paste the exact error message or describe the problem. Our engine will decode the technical barrier for you."
+                <p className="text-[10px] font-black text-indigo-500 uppercase tracking-widest mb-1">Advanced Diagnostic Isolate</p>
+                <p className="text-sm font-bold text-slate-700 leading-relaxed italic">
+                  "Input the error message or describe your requirement. Our expert node will architect a solution based on current compliance rules."
                 </p>
              </div>
           </div>
           <textarea
             value={input}
             onChange={e => setInput(e.target.value)}
-            placeholder="Paste error message here (e.g. 'Invalid MIME type', 'Signature not clear', 'Wait for Scrutiny'...)"
+            placeholder="Paste portal error here (e.g. 'Photo background not white', 'Signature too large', 'Wait for Scrutiny'...)"
             className="w-full h-44 p-8 bg-slate-50 border border-slate-200 rounded-[2.5rem] focus:ring-8 focus:ring-indigo-500/5 outline-none font-bold text-slate-700 shadow-inner resize-none transition-all"
           />
         </div>
       }
       options={activeConfig.options?.length > 0 ? <OptionsPanel options={activeConfig.options as any} values={options} onChange={(id, v) => setOptions(p => ({...p, [id]: v}))} /> : undefined}
-      actions={<button onClick={handleRun} disabled={loading} className={`w-full py-7 ${activeConfig.colorClass} text-white rounded-[2.5rem] font-black text-2xl shadow-2xl transition-all active:scale-95 disabled:opacity-50`}>{loading ? "Running Logic Audit..." : "Execute Diagnostic Scan"}</button>}
+      actions={<button onClick={handleRun} disabled={loading} className={`w-full py-7 ${activeConfig.colorClass} text-white rounded-[2.5rem] font-black text-2xl shadow-2xl transition-all active:scale-95 disabled:opacity-50`}>{loading ? "Running Intelligence Audit..." : "Dispatch Solution Node"}</button>}
       result={result && (
         <div className="animate-in zoom-in-95 space-y-8">
            <div className="bg-slate-900 p-10 md:p-16 rounded-[3.5rem] text-white shadow-2xl relative overflow-hidden group border border-white/5">
-              <div className="absolute top-0 right-0 p-8 opacity-5"><div className="text-9xl font-black italic">AUDIT</div></div>
+              <div className="absolute top-0 right-0 p-8 opacity-5"><div className="text-9xl font-black italic">SOLVED</div></div>
               <div className="relative z-10 prose prose-invert max-w-none">
                  <div className="text-emerald-400 font-medium whitespace-pre-wrap leading-relaxed text-lg">
                    {result}
                  </div>
               </div>
            </div>
-           
-           <div className="flex flex-col sm:flex-row gap-4">
-              <button onClick={() => window.dispatchEvent(new Event('tv_open_menu'))} className="flex-1 py-5 bg-white border border-slate-100 text-slate-900 rounded-2xl font-black text-xs uppercase tracking-widest shadow-xl hover:bg-slate-50">Find Recommended Tool</button>
-              <button onClick={() => { setInput(""); setResult(null); }} className="flex-1 py-5 bg-slate-100 text-slate-400 rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-slate-200">Start New Audit</button>
-           </div>
+           <button onClick={() => { navigator.clipboard.writeText(result); onSuccess("Copied!"); }} className="w-full py-5 bg-white border border-slate-100 text-slate-900 rounded-2xl font-black text-xs uppercase tracking-widest shadow-xl">Copy Solution Roadmap</button>
         </div>
       )}
     />
