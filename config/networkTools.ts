@@ -1,7 +1,6 @@
-
 export const ipLookupConfig = {
   slug: "ip-to-location",
-  title: "IP to Location Lookup",
+  title: "Lookup IP Location",
   description: "Identify geographical data, ISP, and ASN metadata for any IP address instantly.",
   icon: "📍",
   colorClass: "bg-cyan-600",
@@ -10,7 +9,7 @@ export const ipLookupConfig = {
 
 export const dnsLookupConfig = {
   slug: "dns-lookup",
-  title: "Pro DNS Lookup",
+  title: "Query DNS Records",
   description: "Query global DNS records including A, AAAA, MX, TXT, and NS records for any domain.",
   icon: "📂",
   colorClass: "bg-cyan-700",
@@ -21,7 +20,7 @@ export const dnsLookupConfig = {
 
 export const sslCheckerConfig = {
   slug: "ssl-expiry-checker",
-  title: "SSL Expiry & Health Checker",
+  title: "Check SSL Certificate Expiry",
   description: "Check SSL certificate validity, issuer details, and precise expiration timestamps for any domain.",
   icon: "🔒",
   colorClass: "bg-emerald-600",
@@ -30,7 +29,7 @@ export const sslCheckerConfig = {
 
 export const uaParserConfig = {
   slug: "user-agent-parser",
-  title: "User Agent Parser",
+  title: "Parse Device User-Agent",
   description: "Decode User-Agent strings to identify browser, OS, and device hardware details.",
   icon: "💻",
   colorClass: "bg-slate-700",
@@ -39,7 +38,7 @@ export const uaParserConfig = {
 
 export const portCheckerConfig = {
   slug: "port-checker",
-  title: "Remote Port Scanner",
+  title: "Scan Remote Ports",
   description: "Check for open network ports (SSH, HTTP, MySQL, etc.) on any public IP or hostname.",
   icon: "🔌",
   colorClass: "bg-cyan-800",
@@ -50,7 +49,7 @@ export const portCheckerConfig = {
 
 export const headerCheckerConfig = {
   slug: "http-header-checker",
-  title: "HTTP Header Inspector",
+  title: "Inspect HTTP Headers",
   description: "Analyze HTTP response headers for security compliance, caching, and server identification.",
   icon: "📡",
   colorClass: "bg-indigo-600",
@@ -59,7 +58,7 @@ export const headerCheckerConfig = {
 
 export const urlSafetyConfig = {
   slug: "url-safety-checker",
-  title: "URL Safety & Phishing Guard",
+  title: "Scan for URL Phishing Risks",
   description: "Analyze URLs for potential security risks, malicious patterns, and typosquatting attempts.",
   icon: "🛡️",
   colorClass: "bg-rose-600",
@@ -68,7 +67,7 @@ export const urlSafetyConfig = {
 
 export const internetSpeedTestConfig = {
   slug: "internet-speed-test",
-  title: "Internet Speed Analyzer",
+  title: "Test Connection Latency (Ping)",
   description: "Evaluate your current connection quality, latency (ping), and bandwidth throughput.",
   icon: "🚀",
   colorClass: "bg-cyan-600",
@@ -86,7 +85,7 @@ export const emailHeaderAnalyzerConfig = {
 
 export const ipInfoOfflineConfig = {
   slug: "ip-info-tool",
-  title: "IP Address Info Tool",
+  title: "Analyze Local IP Info",
   description: "Identify IP version, subnet class, and reserved status for any IP without external calls.",
   icon: "🌐",
   colorClass: "bg-cyan-600",
@@ -95,7 +94,7 @@ export const ipInfoOfflineConfig = {
 
 export const dataMaskingConfig = {
   slug: "data-masking-tool",
-  title: "PII Data Masking Tool",
+  title: "Mask Sensitive Data",
   description: "Securely mask sensitive data like emails and credit cards for safe sharing.",
   icon: "🎭",
   colorClass: "bg-slate-900",

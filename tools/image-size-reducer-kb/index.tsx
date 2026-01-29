@@ -21,8 +21,8 @@ const ImageReducer: React.FC = () => {
 
   return (
     <ToolShell 
-      title="Image Size Reducer (KB Selector)"
-      description="Compress images to an exact target size for government and portal uploads."
+      title="Photo KB Size Reducer"
+      description="Compress photos to an exact target size (20kb, 50kb, 100kb) for official uploads."
       icon="📉"
       onExecute={onExecute}
     >
@@ -30,7 +30,7 @@ const ImageReducer: React.FC = () => {
         <div className="space-y-8">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
              <div className="space-y-4">
-                <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest px-1">Source Payload</label>
+                <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest px-1">Master Image Source</label>
                 <div className="p-8 bg-slate-50 border-2 border-dashed border-slate-200 rounded-[2rem] text-center hover:border-indigo-200 transition-all cursor-pointer relative group">
                   <input 
                     type="file" 
@@ -39,11 +39,11 @@ const ImageReducer: React.FC = () => {
                     className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
                   />
                   <div className="text-4xl mb-2 group-hover:scale-110 transition-transform">🖼️</div>
-                  <p className="text-slate-600 font-bold text-sm">{file ? file.name : "Drop Master Image"}</p>
+                  <p className="text-slate-600 font-bold text-sm">{file ? file.name : "Drop Photo for Reduction"}</p>
                 </div>
              </div>
              <div className="space-y-4">
-                <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest px-1">Target Threshold (KB)</label>
+                <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest px-1">Target KB Limit</label>
                 <input 
                   type="number"
                   value={targetKb}
@@ -58,25 +58,8 @@ const ImageReducer: React.FC = () => {
             disabled={loading || !file}
             className="w-full py-8 bg-indigo-600 text-white rounded-[2rem] font-black text-xl shadow-2xl hover:bg-indigo-700 transition-all transform active:scale-95 disabled:opacity-50 disabled:grayscale"
           >
-            {loading ? "Optimizing Quantization..." : "Execute Logic Node"}
+            {loading ? "Adjusting Quantization..." : "REDUCE PHOTO SIZE NOW"}
           </button>
 
           {result?.success && (
-            <div className="pt-8 border-t border-slate-50 flex flex-col items-center gap-6">
-               <img src={URL.createObjectURL(result.data.blob)} className="max-h-64 rounded-2xl shadow-lg border border-slate-100" />
-               <a 
-                 href={URL.createObjectURL(result.data.blob)} 
-                 download={`compressed_${file?.name}`}
-                 className="px-10 py-4 bg-emerald-600 text-white rounded-2xl font-black text-xs uppercase tracking-widest shadow-xl hover:bg-emerald-700 transition-all"
-               >
-                 Save Verified Asset ({(result.data.blob.size / 1024).toFixed(1)} KB)
-               </a>
-            </div>
-          )}
-        </div>
-      )}
-    </ToolShell>
-  );
-};
-
-export default ImageReducer;
+            <div className="pt-8 border

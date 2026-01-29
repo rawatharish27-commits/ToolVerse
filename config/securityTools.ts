@@ -1,6 +1,6 @@
 export const passwordStrengthConfig = {
   slug: "password-strength-checker",
-  title: "Password Strength Auditor",
+  title: "Audit Password Strength",
   description: "Check security entropy and password strength using deep heuristic analysis.",
   icon: "🔐",
   colorClass: "bg-indigo-600",
@@ -9,7 +9,7 @@ export const passwordStrengthConfig = {
 
 export const hashGeneratorConfig = {
   slug: "hash-generator",
-  title: "Pro Hash Generator",
+  title: "Generate Secure Hashes",
   description: "Generate MD5, SHA-1, SHA-256, and SHA-512 hashes for text and strings locally.",
   icon: "🔒",
   colorClass: "bg-teal-600",
@@ -21,7 +21,7 @@ export const hashGeneratorConfig = {
 
 export const hashIdentifierConfig = {
   slug: "hash-identifier",
-  title: "Hash Type Identifier",
+  title: "Identify Hash Type",
   description: "Analyze a hash string to identify its probable encryption algorithm based on patterns.",
   icon: "🔎",
   colorClass: "bg-slate-700",
@@ -30,7 +30,7 @@ export const hashIdentifierConfig = {
 
 export const encryptorConfig = {
   slug: "security-encryptor",
-  title: "AES-256 Text Encryptor",
+  title: "Encrypt Private Text (AES-256)",
   description: "Securely encrypt text using authenticated AES-GCM encryption with local key derivation.",
   icon: "🔑",
   colorClass: "bg-indigo-700",
@@ -41,7 +41,7 @@ export const encryptorConfig = {
 
 export const decryptorConfig = {
   slug: "security-decryptor",
-  title: "AES-256 Text Decryptor",
+  title: "Decrypt Secure Text",
   description: "Recover and verify encrypted content with automated integrity checks.",
   icon: "🔓",
   colorClass: "bg-indigo-800",

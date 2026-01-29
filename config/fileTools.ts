@@ -1,16 +1,15 @@
 export const fileTypeIdentifierConfig = {
   slug: "file-type-identifier",
-  title: "Binary File Identifier",
+  title: "File Type Identifier",
   description: "Detect the true format of any file by analyzing its binary signature. Perfect for corrupted or extension-less files.",
   icon: "🔍",
   colorClass: "bg-amber-600",
   options: []
 };
 
-// ... keep existing fileFormatConverterConfig, zipExtractorConfig, etc.
 export const fileFormatConverterConfig = {
   slug: "file-format-converter",
-  title: "File Format Converter Pro",
+  title: "File Format Converter",
   description: "Universal converter for text-based data files. Switch between JSON, CSV, XML, and YAML.",
   icon: "🔄",
   colorClass: "bg-amber-600",

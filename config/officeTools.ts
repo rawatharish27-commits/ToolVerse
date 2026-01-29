@@ -36,7 +36,7 @@ export const resumeRejectionAnalyzerConfig = {
 
 export const atsKeywordGapConfig = {
   slug: "ats-keyword-gap-finder",
-  title: "ATS Keyword Gap Finder",
+  title: "Analyze Job Description Keywords",
   description: "Identify missing skills and critical keywords by comparing your resume against a target job description.",
   icon: "🔍",
   colorClass: "bg-indigo-700",
@@ -45,7 +45,7 @@ export const atsKeywordGapConfig = {
 
 export const resumeFormatConfig = {
   slug: "resume-format-checker",
-  title: "Format Compatibility Checker",
+  title: "Check Resume Format",
   description: "Test if your resume layout (columns, tables, headers) is safe for modern ATS parsing systems.",
   icon: "📋",
   colorClass: "bg-indigo-500",
@@ -58,7 +58,7 @@ export const resumeFormatConfig = {
 
 export const experienceResolverConfig = {
   slug: "experience-dispute-resolver",
-  title: "HR Experience Resolver",
+  title: "Resolve Experience Disputes",
   description: "Calculate total relevant years of experience including overlapping roles and career breaks.",
   icon: "⌛",
   colorClass: "bg-indigo-800",
@@ -69,7 +69,7 @@ export const experienceResolverConfig = {
 
 export const noticePeriodConfig = {
   slug: "notice-period-calculator",
-  title: "Notice Period Eligibility",
+  title: "Calculate Notice Period",
   description: "Calculate your last working day and check buyout eligibility based on company resignation policy.",
   icon: "📅",
   colorClass: "bg-indigo-900",
@@ -81,7 +81,7 @@ export const noticePeriodConfig = {
 
 export const resumeFilenameConfig = {
   slug: "resume-filename-checker",
-  title: "Resume Filename Checker",
+  title: "Check Resume Filename",
   description: "Is your filename professional? Check if 'Resume_Final_v2.pdf' is hurting your chances.",
   icon: "📁",
   colorClass: "bg-indigo-400",
@@ -90,7 +90,7 @@ export const resumeFilenameConfig = {
 
 export const coverLetterOptimizerConfig = {
   slug: "cover-letter-optimizer",
-  title: "Cover Letter Optimizer",
+  title: "Optimize Cover Letter",
   description: "Check if your cover letter is too short for executives or too long for entry-level roles.",
   icon: "✉️",
   colorClass: "bg-indigo-600",
@@ -101,7 +101,7 @@ export const coverLetterOptimizerConfig = {
 
 export const gapExplanationConfig = {
   slug: "gap-explanation-generator",
-  title: "Career Gap Explainer",
+  title: "Explain Career Gaps",
   description: "Generate professional logic for career gaps due to health, family, or upskilling.",
   icon: "🛠️",
   colorClass: "bg-indigo-700",
@@ -112,7 +112,7 @@ export const gapExplanationConfig = {
 
 export const invoiceGeneratorConfig = {
   slug: "invoice-generator",
-  title: "Professional Invoice Generator",
+  title: "Generate Professional Invoices",
   description: "Create professional business invoices via AI.",
   icon: "🧾",
   colorClass: "bg-slate-800",
@@ -123,7 +123,7 @@ export const invoiceGeneratorConfig = {
 
 export const resumeBuilderConfig = {
   slug: "resume-builder",
-  title: "AI Resume Builder",
+  title: "Build AI Resumes",
   description: "Build ATS-friendly professional resumes.",
   icon: "📄",
   colorClass: "bg-slate-900",
@@ -132,7 +132,7 @@ export const resumeBuilderConfig = {
 
 export const wordCounterConfig = {
   slug: "word-counter",
-  title: "Advanced Word Counter",
+  title: "Analyze Text Word Frequency",
   description: "Comprehensive text analysis with word frequency.",
   icon: "📝",
   colorClass: "bg-blue-600",
@@ -141,7 +141,7 @@ export const wordCounterConfig = {
 
 export const characterCounterConfig = {
   slug: "character-counter",
-  title: "Pro Character Counter",
+  title: "Count Professional Characters",
   description: "Real-time character counting.",
   icon: "🔢",
   colorClass: "bg-indigo-500",
@@ -150,7 +150,7 @@ export const characterCounterConfig = {
 
 export const textCleanerConfig = {
   slug: "text-cleaner",
-  title: "Professional Text Cleaner",
+  title: "Clean Professional Text",
   description: "Sanitize and normalize messy text.",
   icon: "🧹",
   colorClass: "bg-cyan-600",
@@ -159,7 +159,7 @@ export const textCleanerConfig = {
 
 export const caseConverterConfig = {
   slug: "case-converter",
-  title: "Case Converter",
+  title: "Convert Text Case (Upper/Lower)",
   description: "Transform text between UPPERCASE, lowercase, and more.",
   icon: "🔡",
   colorClass: "bg-violet-600",
@@ -168,7 +168,7 @@ export const caseConverterConfig = {
 
 export const findReplaceConfig = {
   slug: "find-and-replace",
-  title: "Find & Replace",
+  title: "Search & Replace Professional Text",
   description: "Search and replace text instantly.",
   icon: "🔍",
   colorClass: "bg-blue-700",
@@ -177,7 +177,7 @@ export const findReplaceConfig = {
 
 export const duplicateRemoverConfig = {
   slug: "duplicate-line-remover",
-  title: "Duplicate Line Remover",
+  title: "Remove Duplicate List Lines",
   description: "Clean up lists by removing duplicate lines.",
   icon: "👯",
   colorClass: "bg-indigo-600",
@@ -195,7 +195,7 @@ export const ttsConfig = {
 
 export const textCompareConfig = {
   slug: "text-compare",
-  title: "Visual Diff Checker",
+  title: "Side-by-Side Text Diff Checker",
   description: "Compare two versions of text side-by-side.",
   icon: "⚖️",
   colorClass: "bg-indigo-700",

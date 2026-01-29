@@ -1,89 +1,88 @@
 export const aiArticleGeneratorConfig = {
   slug: "ai-article-generator",
-  title: "AI Article Writer Pro",
-  description: "Generate structured, 1000+ word SEO articles based on a topic and target keywords.",
+  title: "AI Article & Blog Writer",
+  description: "Write professional articles and blog posts instantly using AI.",
   icon: "🖋️",
   colorClass: "bg-indigo-600",
   options: [
-    { id: "tone", type: "select", label: "Writing Tone", values: ["Professional", "Conversational", "Educational", "Persuasive"], default: "Professional" },
-    { id: "length", type: "select", label: "Word Count", values: ["Short (~500)", "Medium (~1000)", "Long (~1500)"], default: "Medium (~1000)" },
-    { id: "format", type: "select", label: "Output Format", values: ["Markdown", "Plain Text", "HTML"], default: "Markdown" },
-    { id: "includeCTA", type: "toggle", label: "Include Call to Action", default: true }
+    { id: "tone", type: "select", label: "Writing Style", values: ["Professional", "Conversational", "Educational", "Friendly"], default: "Professional" },
+    { id: "length", type: "select", label: "Article Length", values: ["Short (~500 words)", "Medium (~1000 words)", "Long (~1500 words)"], default: "Medium (~1000 words)" },
+    { id: "format", type: "select", label: "Format", values: ["Markdown", "Plain Text", "HTML"], default: "Markdown" }
   ]
 };
 
 export const aiRewriterConfig = {
   slug: "ai-article-rewriter",
-  title: "Smart Content Rewriter",
-  description: "Paraphrase and restructure content to make it unique while keeping the same core message.",
+  title: "Rewrite My Text",
+  description: "Change the wording of your text while keeping the same meaning.",
   icon: "🔄",
   colorClass: "bg-indigo-500",
   options: [
-    { id: "creativity", type: "slider", label: "Creativity Level", min: 1, max: 10, default: 5 },
-    { id: "purpose", type: "select", label: "Goal", values: ["Simplify", "Professionalize", "Shorten", "Expand"], default: "Professionalize" }
+    { id: "creativity", type: "slider", label: "Creativity", min: 1, max: 10, default: 5 },
+    { id: "purpose", type: "select", label: "Goal", values: ["Simplify", "Make Professional", "Make Short", "Make Long"], default: "Make Professional" }
   ]
 };
 
 export const aiGrammarConfig = {
   slug: "ai-grammar-fixer",
-  title: "Professional Proofreader",
-  description: "Advanced syntax and spelling correction with detailed explanations for every fix.",
+  title: "Correct My Grammar",
+  description: "Fix all spelling and grammar mistakes in your text instantly.",
   icon: "✅",
   colorClass: "bg-indigo-700",
   options: [
-    { id: "dialect", type: "select", label: "English Dialect", values: ["US", "UK", "AU", "CA"], default: "US" },
-    { id: "strictness", type: "select", label: "Mode", values: ["Relaxed", "Strict (Academic)"], default: "Strict (Academic)" }
+    { id: "dialect", type: "select", label: "English Type", values: ["US", "UK", "AU", "CA"], default: "US" },
+    { id: "strictness", type: "select", label: "Mode", values: ["Easy", "Strict (Office/School)"], default: "Strict (Office/School)" }
   ]
 };
 
 export const aiToneConverterConfig = {
   slug: "ai-tone-converter",
-  title: "Tone Shifter",
-  description: "Shift the emotional resonance of your text to match specific audience expectations.",
+  title: "Change Text Tone",
+  description: "Make your text sound more formal, friendly, or funny.",
   icon: "🎭",
   colorClass: "bg-violet-600",
   options: [
-    { id: "targetTone", type: "select", label: "Target Tone", values: ["Formal", "Friendly", "Cold Outreach", "Urgent", "Witty"], default: "Formal" }
+    { id: "targetTone", type: "select", label: "Target Tone", values: ["Formal", "Friendly", "Cold Email", "Urgent", "Witty"], default: "Formal" }
   ]
 };
 
 export const aiSeoOptimizerConfig = {
   slug: "ai-seo-optimizer",
-  title: "SEO Enhancer",
-  description: "Optimize title tags, headings, and keyword placement for specific search intent.",
+  title: "Improve Search Ranking",
+  description: "Optimize your text so it ranks higher on Google and social media.",
   icon: "🚀",
   colorClass: "bg-blue-600",
   options: [
-    { id: "engine", type: "select", label: "Platform", values: ["Google", "Amazon", "YouTube", "LinkedIn"], default: "Google" }
+    { id: "engine", type: "select", label: "Website", values: ["Google", "Amazon", "YouTube", "LinkedIn"], default: "Google" }
   ]
 };
 
 export const aiEmailGeneratorConfig = {
   slug: "ai-email-generator",
-  title: "AI Email Assistant",
-  description: "Craft high-response emails for sales, networking, or customer support.",
+  title: "Write an Email for Me",
+  description: "Craft high-quality emails for work, job applications, or support.",
   icon: "✉️",
   colorClass: "bg-indigo-600",
   options: [
-    { id: "type", type: "select", label: "Email Type", values: ["Cold Outreach", "Follow Up", "Resignation", "Announcement"], default: "Cold Outreach" }
+    { id: "type", type: "select", label: "Email Type", values: ["Job Application", "Follow Up", "Resignation", "Announcement"], default: "Job Application" }
   ]
 };
 
 export const aiResumeWriterConfig = {
   slug: "ai-resume-writer",
-  title: "Resume Optimizer",
-  description: "Turn task lists into accomplishment-driven bullet points for top-tier hiring pipelines.",
+  title: "Write Professional Resume",
+  description: "Transform your job tasks into impressive bullet points for recruiters.",
   icon: "📄",
   colorClass: "bg-indigo-800",
   options: [
-    { id: "seniority", type: "select", label: "Experience Level", values: ["Junior", "Mid-Level", "Senior", "Executive"], default: "Mid-Level" }
+    { id: "seniority", type: "select", label: "Job Level", values: ["Junior", "Mid-Level", "Senior", "Executive"], default: "Mid-Level" }
   ]
 };
 
 export const aiStoryGeneratorConfig = {
   slug: "ai-story-generator",
-  title: "Creative Story Studio",
-  description: "Collaborate with AI to build worlds, characters, and gripping narratives.",
+  title: "Write a Story with AI",
+  description: "Generate creative stories, characters, and plot ideas.",
   icon: "📖",
   colorClass: "bg-purple-600",
   options: [
@@ -93,22 +92,22 @@ export const aiStoryGeneratorConfig = {
 
 export const aiYoutubeScriptConfig = {
   slug: "ai-youtube-script",
-  title: "Script Architect",
-  description: "Generate structured scripts with timestamps, visual cues, and engagement hooks.",
+  title: "Write Video Scripts",
+  description: "Create structured scripts for YouTube videos or Reels.",
   icon: "📹",
   colorClass: "bg-red-600",
   options: [
-    { id: "duration", type: "select", label: "Video Length", values: ["Short (<1m)", "Medium (5-10m)", "Long (>20m)"], default: "Medium (5-10m)" }
+    { id: "duration", type: "select", label: "Video Time", values: ["Short (<1m)", "Medium (5-10m)", "Long (>20m)"], default: "Medium (5-10m)" }
   ]
 };
 
 export const aiProductDescConfig = {
   slug: "ai-product-description",
-  title: "Commerce Copywriter",
-  description: "Sell more with persuasive descriptions focusing on benefits over features.",
+  title: "Write Product Descriptions",
+  description: "Write selling descriptions for your products on Shopify or Amazon.",
   icon: "🛍️",
   colorClass: "bg-indigo-500",
   options: [
-    { id: "platform", type: "select", label: "Sales Platform", values: ["Shopify", "Amazon", "Etsy", "Social Ads"], default: "Shopify" }
+    { id: "platform", type: "select", label: "App", values: ["Shopify", "Amazon", "Etsy", "Social Ads"], default: "Shopify" }
   ]
 };

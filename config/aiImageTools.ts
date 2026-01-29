@@ -1,6 +1,6 @@
 export const aiImageGeneratorConfig = {
   slug: "ai-image-generator",
-  title: "AI Image Studio (Prompt Pro)",
+  title: "Generate AI Images (Prompt)",
   description: "Architect high-fidelity prompts with cinematic controls for professional AI image generation models.",
   icon: "🖼️",
   colorClass: "bg-indigo-600",
@@ -14,7 +14,7 @@ export const aiImageGeneratorConfig = {
 
 export const aiBackgroundRemoverConfig = {
   slug: "ai-background-remover",
-  title: "AI Background Architect",
+  title: "Remove Background with AI",
   description: "Generate precision instructions and masks for AI-powered background removal and replacement.",
   icon: "🪄",
   colorClass: "bg-indigo-500",
@@ -27,7 +27,7 @@ export const aiBackgroundRemoverConfig = {
 
 export const aiImageEnhancerConfig = {
   slug: "ai-image-enhancer",
-  title: "AI Image Enhancer (Architect)",
+  title: "Enhance Image with AI",
   description: "Generate professional AI enhancement instructions to fix blur, noise, lighting, and texture details.",
   icon: "✨",
   colorClass: "bg-violet-600",
@@ -40,7 +40,7 @@ export const aiImageEnhancerConfig = {
 
 export const aiImageUpscalerConfig = {
   slug: "ai-image-upscaler",
-  title: "AI Image Upscaler (Architect)",
+  title: "Upscale Image with AI",
   description: "Generate professional super-resolution instructions and artifact-safe prompts for high-fidelity upscaling.",
   icon: "🔍",
   colorClass: "bg-emerald-600",
@@ -53,7 +53,7 @@ export const aiImageUpscalerConfig = {
 
 export const aiImageRecolorConfig = {
   slug: "ai-image-recolor",
-  title: "AI Image Recolor (Architect)",
+  title: "Recolor Image with AI",
   description: "Generate professional recoloring instructions and AI prompts to change subject colors with realistic lighting preservation.",
   icon: "🎨",
   colorClass: "bg-pink-600",
@@ -66,7 +66,7 @@ export const aiImageRecolorConfig = {
 
 export const aiFaceRetouchConfig = {
   slug: "ai-face-retouch",
-  title: "AI Face Retouch (Architect)",
+  title: "Retouch Face with AI",
   description: "Generate professional portrait retouching instructions for natural skin, eye brightness, and expert facial lighting.",
   icon: "👤",
   colorClass: "bg-orange-600",
@@ -79,7 +79,7 @@ export const aiFaceRetouchConfig = {
 
 export const aiImageStyleTransferConfig = {
   slug: "ai-image-style-transfer",
-  title: "AI Style Transfer (Architect)",
+  title: "Transfer Image Style with AI",
   description: "Generate professional AI instructions and prompts to apply artistic styles to images while keeping structural integrity.",
   icon: "🖌️",
   colorClass: "bg-indigo-700",
@@ -92,7 +92,7 @@ export const aiImageStyleTransferConfig = {
 
 export const aiThumbnailGeneratorConfig = {
   slug: "ai-thumbnail-generator",
-  title: "AI Thumbnail Architect",
+  title: "Generate AI Video Thumbnails",
   description: "Generate high-CTR thumbnail concepts, text layout guides, and precise AI prompts to maximize video clicks.",
   icon: "📺",
   colorClass: "bg-red-600",
@@ -105,7 +105,7 @@ export const aiThumbnailGeneratorConfig = {
 
 export const aiImageCaptionConfig = {
   slug: "ai-image-caption-generator",
-  title: "AI Image Caption Master",
+  title: "Generate AI Image Captions",
   description: "Generate platform-optimized, high-engagement captions for your images using context-aware AI writing architecture.",
   icon: "✍️",
   colorClass: "bg-cyan-600",
@@ -118,7 +118,7 @@ export const aiImageCaptionConfig = {
 
 export const aiMemeGeneratorConfig = {
   slug: "ai-meme-generator",
-  title: "AI Meme Architect",
+  title: "Generate AI Meme Concepts",
   description: "Generate viral meme concepts, punchlines, and layout guidance for Instagram, Reddit, and X using trend-aware AI.",
   icon: "🤡",
   colorClass: "bg-yellow-500",

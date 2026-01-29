@@ -1,6 +1,6 @@
 export const eduStudyPlannerConfig = {
   slug: "edu-study-planner",
-  title: "AI Study Planner",
+  title: "Create Study Plan",
   description: "Architect a custom examination preparation schedule with milestones and habit-tracking nodes.",
   icon: "📅",
   colorClass: "bg-amber-600",
@@ -18,10 +18,10 @@ export const eduStudyPlannerConfig = {
 
 export const eduSummaryGeneratorConfig = {
   slug: "edu-summary-generator",
-  title: "AI Notes Summarizer",
+  title: "Summarize Study Notes",
   description: "Synthesize long notes or textbook excerpts into condensed, exam-ready summaries and key takeaways.",
   icon: "📝",
-  colorClass: "bg-amber-500",
+  colorClass: "bg-amber-50",
   options: [
     { id: "nsSubject", type: "select", label: "Subject", values: ["General", "Maths", "Physics", "Chemistry", "Biology"], default: "General" },
     { id: "nsLevel", type: "select", label: "Education Level", values: ["School", "High School", "College"], default: "High School" },
@@ -37,7 +37,7 @@ export const eduSummaryGeneratorConfig = {
 
 export const eduEssayGraderConfig = {
   slug: "edu-essay-grader",
-  title: "AI Essay Auditor",
+  title: "Grade Academic Essay",
   description: "Deep academic audit of essays for grammar, logical consistency, and source integration.",
   icon: "🎓",
   colorClass: "bg-amber-700",
@@ -50,7 +50,7 @@ export const eduEssayGraderConfig = {
 
 export const eduMathSolverConfig = {
   slug: "edu-math-solver",
-  title: "AI Math Logic Solver",
+  title: "Solve Math Problems",
   description: "Provide step-by-step logic and mathematical reasoning for complex equations and word problems.",
   icon: "🔢",
   colorClass: "bg-amber-600",
@@ -62,7 +62,7 @@ export const eduMathSolverConfig = {
 
 export const eduEquationSolverConfig = {
   slug: "edu-equation-solver",
-  title: "AI Equation Solver",
+  title: "Solve Mathematical Equations",
   description: "Step-by-step solving and verification for linear, quadratic, and systems of equations.",
   icon: "🧮",
   colorClass: "bg-indigo-600",
@@ -80,7 +80,7 @@ export const eduEquationSolverConfig = {
 
 export const eduFormulaGeneratorConfig = {
   slug: "edu-formula-generator",
-  title: "AI Formula Generator",
+  title: "Generate Subject Formulas",
   description: "Generate comprehensive, topic-based formula lists with clear explanations and variable units.",
   icon: "🧪",
   colorClass: "bg-amber-600",
@@ -99,7 +99,7 @@ export const eduFormulaGeneratorConfig = {
 
 export const eduUnitPracticeConfig = {
   slug: "edu-unit-practice",
-  title: "Unit Practice Tool",
+  title: "Practice Unit Questions",
   description: "Generate topic-wise practice questions with solutions and difficulty control for effective self-test sessions.",
   icon: "🎯",
   colorClass: "bg-orange-600",
@@ -117,10 +117,10 @@ export const eduUnitPracticeConfig = {
 
 export const eduQuizGeneratorConfig = {
   slug: "edu-quiz-generator",
-  title: "AI Quiz Generator",
+  title: "Generate Study Quiz",
   description: "Professional learning assessment engine. Generate MCQs, True/False, or Mixed quizzes with instant keys.",
   icon: "❓",
-  colorClass: "bg-amber-500",
+  colorClass: "bg-amber-50",
   options: [
     { id: "qzLevel", type: "select", label: "Education Level", values: ["School", "High School", "College"], default: "High School" },
     { id: "qzDifficulty", type: "select", label: "Difficulty", values: ["Easy", "Medium", "Hard", "Mixed"], default: "Medium" },
@@ -135,10 +135,10 @@ export const eduQuizGeneratorConfig = {
 
 export const eduFlashcardGeneratorConfig = {
   slug: "edu-flashcard-generator",
-  title: "AI Flashcard Generator",
+  title: "Create Study Flashcards",
   description: "Active recall engine for memory optimization. Convert complex notes into compact study cards with mnemonics.",
   icon: "🗂️",
-  colorClass: "bg-amber-500",
+  colorClass: "bg-amber-50",
   options: [
     { id: "fcSubject", type: "select", label: "Subject", values: ["Maths", "Physics", "Chemistry", "Biology", "General"], default: "General" },
     { id: "fcLevel", type: "select", label: "Education Level", values: ["School", "High School", "College"], default: "High School" },
@@ -154,7 +154,7 @@ export const eduFlashcardGeneratorConfig = {
 
 export const eduAssignmentFormatterConfig = {
   slug: "edu-assignment-formatter",
-  title: "AI Assignment Formatter",
+  title: "Format Academic Assignment",
   description: "Transform raw notes into professional, submission-ready academic assignments with perfect hierarchy and formal tone.",
   icon: "📝",
   colorClass: "bg-amber-600",
@@ -170,7 +170,7 @@ export const eduAssignmentFormatterConfig = {
 
 export const eduCitationConfig = {
   slug: "edu-citation-architect",
-  title: "AI Citation Architect",
+  title: "Generate Academic Citations",
   description: "Generate platform-perfect citations and bibliographies with zero-error formatting.",
   icon: "🖋️",
   colorClass: "bg-amber-800",
@@ -184,7 +184,7 @@ export const eduCitationConfig = {
 
 export const eduResearchAssistantConfig = {
   slug: "edu-research-assistant",
-  title: "AI Research Architect",
+  title: "Academic Research Assistant",
   description: "Strategize thesis topics, source mapping, and research hierarchies for academic success.",
   icon: "🔬",
   colorClass: "bg-amber-900",
@@ -196,7 +196,7 @@ export const eduResearchAssistantConfig = {
 
 export const eduLanguageTutorConfig = {
   slug: "edu-language-tutor",
-  title: "AI Language Architect",
+  title: "Language Learning Tutor",
   description: "Expert linguistic coaching with scenario-based practice and grammatical architecture.",
   icon: "🗣️",
   colorClass: "bg-amber-600",
@@ -209,10 +209,10 @@ export const eduLanguageTutorConfig = {
 
 export const eduConceptExplainerConfig = {
   slug: "edu-concept-explainer",
-  title: "AI Concept Master (ELI5)",
+  title: "Explain Complex Concepts (ELI5)",
   description: "Simplification engine for complex theories, historical events, or scientific laws.",
   icon: "💡",
-  colorClass: "bg-amber-500",
+  colorClass: "bg-amber-50",
   options: [
     { id: "targetAge", type: "select", label: "Complexity Level", values: ["5 Year Old", "10 Year Old", "High Schooler", "Non-Expert Adult"], default: "10 Year Old" },
     { id: "analogyUsage", type: "toggle", label: "Use Creative Analogies", default: true }
@@ -221,7 +221,7 @@ export const eduConceptExplainerConfig = {
 
 export const eduCodingTutorConfig = {
   slug: "edu-coding-tutor",
-  title: "AI Coding Logic Tutor",
+  title: "Coding Logic Tutor",
   description: "Mental model builder for programming concepts, bug-fixing logic, and syntax mastery.",
   icon: "💻",
   colorClass: "bg-amber-700",

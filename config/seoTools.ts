@@ -1,7 +1,6 @@
-
 export const seoTitleCheckerConfig = {
   slug: "seo-title-length-checker",
-  title: "SEO Title Length Checker",
+  title: "Check SEO Title Length",
   description: "Check if your page title is optimized for Google Search. Ensures it stays within the pixel limit to avoid truncation.",
   icon: "📛",
   colorClass: "bg-blue-600",
@@ -10,7 +9,7 @@ export const seoTitleCheckerConfig = {
 
 export const seoMetaCheckerConfig = {
   slug: "meta-description-length-checker",
-  title: "Meta Description Checker",
+  title: "Check Meta Description",
   description: "Validate meta description length. Keep your snippets engaging and fully visible in search results.",
   icon: "📝",
   colorClass: "bg-indigo-600",
@@ -19,7 +18,7 @@ export const seoMetaCheckerConfig = {
 
 export const serpPreviewToolConfig = {
   slug: "serp-snippet-preview-tool",
-  title: "SERP Snippet Preview",
+  title: "Preview Google Search Result",
   description: "Visualize how your title, URL, and meta description look in Google Search results instantly.",
   icon: "👁️",
   colorClass: "bg-emerald-600",
@@ -31,7 +30,7 @@ export const serpPreviewToolConfig = {
 
 export const internalLinkGeneratorConfig = {
   slug: "internal-link-generator",
-  title: "Internal Link Architect",
+  title: "Generate Internal Link Suggestions",
   description: "Generate natural internal linking suggestions based on your target keyword and page structure.",
   icon: "🔗",
   colorClass: "bg-cyan-600",
@@ -40,7 +39,7 @@ export const internalLinkGeneratorConfig = {
 
 export const keywordDifficultyConfig = {
   slug: "keyword-difficulty-checker",
-  title: "Keyword Difficulty Explorer",
+  title: "Check Keyword Difficulty",
   description: "Analyze how hard it is to rank for a keyword based on search volume and competition heuristics.",
   icon: "🏔️",
   colorClass: "bg-slate-700",
@@ -49,7 +48,7 @@ export const keywordDifficultyConfig = {
 
 export const keywordDensityConfig = {
   slug: "keyword-density-checker",
-  title: "Keyword Density Analyzer",
+  title: "Analyze Keyword Density",
   description: "Analyze word frequency and density to avoid over-optimization and keyword stuffing.",
   icon: "📊",
   colorClass: "bg-indigo-500",
@@ -60,7 +59,7 @@ export const keywordDensityConfig = {
 
 export const robotsTxtConfig = {
   slug: "robots-txt-generator",
-  title: "Robots.txt Generator",
+  title: "Generate Robots.txt",
   description: "Generate a perfectly formatted robots.txt file to guide search engine crawlers accurately.",
   icon: "🤖",
   colorClass: "bg-slate-800",
@@ -72,7 +71,7 @@ export const robotsTxtConfig = {
 
 export const xmlSitemapConfig = {
   slug: "xml-sitemap-generator",
-  title: "XML Sitemap Generator",
+  title: "Generate XML Sitemap",
   description: "Create a search-engine ready XML sitemap for your website URLs.",
   icon: "🗺️",
   colorClass: "bg-orange-600",
@@ -84,7 +83,7 @@ export const xmlSitemapConfig = {
 
 export const faqSchemaConfig = {
   slug: "faq-schema-generator",
-  title: "FAQ Schema Pro",
+  title: "Generate FAQ Schema",
   description: "Generate valid JSON-LD FAQ schema for rich results in Google Search.",
   icon: "❓",
   colorClass: "bg-indigo-700",
@@ -93,7 +92,7 @@ export const faqSchemaConfig = {
 
 export const breadcrumbSchemaConfig = {
   slug: "breadcrumb-schema-generator",
-  title: "Breadcrumb Schema Maker",
+  title: "Generate Breadcrumb Schema",
   description: "Create structured data for breadcrumbs to improve site hierarchy in SERPs.",
   icon: "🍞",
   colorClass: "bg-amber-600",

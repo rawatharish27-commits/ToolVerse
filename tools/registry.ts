@@ -7,7 +7,7 @@ import { ToolMetadata } from '../types/platform';
  */
 export const TOOL_REGISTRY: ToolMetadata[] = [
   {
-    "name": "Image Size Reducer (KB Target)",
+    "name": "Reduce Photo KB (20kb, 50kb, 100kb)",
     "slug": "image-size-reducer-kb",
     "category": "image",
     "subcategory": "compression",
