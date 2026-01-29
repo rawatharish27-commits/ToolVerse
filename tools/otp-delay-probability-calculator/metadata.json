@@ -1,0 +1,9 @@
+
+{
+  "name": "OTP Delay Probability Calculator",
+  "slug": "otp-delay-probability-calculator",
+  "category": "network",
+  "inputType": "object",
+  "outputType": "object",
+  "complexity": "medium"
+}

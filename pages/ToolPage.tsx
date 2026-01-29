@@ -22,8 +22,11 @@ const OfficeTools = lazy(() => import('../components/tools/OfficeTools'));
 const EducationTools = lazy(() => import('../components/tools/EducationTools'));
 const PainPointTools = lazy(() => import('../components/tools/PainPointTools'));
 
-// Strict Structure Implementations
+// Strict Structure Implementations (Wave 1)
 const FileNameFinder = lazy(() => import('../tools/file-name-rejection-cause-finder/index'));
+const OtpCalculator = lazy(() => import('../tools/otp-delay-probability-calculator/index'));
+const AutoFillAnalyzer = lazy(() => import('../tools/govt-form-auto-fill-failure-analyzer/index'));
+const EmiRealityCheck = lazy(() => import('../tools/emi-actual-vs-advertised-calculator/index'));
 
 interface ToolPageProps {
   slug: string;
@@ -48,8 +51,15 @@ const ToolPage: React.FC<ToolPageProps> = ({ slug, onNavigate }) => {
       </div>
     );
 
-    // 1. Check for Strict Structure Tool
-    if (slug === 'file-name-rejection-cause-finder') return <FileNameFinder />;
+    // 1. Check for Strict Structure Tool Registry
+    const strictTools: Record<string, React.ReactNode> = {
+      'file-name-rejection-cause-finder': <FileNameFinder />,
+      'otp-delay-probability-calculator': <OtpCalculator />,
+      'govt-form-auto-fill-failure-analyzer': <AutoFillAnalyzer />,
+      'emi-actual-vs-advertised-calculator': <EmiRealityCheck />
+    };
+
+    if (strictTools[slug]) return strictTools[slug];
 
     const commonProps = { 
       slug, 

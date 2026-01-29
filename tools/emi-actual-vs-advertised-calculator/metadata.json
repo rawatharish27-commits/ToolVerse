@@ -1,0 +1,14 @@
+
+{
+"name": "EMI Actual vs Advertised Difference Calculator",
+"slug": "emi-actual-vs-advertised-calculator",
+"category": "finance",
+"subcategory": "loans",
+"keywords": ["reducing balance", "flat rate", "emi trick", "hidden interest"],
+"problemStatement": "The bank says 8% Flat Rate, but my EMI feels much higher. What is the real reducing rate?",
+"whatUsersUsuallyDoWrong": ["Confusing flat interest with the industry-standard reducing balance interest."],
+"inputType": "object",
+"outputType": "object",
+"complexity": "high",
+"relatedTools": ["why-emi-high-explainer", "offer-price-truth-analyzer"]
+}

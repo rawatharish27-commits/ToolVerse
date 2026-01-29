@@ -17,40 +17,73 @@ export interface ProblemHub {
 
 export const PROBLEM_HUBS: ProblemHub[] = [
   {
-    id: "govt-upload-fail",
-    title: "Government Portal Upload Failure",
-    description: "Your photo or PDF is being rejected by SSC, UPSC, or State Portals.",
+    id: "govt-upload-failure-flow",
+    title: "Government Upload Failure Flow",
+    description: "Solve 'Invalid File' or 'Rejected' errors on SSC, UPSC, or State portals.",
     icon: "🏛️",
     category: "government",
     flow: [
+      { toolSlug: "why-my-upload-is-rejected-analyzer", instruction: "Analyze the specific rejection pattern." },
       { toolSlug: "file-name-rejection-cause-finder", instruction: "Check for forbidden characters or length." },
-      { toolSlug: "image-dpi-checker", instruction: "Ensure 300/600 DPI compliance." },
-      { toolSlug: "size-vs-dpi-conflict-explainer", instruction: "Check if size is mathematically possible for your DPI." },
-      { toolSlug: "govt-image-compliance-tool", instruction: "Verify final portal constraints." }
+      { toolSlug: "document-size-vs-dpi-conflict-explainer", instruction: "Resolve the mathematical conflict between size and DPI." },
+      { toolSlug: "govt-image-compliance-tool", instruction: "Execute final image hardening for Govt standards." },
+      { toolSlug: "govt-pdf-compliance-tool", instruction: "Execute final PDF hardening for Govt standards." },
+      { toolSlug: "upload-success-probability-tool", instruction: "Calculate probability of acceptance." }
     ]
   },
   {
-    id: "pdf-rejection",
+    id: "pdf-not-accepted-flow",
     title: "PDF Not Accepted Flow",
-    description: "Portal refuses to display or accept your PDF document.",
+    description: "Fix PDF documents that portals refuse to load or display correctly.",
     icon: "📄",
     category: "pdf",
     flow: [
-      { toolSlug: "pdf-security-flag-issue-detector", instruction: "Find hidden encryption or owner locks." },
-      { toolSlug: "pdf-font-embedding-risk-analyzer", instruction: "Check if fonts will break on the server." },
-      { toolSlug: "pdf-compliance-checker", instruction: "Run a full structure audit." }
+      { toolSlug: "pdf-upload-portal-acceptance-predictor", instruction: "Predict portal acceptance based on structure." },
+      { toolSlug: "pdf-compliance-checker", instruction: "Verify ISO standard adherence." },
+      { toolSlug: "pdf-font-embedding-risk-analyzer", instruction: "Audit font embedding health." },
+      { toolSlug: "pdf-layering-issue-explainer", instruction: "Detect hidden layers or overprint issues." },
+      { toolSlug: "pdf-security-flag-hidden-issue-detector", instruction: "Scan for owner locks and encryption flags." }
     ]
   },
   {
-    id: "resume-rejection",
-    title: "Resume/ATS Rejection Flow",
-    description: "Your resume is not getting parsed correctly by recruiter systems.",
+    id: "image-quality-rejection-flow",
+    title: "Image Quality Rejection Flow",
+    description: "Fix photos rejected due to 'Blur', 'Low Quality', or 'Wrong Dimensions'.",
+    icon: "🖼️",
+    category: "image",
+    flow: [
+      { toolSlug: "image-dpi-checker", instruction: "Check and fix pixel density metadata." },
+      { toolSlug: "image-aspect-ratio-rejection-predictor", instruction: "Predict ratio-based failures." },
+      { toolSlug: "image-color-space-rejection-analyzer", instruction: "Detect CMYK vs RGB conflicts." },
+      { toolSlug: "image-transparency-rejection-predictor", instruction: "Identify alpha-channel rejection risks." },
+      { toolSlug: "image-print-size-calculator", instruction: "Calculate physical output feasibility." }
+    ]
+  },
+  {
+    id: "resume-rejection-flow",
+    title: "Resume Rejection Flow",
+    description: "Optimize your resume to pass automated Applicant Tracking Systems (ATS).",
     icon: "🚀",
     category: "career",
     flow: [
       { toolSlug: "resume-parsing-preview", instruction: "View your resume through an ATS lens." },
-      { toolSlug: "resume-keyword-optimization-detector", instruction: "Check for keyword stuffing or absence." },
-      { toolSlug: "resume-rejection-analyzer", instruction: "Get a final probability score." }
+      { toolSlug: "resume-keyword-over-optimization-detector", instruction: "Detect 'Keyword Stuffing' flags." },
+      { toolSlug: "resume-section-ordering-impact-analyzer", instruction: "Analyze the impact of your section hierarchy." },
+      { toolSlug: "resume-format-compatibility-checker", instruction: "Check for layout-based parsing errors." },
+      { toolSlug: "resume-rejection-reason-analyzer", instruction: "Get a final strategic diagnostic." }
+    ]
+  },
+  {
+    id: "network-otp-failure-flow",
+    title: "Network / OTP Failure Flow",
+    description: "Diagnose why specific websites or OTP services are not working for you.",
+    icon: "🌐",
+    category: "network",
+    flow: [
+      { toolSlug: "internet-works-but-site-doesnt-analyzer", instruction: "Analyze DNS and CDN peering health." },
+      { toolSlug: "otp-delay-probability-calculator", instruction: "Estimate SMS carrier delivery delay." },
+      { toolSlug: "mobile-data-saver-impact-analyzer", instruction: "Audit data-saver corruption impacts." },
+      { toolSlug: "browser-vs-app-behavior-difference-analyzer", instruction: "Identify protocol mismatches." }
     ]
   }
 ];
