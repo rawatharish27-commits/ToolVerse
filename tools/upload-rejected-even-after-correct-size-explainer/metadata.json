@@ -1,0 +1,18 @@
+
+{
+"name": "Upload Rejected Even After Correct Size Explainer",
+"slug": "upload-rejected-even-after-correct-size-explainer",
+"category": "government",
+"subcategory": "validation",
+"keywords": ["upload rejection", "file validation", "ssc photo"],
+"problemStatement": "My photo is exactly 50KB but the portal still says 'Invalid File' or 'Rejected'. Why?",
+"whatUsersUsuallyDoWrong": [
+  "Ignoring internal metadata (EXIF) that portals use for security verification.",
+  "Manually renaming .png to .jpg without actual binary conversion.",
+  "Upload while on a slow network which causes binary corruption."
+],
+"inputType": "file",
+"outputType": "object",
+"complexity": "medium",
+"relatedTools": ["govt-form-auto-fill-failure-analyzer", "pdf-accepted-on-one-portal-but-rejected-on-another-analyzer"]
+}

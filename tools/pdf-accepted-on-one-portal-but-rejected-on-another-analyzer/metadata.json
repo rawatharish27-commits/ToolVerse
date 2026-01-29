@@ -1,0 +1,18 @@
+
+{
+"name": "PDF Accepted on One Portal but Rejected on Another Analyzer",
+"slug": "pdf-accepted-on-one-portal-but-rejected-on-another-analyzer",
+"category": "pdf",
+"subcategory": "diagnostics",
+"keywords": ["pdf error", "upload failure", "portal compatibility"],
+"problemStatement": "My PDF worked on one job site but is failing on this government portal. What changed?",
+"whatUsersUsuallyDoWrong": [
+  "Using PDF version 1.7 on portals that only support legacy 1.4 standards.",
+  "Failing to flatten layers or remove owner passwords/restrictions.",
+  "Not checking for font-embedding flags which cause server-side rendering errors."
+],
+"inputType": "file",
+"outputType": "object",
+"complexity": "medium",
+"relatedTools": ["upload-rejected-even-after-correct-size-explainer", "resume-looks-correct-but-ats-rejects-explainer"]
+}
