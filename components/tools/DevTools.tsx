@@ -4,6 +4,7 @@ import ToolLayout from '../ToolLayout';
 import OptionsPanel from '../OptionsPanel';
 import { TOOLS } from '../../data/tools';
 import { getToolConfig } from '../../utils/configRegistry';
+import OutputController from '../OutputController';
 
 interface ToolProps {
   slug: string;
@@ -31,7 +32,7 @@ const DevTools: React.FC<ToolProps> = ({ slug, onSuccess, onError }) => {
   }, [slug, activeConfig]);
 
   const handleRun = async () => {
-    if (!input.trim() && slug !== 'password-generator') return onError("Input data required.");
+    if (!input.trim()) return onError("Input data required.");
     if (!toolNode?.execute) return onError("Logic node not resolved.");
 
     setLoading(true);
@@ -59,7 +60,7 @@ const DevTools: React.FC<ToolProps> = ({ slug, onSuccess, onError }) => {
           <textarea
             value={input}
             onChange={e => setInput(e.target.value)}
-            placeholder={`Paste your ${slug.split('-')[0].toUpperCase()} or target text here...`}
+            placeholder={`Paste your code or target text here...`}
             className="w-full h-64 p-8 bg-slate-900 text-emerald-400 font-mono text-xs rounded-[2rem] outline-none shadow-2xl focus:ring-8 focus:ring-indigo-500/5 transition-all"
           />
         </div>
@@ -67,11 +68,12 @@ const DevTools: React.FC<ToolProps> = ({ slug, onSuccess, onError }) => {
       options={activeConfig.options?.length > 0 ? <OptionsPanel options={activeConfig.options as any} values={options} onChange={(id, v) => setOptions(p => ({...p, [id]: v}))} /> : undefined}
       actions={<button onClick={handleRun} disabled={loading} className={`w-full py-7 ${activeConfig.colorClass} text-white rounded-[2.5rem] font-black text-2xl shadow-2xl transition-all active:scale-95 disabled:opacity-50`}>{loading ? "Crunching Logic..." : `Execute ${activeConfig.title}`}</button>}
       result={output && (
-        <div className="relative group animate-in zoom-in-95">
-           <div className="absolute top-4 right-6 text-[8px] font-black text-slate-500 uppercase tracking-widest z-10">Output Terminal</div>
-           <textarea readOnly value={output} className="w-full h-64 p-10 bg-slate-950 text-indigo-400 font-mono text-xs rounded-[2.5rem] border-none outline-none shadow-inner" />
-           <button onClick={() => { navigator.clipboard.writeText(output); onSuccess("Copied!"); }} className="absolute bottom-8 right-10 px-8 py-3 bg-indigo-600 text-white rounded-xl font-black text-[10px] uppercase tracking-widest hover:scale-105 transition-all shadow-xl">Copy Output</button>
-        </div>
+        <OutputController 
+          type="data" 
+          data={output} 
+          fileName={`toolverse_dev_${slug}_${Date.now()}.txt`}
+          onSuccess={onSuccess}
+        />
       )}
     />
   );
