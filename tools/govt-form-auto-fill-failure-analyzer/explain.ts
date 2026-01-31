@@ -1,7 +1,7 @@
 
 export function explain(output: any): string {
-  if (!output.foundIssues) {
-    return "The portal's code seems standard. If autofill fails, check your Chrome/Edge settings under 'Autofill and passwords' to ensure 'Save and fill addresses' is enabled.";
+  if (output.issues.length === 0) {
+    return "Your code looks standard. Check if 'Save and fill addresses' is enabled in your Chrome/Edge settings.";
   }
-  return `We detected ${output.issues.length} technical factors in the portal's code that prevent standard browser autofill. Most government sites do this to prevent bot submissions.`;
+  return `Diagnosis: ${output.verdict}. ${output.issues[0]} Recommendation: ${output.suggestions[0] || 'Try a different browser.'}`;
 }

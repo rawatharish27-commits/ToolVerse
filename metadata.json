@@ -1,10 +1,8 @@
 {
-  "name": "ToolVerse - Universal Logic Ecosystem",
-  "short_name": "ToolVerse",
-  "description": "Production-grade utility engine with 500+ stateless logic nodes and zero-upload architecture.",
   "requestFramePermissions": [
     "camera",
-    "microphone",
     "geolocation"
-  ]
+  ],
+  "name": "",
+  "description": ""
 }

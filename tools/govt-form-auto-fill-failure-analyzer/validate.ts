@@ -1,13 +1,7 @@
 
-import { ValidationResult } from '../../types';
-import { LIMITS } from './limits';
-
-export function validate(input: string): ValidationResult {
-  if (!input || input.trim().length === 0) {
-    return { valid: false, error: "Input code snippet or field name cannot be empty." };
-  }
-  if (input.length > LIMITS.maxHtmlSnippetLength) {
-    return { valid: false, error: `Snippet too long. Max ${LIMITS.maxHtmlSnippetLength} characters allowed.` };
+export function validate(input: string) {
+  if (!input || input.trim().length < 5) {
+    return { valid: false, error: "Input is too short. Please paste at least one full HTML input tag." };
   }
   return { valid: true };
 }

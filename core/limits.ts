@@ -1,0 +1,7 @@
+
+export const GLOBAL_LIMITS = {
+  MAX_FILE_SIZE_MB: 20,
+  MAX_EXECUTION_TIME_MS: 4000,
+  MAX_CONCURRENT_TASKS: 1,
+  CLEANUP_STRATEGY: "aggressive-ram-purge"
+};

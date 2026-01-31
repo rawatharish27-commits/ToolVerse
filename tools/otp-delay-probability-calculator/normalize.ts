@@ -1,8 +1,8 @@
 
-export function normalize(input: any): any {
+export function normalize(input: any) {
   return {
-    ...input,
-    hour: new Date().getHours(),
-    isWeekend: [0, 6].includes(new Date().getDay())
+    carrier: String(input.carrier).trim(),
+    signal: Math.floor(Number(input.signal)) || 3,
+    timeElapsed: Number(input.timeElapsed) || 0
   };
 }

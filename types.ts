@@ -1,4 +1,5 @@
 
+
 export type CategorySlug = 
   | 'upload-rejection' 
   | 'pdf-diagnostics' 
@@ -26,12 +27,20 @@ export interface Tool {
   category: CategorySlug;
   description: string;
   keywords: string[];
-  toolType: ToolType;
+  // Made toolType optional to support multiple registry sources (data/tools.ts vs core/toolRegistry.ts)
+  toolType?: ToolType;
+  // Added icon to Tool interface as it is used in registries and ToolPage
+  icon?: string;
   priority?: number;
   // Added faqs and howTo to Tool interface to satisfy property access in SEO and UI components
   faqs?: { q: string; a: string }[];
   howTo?: string[];
+  // Added execute property for calculators and local processing logic
+  execute?: (input: any, options?: any) => Promise<any>;
 }
+
+// Fix: Export ToolEntry as an alias to Tool to resolve "no exported member 'ToolEntry'" error
+export type ToolEntry = Tool;
 
 export interface ValidationResult { valid: boolean; error?: string; }
 export interface VerificationResult { secure: boolean; error?: string; }

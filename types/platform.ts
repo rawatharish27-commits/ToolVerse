@@ -1,5 +1,5 @@
 
-export type ToolCategory = 'image' | 'pdf' | 'finance' | 'ai' | 'dev' | 'utility' | 'seo';
+export type ToolCategory = 'image' | 'pdf' | 'finance' | 'ai' | 'dev' | 'utility' | 'seo' | 'network';
 
 export interface ToolMetadata {
   name: string;
@@ -11,6 +11,8 @@ export interface ToolMetadata {
   inputType: string;
   outputType: string;
   complexity: 'low' | 'medium' | 'high';
+  // Added priority to support sorting in Home and Category hubs
+  priority?: number;
 }
 
 export interface ExecutionResult<T> {

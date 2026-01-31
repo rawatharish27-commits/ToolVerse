@@ -2,6 +2,6 @@
 import { VerificationResult } from '../../core/pipeline';
 
 export function verify(output: any): VerificationResult {
-  if (output.estWait === undefined) return { secure: false, error: "Calculation fault." };
+  if (typeof output.probability !== 'number') return { secure: false, error: "Invalid probability type." };
   return { secure: true };
 }

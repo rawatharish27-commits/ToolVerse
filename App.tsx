@@ -1,105 +1,93 @@
-
-import React, { useState, useEffect, Suspense, startTransition, useMemo } from 'react';
+import React from 'react';
+import { BrowserRouter, Routes, Route, Navigate, useParams } from 'react-router-dom';
 import Layout from './components/Layout';
 import Home from './pages/Home';
-import CategoryPage from './pages/CategoryPage';
 import ToolPage from './pages/ToolPage';
 import Directory from './pages/Directory';
+import CategoryPage from './pages/CategoryPage';
 import GuidedFlowPage from './pages/GuidedFlowPage';
+import About from './pages/About';
 import PrivacyPolicy from './pages/PrivacyPolicy';
 import Terms from './pages/Terms';
 import Contact from './pages/Contact';
-import About from './pages/About';
-import { CategorySlug } from './types';
 import AddonLayer from './components/AddonLayer';
 
-interface NavigationState {
-  page: 'home' | 'category' | 'tool' | 'about' | 'privacy' | 'terms' | 'contact' | 'directory' | 'flow';
-  params?: any;
-}
+// Navigation Adapter for standard React Router usage
+const NavigationWrapper: React.FC<{ children: (navigate: any) => React.ReactNode }> = ({ children }) => {
+  const navigate = (page: string, params?: any) => {
+    let url = '/';
+    if (page === 'tool') url = `/tools/${params.slug}`;
+    if (page === 'category') url = `/category/${params.id}`;
+    if (page === 'directory') url = '/directory';
+    if (page === 'flow') url = `/flow/${params.hubId}`;
+    if (page === 'home') url = '/';
+    if (page === 'about') url = '/about';
+    
+    window.location.href = url; // Standard navigation
+  };
+  return <>{children(navigate)}</>;
+};
+
+const ToolRoute = () => {
+  const { slug } = useParams<{ slug: string }>();
+  return (
+    <NavigationWrapper>
+      {(navigate) => <ToolPage slug={slug || ''} onNavigate={navigate} />}
+    </NavigationWrapper>
+  );
+};
+
+const CategoryRoute = () => {
+  const { id } = useParams<{ id: string }>();
+  return (
+    <NavigationWrapper>
+      {(navigate) => <CategoryPage categoryId={id || ''} onNavigate={navigate} />}
+    </NavigationWrapper>
+  );
+};
+
+const FlowRoute = () => {
+  const { hubId } = useParams<{ hubId: string }>();
+  return (
+    <NavigationWrapper>
+      {(navigate) => <GuidedFlowPage hubId={hubId || ''} onNavigate={navigate} />}
+    </NavigationWrapper>
+  );
+};
 
 const App: React.FC = () => {
-  const [nav, setNav] = useState<NavigationState>({ page: 'home' });
-  const [searchQuery, setSearchQuery] = useState('');
-  
-  const handlePathChange = () => {
-    const path = window.location.pathname;
-    
-    if (path === '/' || path === '' || path.endsWith('index.html')) {
-      setNav({ page: 'home' });
-    } else if (path.startsWith('/category/')) {
-      const id = path.split('/')[2] as CategorySlug;
-      setNav({ page: 'category', params: { id } });
-    } else if (path.startsWith('/tools/')) {
-      const slug = path.split('/')[2] || '';
-      setNav({ page: 'tool', params: { slug } });
-    } else if (path.startsWith('/solve/')) {
-      const hubId = path.split('/')[2] || '';
-      setNav({ page: 'flow', params: { hubId } });
-    } else if (path === '/directory') {
-      setNav({ page: 'directory' });
-    } else if (path === '/privacy') {
-      setNav({ page: 'privacy' });
-    } else if (path === '/terms') {
-      setNav({ page: 'terms' });
-    } else if (path === '/contact') {
-      setNav({ page: 'contact' });
-    } else if (path === '/about') {
-      setNav({ page: 'about' });
-    } else {
-      setNav({ page: 'home' });
-    }
-    
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-  };
-
-  useEffect(() => {
-    window.addEventListener('popstate', handlePathChange);
-    handlePathChange();
-    return () => window.removeEventListener('popstate', handlePathChange);
-  }, []);
-
-  const navigate = (page: string, params?: any) => {
-    let newPath = '/';
-    if (page === 'category') newPath = `/category/${params.id}`;
-    else if (page === 'tool') newPath = `/tools/${params.slug}`;
-    else if (page === 'flow') newPath = `/solve/${params.hubId}`;
-    else if (page === 'directory') newPath = `/directory`;
-    else if (page === 'privacy') newPath = `/privacy`;
-    else if (page === 'terms') newPath = `/terms`;
-    else if (page === 'contact') newPath = `/contact`;
-    else if (page === 'about') newPath = `/about`;
-
-    if (window.location.pathname !== newPath) {
-      window.history.pushState({}, '', newPath);
-      handlePathChange();
-    }
-  };
-
-  const activeView = useMemo(() => {
-    switch (nav.page) {
-      case 'home': return <Home onNavigate={navigate} searchQuery={searchQuery} favorites={[]} onToggleFavorite={()=>{}} recent={[]} />;
-      case 'category': return <CategoryPage categoryId={nav.params.id} onNavigate={navigate} favorites={[]} onToggleFavorite={()=>{}} />;
-      case 'tool': return <ToolPage slug={nav.params.slug} onNavigate={navigate} />;
-      case 'flow': return <GuidedFlowPage hubId={nav.params.hubId} onNavigate={navigate} />;
-      case 'directory': return <Directory onNavigate={navigate} favorites={[]} onToggleFavorite={()=>{}} />;
-      case 'privacy': return <PrivacyPolicy />;
-      case 'terms': return <Terms />;
-      case 'contact': return <Contact />;
-      case 'about': return <About />;
-      default: return <Home onNavigate={navigate} searchQuery="" favorites={[]} onToggleFavorite={()=>{}} recent={[]} />;
-    }
-  }, [nav, searchQuery]);
-
   return (
-    <Layout 
-      searchQuery={searchQuery}
-      onNavigate={navigate} 
-      onSearch={setSearchQuery}
-    >
-      <AddonLayer />
-      {activeView}
-    </Layout>
+    <BrowserRouter>
+      <Layout onNavigate={(page, params) => {
+          let url = '/';
+          if (page === 'tool') url = `/tools/${params.slug}`;
+          if (page === 'category') url = `/category/${params.id}`;
+          if (page === 'directory') url = '/directory';
+          if (page === 'home') url = '/';
+          window.location.href = url;
+      }}>
+        <AddonLayer />
+        <Routes>
+          <Route path="/" element={<Home onNavigate={(p, pr) => {
+              if (p === 'tool') window.location.href = `/tools/${pr.slug}`;
+              if (p === 'directory') window.location.href = '/directory';
+              if (p === 'flow') window.location.href = `/flow/${pr.hubId}`;
+          }} favorites={[]} onToggleFavorite={() => {}} recent={[]} />} />
+          
+          <Route path="/tools/:slug" element={<ToolRoute />} />
+          <Route path="/category/:id" element={<CategoryRoute />} />
+          <Route path="/flow/:hubId" element={<FlowRoute />} />
+          <Route path="/directory" element={<Directory onNavigate={(p, pr) => window.location.href = `/tools/${pr.slug}`} favorites={[]} onToggleFavorite={() => {}} />} />
+          
+          <Route path="/about" element={<About />} />
+          <Route path="/privacy" element={<PrivacyPolicy />} />
+          <Route path="/terms" element={<Terms />} />
+          <Route path="/contact" element={<Contact />} />
+          
+          <Route path="*" element={<Navigate to="/" replace />} />
+        </Routes>
+      </Layout>
+    </BrowserRouter>
   );
 };
 
