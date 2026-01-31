@@ -1,9 +1,8 @@
 
-import React, { Suspense, useMemo } from 'react';
-import { TOOLS } from '../data/tools';
+import React, { useMemo } from 'react';
+import { ToolRegistry } from '../core/toolRegistry';
 import AdSenseManager from '../components/AdSenseManager';
-import SEOManager from '../components/SEOManager';
-import ToolLoader from '../components/ToolLoader';
+import SEOHead from '../components/SEOHead';
 import UniversalSEOLayer from '../components/UniversalSEOLayer';
 import GenericToolView from '../components/GenericToolView';
 import RightSideMenu from '../components/RightSideMenu';
@@ -14,36 +13,35 @@ interface Props {
 }
 
 const ToolPage: React.FC<Props> = ({ slug, onNavigate }) => {
-  const tool = useMemo(() => TOOLS.find(t => t.slug === slug), [slug]);
+  const tool = useMemo(() => ToolRegistry.getToolBySlug(slug), [slug]);
 
   if (!tool) {
-    return <div className="p-40 text-center font-black text-slate-300">404: LOGIC NODE NOT RESOLVED</div>;
+    return (
+      <div className="p-40 text-center space-y-8">
+        <div className="text-9xl opacity-10">404</div>
+        <h2 className="text-2xl font-black text-slate-300 uppercase tracking-widest">Logic Node Not Found</h2>
+        <button onClick={() => onNavigate('home')} className="px-8 py-3 bg-indigo-600 text-white rounded-xl font-black text-xs uppercase tracking-widest">Back to Origin</button>
+      </div>
+    );
   }
 
   return (
     <div className="min-h-screen bg-white">
-      <SEOManager tool={tool} />
+      <SEOHead tool={tool} />
       <UniversalSEOLayer tool={tool} />
       
       <div className="max-w-[1600px] mx-auto px-8 py-12">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-16">
           
           <main className="lg:col-span-8">
-            <div className="bg-white rounded-[4rem] p-10 md:p-20 shadow-3xl border border-slate-50 mb-12 relative overflow-hidden group">
-              <div className="absolute top-0 left-0 w-2 h-full bg-indigo-600 opacity-20 group-hover:opacity-100 transition-opacity duration-700"></div>
-              
-              <Suspense fallback={<ToolLoader message="Orchestrating Logic Isolate..." />}>
-                <GenericToolView 
-                  slug={tool.slug} 
-                  title={tool.title} 
-                  description={tool.description} 
-                  category={tool.category} 
-                  icon={tool.icon || '🛠️'} 
-                />
-              </Suspense>
-            </div>
-
-            <AdSenseManager slotId={`TOOL_${tool.slug.toUpperCase()}`} type="mid" />
+            <GenericToolView 
+              slug={tool.slug} 
+              title={tool.title} 
+              description={tool.description} 
+              category={tool.category} 
+              icon={tool.icon || '🛠️'} 
+            />
+            <AdSenseManager slotId={`TOOL_${tool.slug.toUpperCase()}`} type="INLINE" className="mt-12" />
           </main>
 
           <aside className="lg:col-span-4">

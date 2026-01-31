@@ -1,62 +1,57 @@
 
-export interface ToolResult<O> {
-  success: boolean;
-  data?: O;
-  error?: string;
-  explanation?: string;
-  timing: number;
-}
-
-export interface ToolPipeline<I, O> {
-  validate: (input: I) => { valid: boolean; error?: string };
-  normalize: (input: I) => I;
-  process: (input: I, options?: any) => Promise<O>;
-  verify: (output: O) => { secure: boolean; error?: string };
-  explain: (output: O) => string;
-}
-
 /**
- * ToolVerse Logic Orchestrator
- * Ensures deterministic, stateless execution for every node in the registry.
+ * TOOLVERSE CORE ENGINE v1.1
+ * Simplified Phase 2 Execution Model
  */
-export async function executeTool<I, O>(
-  input: I,
-  pipeline: ToolPipeline<I, O>,
-  options?: any
-): Promise<ToolResult<O>> {
+// Fix: Added generic types and updated return structure to include success, data, error, and timing
+export async function executeTool<I = any, O = any>({
+  input,
+  validate,
+  normalize,
+  process,
+  verify,
+  explain,
+  options
+}: {
+  input: I;
+  validate?: (input: I) => { valid: boolean; error?: string };
+  normalize?: (input: I) => I;
+  process: (input: I, options?: any) => Promise<O>;
+  verify?: (output: O) => { secure: boolean; error?: string };
+  explain?: (output: O) => string;
+  options?: any;
+}) {
   const startTime = performance.now();
   try {
-    // 1. Validation Logic
-    const validation = pipeline.validate(input);
-    if (!validation.valid) {
-      throw new Error(validation.error || "Input Schema Validation Failed.");
+    // 1. Validate
+    if (validate) {
+      const v = validate(input);
+      if (v && v.valid === false) throw new Error(v.error || "Validation failed");
     }
 
-    // 2. Data Normalization
-    const normalizedInput = pipeline.normalize(input);
+    // 2. Normalize
+    const norm = normalize ? normalize(input) : input;
 
-    // 3. Core Software Processing (Logic Node Isolate)
-    const output = await pipeline.process(normalizedInput, options);
+    // 3. Process
+    const output = await process(norm, options);
 
-    // 4. Integrity Verification
-    const verification = pipeline.verify(output);
-    if (!verification.secure) {
-      throw new Error(verification.error || "Output Integrity Fault Detected.");
+    // 4. Verify
+    if (verify) {
+      const v = verify(output);
+      if (v && v.secure === false) throw new Error(v.error || "Verification failed");
     }
 
-    // 5. Semantic Explanation
-    const explanation = pipeline.explain(output);
-
+    // 5. Explain & Return
     return {
       success: true,
       data: output,
-      explanation,
+      explanation: explain ? explain(output) : "Logic executed successfully in browser-native memory.",
       timing: performance.now() - startTime
     };
-  } catch (err: any) {
+  } catch (e: any) {
     return {
       success: false,
-      error: err.message || "Logic Isolate Execution Fault.",
+      error: e.message || "Logic Isolate Error",
       timing: performance.now() - startTime
     };
   }

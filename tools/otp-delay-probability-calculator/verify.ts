@@ -1,7 +1,7 @@
 
-import { VerificationResult } from '../../core/pipeline';
+import { VerificationResult } from '../../types';
 
 export function verify(output: any): VerificationResult {
-  if (typeof output.probability !== 'number') return { secure: false, error: "Invalid probability type." };
+  if (output.probability === undefined) return { secure: false, error: "Logic node output corrupted." };
   return { secure: true };
 }

@@ -33,11 +33,13 @@ export const onRequestPost = async (context: { request: Request; env: any }) => 
 
     const result = await handleRouting(toolId, category || 'general', payload, isolateEnv);
     
-    if (result.success) {
-      return success(result.data);
+    // Fix: Explicitly cast result to any to bypass TypeScript union property access restrictions for 'data' and 'error'
+    const finalResult = result as any;
+    if (finalResult.success) {
+      return success(finalResult.data);
     } else {
-      const errCode = (result as any).error?.includes("429") ? 429 : 400;
-      return error((result as any).error || "Node logic failure.", errCode);
+      const errCode = finalResult.error?.includes("429") ? 429 : 400;
+      return error(finalResult.error || "Node logic failure.", errCode);
     }
     
   } catch (err: any) {

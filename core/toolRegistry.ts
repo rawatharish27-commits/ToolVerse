@@ -1,148 +1,66 @@
 
-import { ToolMetadata } from '../types/platform';
+// Fix: Import React to resolve 'Cannot find namespace React' error
+import React, { lazy } from 'react';
+import { Tool } from '../types';
+
+export interface RegisteredTool extends Tool {
+  component: React.ComponentType<any>;
+}
 
 /**
- * TOOLVERSE MASTER REGISTRY v12.5
- * Central index for all 500+ logic nodes.
+ * TOOLVERSE MASTER REGISTRY (Auto-Generated)
+ * Total Active Nodes: 5
  */
-export const TOOL_REGISTRY: ToolMetadata[] = [
+export const TOOL_REGISTRY: RegisteredTool[] = [
   {
-    name: "Photo KB Size Reducer",
-    slug: "image-size-reducer-kb",
-    category: "image",
-    subcategory: "compression",
-    keywords: ["20kb", "50kb", "ssc photo", "compress image"],
-    inputType: "file",
-    outputType: "file",
-    priority: 100,
-    // Fix: Added missing properties 'related' and 'complexity'
-    related: ["bulk-image-resizer-kb"],
-    complexity: "medium"
+    slug: 'emi-actual-vs-advertised-calculator',
+    title: 'EMI Actual vs Advertised Difference Calculator',
+    category: 'finance-analysis' as any,
+    description: 'The bank says 8% Flat Rate, but my EMI feels much higher. What is the real reducing rate?',
+    icon: '📊',
+    keywords: [],
+    component: lazy(() => import('../tools/emi-actual-vs-advertised-calculator/index'))
   },
   {
-    name: "OTP Delay Probability",
-    slug: "otp-delay-probability-calculator",
-    category: "network",
-    subcategory: "diagnostics",
-    keywords: ["otp delay", "sms delay"],
-    inputType: "object",
-    outputType: "object",
-    priority: 95,
-    // Fix: Added missing properties 'related' and 'complexity'
-    related: ["email-spam-trigger-checker"],
-    complexity: "medium"
+    slug: 'gst-calculator-india',
+    title: 'Gst Calculator India',
+    category: 'finance-analysis' as any,
+    description: 'Auto-fixed tool',
+    icon: '🏷️',
+    keywords: [],
+    component: lazy(() => import('../tools/gst-calculator-india/index'))
   },
   {
-    name: "EMI Reality Checker",
-    slug: "emi-actual-vs-advertised-difference-calculator",
-    category: "finance",
-    subcategory: "loans",
-    keywords: ["emi", "loan interest"],
-    inputType: "object",
-    outputType: "object",
-    priority: 98,
-    // Fix: Added missing properties 'related' and 'complexity'
-    related: ["loan-eligibility-calculator"],
-    complexity: "high"
+    slug: 'image-size-reducer-kb',
+    title: 'Image Size Reducer Kb',
+    category: 'media-acceptance' as any,
+    description: 'Auto-fixed tool',
+    icon: '📉',
+    keywords: [],
+    component: lazy(() => import('../tools/image-size-reducer-kb/index'))
   },
-  // --- BATCH REPLICATION STUBS ---
-  // Fix: Added missing properties 'related' and 'complexity' to all stubs
-  { 
-    name: "GST Calculator (India)", 
-    slug: "gst-calculator-india", 
-    category: "finance", 
-    subcategory: "tax", 
-    keywords: ["gst", "tax india"], 
-    inputType: "object", 
-    outputType: "object",
-    related: [],
-    complexity: "low"
+  {
+    slug: 'otp-delay-probability-calculator',
+    title: 'OTP Delay Probability Calculator',
+    category: 'connectivity' as any,
+    description: 'Professional logic node.',
+    icon: '🌐',
+    keywords: [],
+    component: lazy(() => import('../tools/otp-delay-probability-calculator/index'))
   },
-  { 
-    name: "Resume ATS Score", 
-    slug: "resume-ats-score-analyzer", 
-    // Fix: Re-mapped invalid category 'career-diagnostics' to 'ai'
-    category: "ai", 
-    subcategory: "audit", 
-    keywords: ["ats", "resume score"], 
-    inputType: "text", 
-    outputType: "object",
-    related: [],
-    complexity: "medium"
-  },
-  { 
-    name: "PDF to Editable Word", 
-    slug: "pdf-to-word-high-fidelity", 
-    // Fix: Re-mapped invalid category 'pdf-diagnostics' to 'pdf'
-    category: "pdf", 
-    subcategory: "converter", 
-    keywords: ["pdf", "word"], 
-    inputType: "file", 
-    outputType: "file",
-    related: [],
-    complexity: "high"
-  },
-  { 
-    name: "Bulk Image Resizer", 
-    slug: "bulk-image-resizer-kb", 
-    // Fix: Re-mapped invalid category 'media-acceptance' to 'image'
-    category: "image", 
-    subcategory: "bulk", 
-    keywords: ["resizer", "bulk"], 
-    inputType: "file", 
-    outputType: "file",
-    related: ["image-size-reducer-kb"],
-    complexity: "medium"
-  },
-  { 
-    name: "Loan Eligibility", 
-    slug: "loan-eligibility-calculator", 
-    // Fix: Re-mapped invalid category 'finance-analysis' to 'finance'
-    category: "finance", 
-    subcategory: "eligibility", 
-    keywords: ["loan", "home loan"], 
-    inputType: "object", 
-    outputType: "object",
-    related: ["emi-actual-vs-advertised-difference-calculator"],
-    complexity: "medium"
-  },
-  { 
-    name: "Email Spam Checker", 
-    slug: "email-spam-trigger-checker", 
-    // Fix: Re-mapped invalid category 'email-comms' to 'network'
-    category: "network", 
-    subcategory: "spam", 
-    keywords: ["spam", "email test"], 
-    inputType: "text", 
-    outputType: "object",
-    related: [],
-    complexity: "medium"
-  },
-  { 
-    name: "Server Uptime Predictor", 
-    slug: "website-uptime-simulator", 
-    // Fix: Re-mapped invalid category 'connectivity' to 'network'
-    category: "network", 
-    subcategory: "network", 
-    keywords: ["uptime", "server"], 
-    inputType: "text", 
-    outputType: "object",
-    related: [],
-    complexity: "medium"
-  },
-  { 
-    name: "Dark Pattern Detector", 
-    slug: "dark-pattern-detector", 
-    // Fix: Re-mapped invalid category 'ux-performance' to 'dev'
-    category: "dev", 
-    subcategory: "audit", 
-    keywords: ["dark patterns", "ui audit"], 
-    inputType: "text", 
-    outputType: "object",
-    related: [],
-    complexity: "medium"
+  {
+    slug: 'resume-ats-score-analyzer',
+    title: 'Resume Ats Score Analyzer',
+    category: 'career-diagnostics' as any,
+    description: 'Auto-fixed tool',
+    icon: '🚀',
+    keywords: [],
+    component: lazy(() => import('../tools/resume-ats-score-analyzer/index'))
   }
 ];
 
-export const getToolBySlug = (slug: string) => 
-  TOOL_REGISTRY.find(t => t.slug === slug);
+export const ToolRegistry = {
+  getTools: () => TOOL_REGISTRY,
+  getToolBySlug: (slug: string) => TOOL_REGISTRY.find(t => t.slug === slug),
+  getToolsByCategory: (catId: string) => TOOL_REGISTRY.filter(t => t.category === catId)
+};

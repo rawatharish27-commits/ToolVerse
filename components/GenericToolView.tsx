@@ -4,18 +4,8 @@ import ToolLayout from './ToolLayout';
 import OptionsPanel from './OptionsPanel';
 import ToolLoader from './ToolLoader';
 import OutputController from './OutputController';
-import ToolFeedback from './ToolFeedback';
+import { executeTool } from '../core/executeTool';
 import { trackToolClick } from '../utils/attraction';
-
-interface ToolOption {
-  id: string;
-  label: string;
-  type: 'slider' | 'select' | 'toggle' | 'number' | 'text';
-  min?: number;
-  max?: number;
-  values?: (string | number)[];
-  default: any;
-}
 
 interface Props {
   slug: string;
@@ -26,84 +16,69 @@ interface Props {
 }
 
 const GenericToolView: React.FC<Props> = ({ slug, title, description, category, icon }) => {
+  const [logic, setLogic] = useState<any>(null);
   const [options, setOptions] = useState<Record<string, any>>({});
-  const [uiSchema, setUiSchema] = useState<ToolOption[]>([]);
+  const [uiSchema, setUiSchema] = useState<any[]>([]);
   const [result, setResult] = useState<any>(null);
   const [loading, setLoading] = useState(false);
-  const [processFn, setProcessFn] = useState<any>(null);
-  const [latency, setLatency] = useState<number>(0);
-  const [isStub, setIsStub] = useState(false);
+  const [status, setStatus] = useState<'loading' | 'ready' | 'stub'>('loading');
 
   useEffect(() => {
-    setLoading(true);
-    setResult(null);
-    setIsStub(false);
+    let active = true;
+    const load = async () => {
+      setStatus('loading');
+      try {
+        // Attempt to load logic and config from the tool's folder
+        const [proc, cfg, val, norm, ver, exp] = await Promise.all([
+          import(`../tools/${slug}/process`).then(m => m.process).catch(() => null),
+          import(`../tools/${slug}/config`).then(m => m.CONFIG).catch(() => null),
+          import(`../tools/${slug}/validate`).then(m => m.validate).catch(() => null),
+          import(`../tools/${slug}/normalize`).then(m => m.normalize).catch(() => null),
+          import(`../tools/${slug}/verify`).then(m => m.verify).catch(() => null),
+          import(`../tools/${slug}/explain`).then(m => m.explain).catch(() => null)
+        ]);
 
-    Promise.all([
-      import(`../tools/${slug}/process`).then(m => m.process).catch(() => null),
-      import(`../tools/${slug}/config`).then(m => m.CONFIG).catch(() => null)
-    ]).then(([proc, config]) => {
-      if (!proc) {
-        setIsStub(true);
-        // Basic fallback logic for stubs
-        setProcessFn(() => async (o: any) => ({ 
-          "Status": "Development Node", 
-          "Message": "Logic kernel is currently being optimized for this specific node.",
-          "Target Slug": slug 
-        }));
-      } else {
-        setProcessFn(() => proc);
-      }
+        if (!active) return;
 
-      if (config?.options) {
-        setUiSchema(config.options);
-        const defaults: any = {};
-        config.options.forEach((o: ToolOption) => defaults[o.id] = o.default);
-        setOptions(defaults);
-      } else {
-        setUiSchema([]);
+        if (!proc) {
+          setStatus('stub');
+        } else {
+          setLogic({ process: proc, validate: val, normalize: norm, verify: ver, explain: exp });
+          if (cfg?.options) {
+            setUiSchema(cfg.options);
+            const defaults: any = {};
+            cfg.options.forEach((o: any) => defaults[o.id] = o.default);
+            setOptions(defaults);
+          }
+          setStatus('ready');
+        }
+      } catch (e) {
+        if (active) setStatus('stub');
       }
-      setLoading(false);
-    });
+    };
+    load();
+    return () => { active = false; };
   }, [slug]);
 
-  const handleExecute = async () => {
-    if (!processFn) return;
-    const start = performance.now();
+  const handleRun = async () => {
+    if (status !== 'ready') return;
     setLoading(true);
-    try {
-      const out = await processFn(options);
-      setResult(out);
-      setLatency(performance.now() - start);
-      trackToolClick(slug, category);
-    } catch (e: any) {
-      setResult({ error: e.message || "Logic Isolate Execution Fault" });
-    } finally {
-      setLoading(false);
-    }
+    setResult(null);
+    // Fix: Wrapped arguments in a single object as expected by executeTool to fix the 'Expected 1 arguments, but got 2' error.
+    const res = await executeTool({ input: options, ...logic });
+    setResult(res);
+    setLoading(false);
+    trackToolClick(slug, category);
   };
 
-  if (loading && !processFn) return <ToolLoader message="Deploying Logic Node..." />;
+  if (status === 'loading') return <ToolLoader message="Warming up Logic Node..." />;
 
-  const inputArea = (
-    <div className="space-y-8">
-       <div className="p-12 bg-indigo-50/50 rounded-[3rem] border-2 border-dashed border-indigo-100 text-center flex flex-col items-center group">
-          {isStub && (
-            <div className="absolute top-6 right-8 px-3 py-1 bg-amber-100 text-amber-600 text-[8px] font-black uppercase rounded-lg">Development Mode</div>
-          )}
-          <div className="text-8xl mb-6 group-hover:scale-110 group-hover:rotate-6 transition-all duration-700">{icon}</div>
-          <p className="text-[10px] font-black text-indigo-400 uppercase tracking-[0.5em] italic">Precision Logic Kernel: Active</p>
-       </div>
-       
-       {uiSchema.length > 0 && (
-         <div className="bg-white p-8 rounded-[3rem] border border-slate-100 shadow-inner">
-            <OptionsPanel 
-              options={uiSchema as any} 
-              values={options} 
-              onChange={(id, val) => setOptions(prev => ({ ...prev, [id]: val }))} 
-            />
-         </div>
-       )}
+  if (status === 'stub') return (
+    <div className="py-20 text-center space-y-6">
+       <div className="text-8xl grayscale opacity-20">🚧</div>
+       <h3 className="text-2xl font-black text-slate-300 uppercase tracking-widest">Logic Node Pending</h3>
+       <p className="text-slate-400 font-medium italic max-w-sm mx-auto">This tool is in our build pipeline and will be live in the next release cycle.</p>
+       <button onClick={() => window.history.back()} className="px-8 py-3 bg-slate-100 text-slate-500 rounded-xl font-black text-[10px] uppercase tracking-widest">Return to Directory</button>
     </div>
   );
 
@@ -112,42 +87,59 @@ const GenericToolView: React.FC<Props> = ({ slug, title, description, category, 
       title={title}
       description={description}
       icon={icon}
-      input={inputArea}
+      input={
+        <div className="space-y-10">
+           <div className="p-12 bg-slate-50 rounded-[3rem] border-2 border-dashed border-slate-200 text-center flex flex-col items-center">
+              <div className="text-8xl mb-6">{icon}</div>
+              <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.5em] italic">Stateless Logic Isolate Active</p>
+           </div>
+           
+           {uiSchema.length > 0 && (
+             <div className="bg-white p-8 rounded-[3rem] border border-slate-100 shadow-inner">
+                <OptionsPanel 
+                  options={uiSchema} 
+                  values={options} 
+                  onChange={(id, val) => setOptions(prev => ({ ...prev, [id]: val }))} 
+                />
+             </div>
+           )}
+        </div>
+      }
       actions={
         <button 
-          onClick={handleExecute}
-          disabled={loading || !processFn}
+          onClick={handleRun} 
+          disabled={loading}
           className="w-full py-8 bg-indigo-600 text-white rounded-[2.5rem] font-black text-2xl shadow-2xl hover:bg-indigo-700 transition-all transform active:scale-95 disabled:opacity-50"
         >
-          {loading ? "Crunching Logic..." : "Execute Logic Node"}
+          {loading ? "Crunching Logic..." : "Execute Tool Logic"}
         </button>
       }
       result={result && (
-        <div className="space-y-12 animate-in zoom-in-95 duration-500">
-           <div className="flex items-center justify-between px-4">
-              <div className="flex items-center gap-3">
-                 <div className="w-2 h-2 rounded-full bg-emerald-500 animate-ping"></div>
-                 <span className="text-[9px] font-black text-slate-400 uppercase tracking-widest">Logic Resolved in {latency.toFixed(2)}ms</span>
-              </div>
-              <div className="text-[8px] font-black text-slate-300 uppercase tracking-widest">Sig: {Math.random().toString(36).substring(7).toUpperCase()}</div>
-           </div>
-
-           <OutputController 
-             type="data" 
-             data={result} 
-             fileName={`toolverse_${slug}.json`}
-             onSuccess={() => {}} 
-           />
-
-           <ToolFeedback toolSlug={slug} />
+        <div className="space-y-10 animate-in zoom-in-95 duration-500">
+           {result.success ? (
+             <>
+               <OutputController 
+                 type="data" 
+                 data={result.data} 
+                 fileName={`toolverse_${slug}.json`}
+                 onSuccess={() => {}} 
+               />
+               <div className="p-8 bg-indigo-50 rounded-[2.5rem] border border-indigo-100 italic font-medium text-indigo-900 text-sm">
+                 " {result.explanation} "
+               </div>
+             </>
+           ) : (
+             <div className="p-10 bg-rose-50 rounded-[2.5rem] border border-rose-100 text-rose-700 font-bold">
+               Error: {result.error}
+             </div>
+           )}
         </div>
       )}
       footer={
-        <div className="p-10 bg-slate-50 rounded-[3rem] border border-slate-100 text-left relative overflow-hidden">
-          <div className="absolute top-0 left-0 w-2 h-full bg-slate-200"></div>
-          <h5 className="text-[11px] font-black text-slate-400 uppercase tracking-widest mb-4">Technical Integrity Audit</h5>
-          <p className="text-xs text-slate-500 font-medium leading-relaxed italic leading-relaxed">
-            Every calculation in the ToolVerse network is performed on the user's hardware. This node utilizes 64-bit address space isolation to protect against buffer overflow and data cross-contamination.
+        <div className="p-10 bg-slate-50 rounded-[3rem] border border-slate-100 text-left">
+          <h5 className="text-[11px] font-black text-slate-400 uppercase tracking-widest mb-4">Integrity Audit</h5>
+          <p className="text-xs text-slate-500 font-medium leading-relaxed italic">
+            This tool processes data locally in your browser RAM. No data is sent to ToolVerse servers.
           </p>
         </div>
       }

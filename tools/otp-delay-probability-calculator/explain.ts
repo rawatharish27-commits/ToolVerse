@@ -1,10 +1,7 @@
 
-export function explain(output: { probability: number; carrierStatus: string }): string {
+export function explain(output: any): string {
   const p = Math.round(output.probability * 100);
-  let advice = "The network path is clear. Proceed with the request.";
-  
-  if (p < 50) advice = "High congestion detected. Carriers are likely queuing SMS packets. Switch to mobile data or try again after 10 PM IST.";
-  else if (p < 80) advice = "Moderate delay expected. Do not click 'Resend' for at least 2 minutes to prevent session lockout.";
-
-  return `Logic Resolved: ${p}% Probability. Status: ${output.carrierStatus}. Recommendation: ${advice}`;
+  if (p > 80) return "Connection path is optimal. Your OTP should arrive within 30 seconds.";
+  if (p > 50) return "Moderate network congestion detected. Delay of up to 2 minutes is likely.";
+  return "High carrier load identified. Your OTP request might time out; try using a different network if possible.";
 }

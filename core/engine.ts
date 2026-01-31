@@ -1,44 +1,59 @@
 
-import { ToolPipeline, ExecutionResult } from '../types/platform';
+import { ValidationResult, VerificationResult } from '../types';
 
-export class ToolEngine {
-  static async run<I, O>(
-    pipeline: ToolPipeline<I, O>,
-    input: I,
-    options?: any,
-    onProgress?: (stage: string) => void
-  ): Promise<ExecutionResult<O>> {
-    try {
-      // 1. Validation (Fast Fail)
-      onProgress?.('Validating input parameters...');
-      const v = pipeline.validate(input);
-      if (!v.valid) return { success: false, error: v.error, stage: 'validation' };
+export interface ExecutionResult<O> {
+  success: boolean;
+  data?: O;
+  error?: string;
+  explanation?: string;
+  timing: number;
+}
 
-      // 2. Normalization
-      onProgress?.('Normalizing formats...');
-      const normalizedInput = pipeline.normalize(input);
+export interface ToolPipeline<I, O> {
+  validate: (input: I) => ValidationResult;
+  normalize: (input: I) => I;
+  process: (input: I, options?: any) => Promise<O>;
+  verify: (output: O) => VerificationResult;
+  explain: (output: O) => string;
+}
 
-      // 3. Core Processing
-      onProgress?.('Processing logic nodes...');
-      const output = await pipeline.process(normalizedInput, options);
+/**
+ * Global Tool Orchestrator
+ * Executes stateless logic nodes with integrity checks.
+ */
+export async function executeLogic<I, O>(
+  input: I,
+  pipeline: ToolPipeline<I, O>,
+  options?: any
+): Promise<ExecutionResult<O>> {
+  const startTime = performance.now();
+  try {
+    // 1. Schema Validation
+    const val = pipeline.validate(input);
+    if (!val.valid) throw new Error(val.error || "Input rejected by validation layer.");
 
-      // 4. Output Verification
-      onProgress?.('Verifying result integrity...');
-      const ver = pipeline.verify(output);
-      if (!ver.secure) return { success: false, error: ver.error, stage: 'verification' };
+    // 2. Data Normalization
+    const normalized = pipeline.normalize(input);
 
-      // 5. Success
-      return {
-        success: true,
-        data: output,
-        explanation: pipeline.explain(output)
-      };
-    } catch (err: any) {
-      return {
-        success: false,
-        error: err.message || 'Unknown execution fault in logic isolate.',
-        stage: 'processing'
-      };
-    }
+    // 3. Execution (Logic Node)
+    const output = await pipeline.process(normalized, options);
+
+    // 4. Integrity Verification
+    const ver = pipeline.verify(output);
+    if (!ver.secure) throw new Error(ver.error || "Result failed post-computation audit.");
+
+    return {
+      success: true,
+      data: output,
+      explanation: pipeline.explain(output),
+      timing: performance.now() - startTime
+    };
+  } catch (err: any) {
+    console.error("[LogicEngine Error]:", err.message);
+    return {
+      success: false,
+      error: err.message || "Logic Isolate Fault",
+      timing: performance.now() - startTime
+    };
   }
 }

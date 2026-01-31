@@ -1,7 +1,8 @@
 
 import React, { useState } from 'react';
-import { ToolMetadata, ExecutionResult } from '../types/platform';
-import { ToolEngine } from '../core/engine';
+import { ToolMetadata } from '../types/platform';
+// Fix: Import PipelineRunner and ExecutionResult from core/pipeline instead of missing ToolEngine from core/engine
+import { PipelineRunner, ExecutionResult } from '../core/pipeline';
 
 interface Props {
   tool: ToolMetadata;
@@ -21,7 +22,8 @@ const UniversalToolShell: React.FC<Props> = ({ tool }) => {
     const module = await import(`../tools/${tool.slug}/index`);
     const pipeline = module.pipeline;
 
-    const res = await ToolEngine.run(pipeline, input, {}, setProgress);
+    // Fix: Use PipelineRunner.run instead of non-existent ToolEngine.run and remove unsupported setProgress parameter
+    const res = await PipelineRunner.run(tool.slug, pipeline, input, {});
     setResult(res);
     setLoading(false);
   };
