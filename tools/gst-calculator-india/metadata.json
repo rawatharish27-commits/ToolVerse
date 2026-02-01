@@ -1,0 +1,8 @@
+
+{
+  "name": "GST Calculator (India) FY 24-25",
+  "slug": "gst-calculator-india",
+  "category": "finance-analysis",
+  "problemStatement": "Calculate GST breakdown with multi-slab support for Indian tax compliance.",
+  "icon": "🏷️"
+}

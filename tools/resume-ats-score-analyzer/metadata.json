@@ -1,0 +1,8 @@
+
+{
+  "name": "Resume ATS Auditor & Score",
+  "slug": "resume-ats-score-analyzer",
+  "category": "career-diagnostics",
+  "problemStatement": "Audit your resume for hidden ATS blockers and multi-column parsing errors.",
+  "icon": "🚀"
+}
